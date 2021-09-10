@@ -7,16 +7,20 @@ orbs:
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.2
   jira: circleci/jira@1.3.1
+  node: circleci/node@4.7.0
+  python-lint: qventus/python-lint@0.0.7
 
 workflows:
-  gaqsa-workflow:  # This is the name of the workflow, feel free to change it to better match your workflow.
+  gaqsa-pipeline:  # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run. 
     # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows 
     jobs:
-      - build-and-test
+      - backend-build-and-test
+      - frontend-build-and-test
+      - deploy-staging
 
 jobs:
-  build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
+  backend-build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
     # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
@@ -34,10 +38,48 @@ jobs:
       - python/install-packages:
           pkg-manager: pip
           # app-dir: ~/project/package-directory/  # If you're requirements.txt isn't in the root directory.
-          # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
+          # pip-dependency-file: test-requirements.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements
+      - python-lint/lint:
+          working-directory: backend
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
           command: pytest
       - jira/notify:
           environment_type: development 
+  frontend-build-and-test:
+    docker:
+    - image: node:14.16.0-alpine3.11
+    steps:
+      - node/install-yarn
+      - node/install-packages:
+          app-dir: /frontend 
+          pkg-manager: yarn 
+      - run:
+          name: build
+          working_directory: ./frontend
+          command: yarn build
+      - run:
+          name: lint
+          working_directory: ./frontend
+          command: yarn lint
+      - run:
+          name: typecheck
+          working_directory: ./frontend
+          command: yarn typecheck
+      - run:
+          name: test
+          working_directory: ./frontend
+          command: yarn test
+      - jira/notify:
+          environment_type: development
+  deploy-staging:
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - checkout
+      - run:
+          name: Deploy to staging with SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST "echo test"
+
