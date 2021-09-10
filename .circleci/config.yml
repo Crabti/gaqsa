@@ -36,5 +36,5 @@ jobs:
           app-dir: ./backend
       - run:
           name: Run tests
-          # This assumes pytest is installed via the install-package step above
+          working_directory: ./backend
           command: ./manage.py test
