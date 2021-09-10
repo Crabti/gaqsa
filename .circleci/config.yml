@@ -17,9 +17,12 @@ workflows:
 jobs:
   deploy-staging:
     docker:
-      - image: cimg/base:2021.04
+      - image: cimg/base:stable
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "02:6a:98:d8:16:11:62:dd:d7:8a:62:c3:a8:15:a3:01"
       - run:
           name: Deploy to staging with SSH
           command: |
