@@ -26,5 +26,6 @@ jobs:
       - run:
           name: Deploy to staging with SSH
           command: |
+            ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
             ssh $SSH_USER@$SSH_HOST "echo test"
 
