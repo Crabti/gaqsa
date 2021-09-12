@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=gaqsa
+    volumes:
+      - mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - app
+  django:
+    build: ./backend
+    command: sh -c "/wait && ./scripts/serve.sh"
+    volumes:
+      - ./backend:/app/backend
+    ports:
+      - "8000:8000"
+    environment: 
+      - WAIT_HOSTS=db:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=gaqsa
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_HOST=db
+      - DB_PORT=3306
+    depends_on:
+      - db
+    networks:
+      - app
+    restart: always
+  frontend:
+    build: ./frontend
+    command: ["yarn", "start"]
+    environment: 
+      - BACKEND=django
+    volumes:
+      - ./frontend:/app/frontend
+      - node-modules:/app/frontend/node_modules
+    ports:
+      - "3000:3000"
+    networks:
+      - app
+volumes:
+  node-modules:
+  mysql:
+networks: 
+  app:
+    driver: bridge
