@@ -53,7 +53,7 @@ jobs:
           name: Lint
           working_directory: ./backend
           command: |
-            flake8 --exclude=*.pyc,venv/
+            poetry run flake8 --exclude=*.pyc,venv/
       - run:
           name: Run tests
           working_directory: ./backend
