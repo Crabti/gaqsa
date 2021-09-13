@@ -76,5 +76,5 @@ jobs:
       - run:
           name: list files
           command: |
-            /tmp/frontend/build
+            ls /tmp/frontend/build
             ls backend
