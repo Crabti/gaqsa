@@ -71,7 +71,7 @@ jobs:
       - image: cimg/base:2021.04
     steps:
       - checkout
-        - attach_workspace:
+      - attach_workspace:
           at: /tmp/workspace
       - run:
           name: list files
