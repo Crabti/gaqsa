@@ -64,7 +64,7 @@ jobs:
           command: yarn build
       - run:
       - persist_to_workspace:
-          root: ./frontend
+          root: frontend
           paths:
             - build
   deploy-staging:
