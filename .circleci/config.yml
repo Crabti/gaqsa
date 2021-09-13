@@ -62,7 +62,6 @@ jobs:
           name: build
           working_directory: ./frontend
           command: yarn build
-      - run:
       - persist_to_workspace:
           root: frontend
           paths:
