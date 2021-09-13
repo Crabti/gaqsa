@@ -21,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-35!h^w0^vffmbcmg^r4+popgutd0bt(5gmhpzdq+scz6c!18#(')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-35!h^w0 \
+    ^vffmbcmg^r4+popgutd0bt(5gmhpzdq+scz6c!18#(')
 
 ENVIRONMENT = os.getenv('ENV', 'dev')
 
@@ -30,8 +31,8 @@ DEBUG = ENVIRONMENT == 'dev'
 
 ALLOWED_HOSTS = ['api.staging.gaqsa.com', 'api.prod.gaqsa.com', 'localhost']
 
-SECURE_SSL_REDIRECT= not DEBUG
-SESSION_COOKIE_SECURE= not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 
 SECURE_HSTS_SECONDS = 31536000
 
@@ -100,7 +101,8 @@ if ENVIRONMENT == 'dev':
 elif ENVIRONMENT == 'staging':
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('STAGING_DB_ENGINE', 'django.db.backends.mysql'),
+            'ENGINE': os.getenv('STAGING_DB_ENGINE',
+                                'django.db.backends.mysql'),
             'NAME': os.getenv('STAGING_DB_NAME', BASE_DIR / 'db.sqlite3'),
             'USER': os.getenv('STAGING_DB_USER', 'root'),
             'PASSWORD': os.getenv('STAGING_DB_PASSWORD', 'password'),
@@ -114,7 +116,8 @@ elif ENVIRONMENT == 'staging':
 elif ENVIRONMENT == 'production':
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('PRODUCTION_DB_ENGINE', 'django.db.backends.mysql'),
+            'ENGINE': os.getenv('PRODUCTION_DB_ENGINE',
+                                'django.db.backends.mysql'),
             'NAME': os.getenv('PRODUCTION_DB_NAME', BASE_DIR / 'db.sqlite3'),
             'USER': os.getenv('PRODUCTION_DB_USER', 'root'),
             'PASSWORD': os.getenv('PRODUCTION_DB_PASSWORD', 'password'),
@@ -131,16 +134,20 @@ elif ENVIRONMENT == 'production':
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation \
+        .UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation \
+            .MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation \
+            .CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation \
+            .NumericPasswordValidator',
     },
 ]
 
