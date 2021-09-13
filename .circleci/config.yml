@@ -77,4 +77,3 @@ jobs:
           name: list files
           command: |
             ls /tmp/frontend/build
-            ls backend
