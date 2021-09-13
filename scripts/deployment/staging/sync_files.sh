@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Syncing $1 to $2..."
-rsync -aP $1/* $2
+rsync -aP $1/ $2
 if [ $? -ne 0 ]
     then
     echo "An error ocurred syncing $1 with $2"

@@ -8,7 +8,7 @@ if [ $? -ne 0 ]
 fi
 
 echo "Rolling back frontend..."
-rsync -a --delete ~/tmp/staging_frontend.bak/ $2/
+rsync -a --delete ~/tmp/staging_frontend.bak/ $2
 if [ $? -ne 0 ]
     then
     echo "An error occured when attempting to rollback the frontend folder. Please do a manual rollback or push a fix."
