@@ -29,7 +29,7 @@ jobs:
     # The executor is the environment in which the steps below will be executed - below will use a python 3.9 container
     # Change the version below to your required version of python
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:3.8.1
     # Checkout the code as the first step. This is a dedicated CircleCI step.
     # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
     # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
@@ -49,12 +49,12 @@ jobs:
           destination: backend_build
   frontend-build-and-test:
     docker:
-    - image: node:14.16.0-alpine3.11
+    - image: node:16
     steps:
       - node/install-yarn
       - node/install-packages:
           app-dir: /frontend 
-          pkg-manager: yarn 
+          pkg-manager: yarn
       - run:
           name: lint
           working_directory: ./frontend
