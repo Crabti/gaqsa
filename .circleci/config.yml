@@ -63,9 +63,9 @@ jobs:
           working_directory: ./frontend
           command: yarn build
       - persist_to_workspace:
-          root: ./frontend/build
+          root: workspace
           paths:
-            - build
+            - ./frontend/build
   deploy-staging:
     docker:
       - image: cimg/base:2021.04
@@ -76,6 +76,6 @@ jobs:
       - run:
           name: list files
           command: |
-            ls
-            ls /tmp/workspace/build
+            ls -lR /tmp/workspace
+            ls /tmp/workspace/frontend/build
             ls backend
