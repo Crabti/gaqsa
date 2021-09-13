@@ -45,9 +45,6 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run python manage.py test
-      - store_artifacts:
-          path: ./backend
-          destination: backend_build
   frontend-build-and-test:
     docker:
     - image: node:16
@@ -65,17 +62,20 @@ jobs:
           name: build
           working_directory: ./frontend
           command: yarn build
-      - store_artifacts:
-          path: ./frontend/build
-          destination: frontend_build
+      - persist_to_workspace:
+          root: ./frontend/build
+          paths:
+            - build
   deploy-staging:
     docker:
       - image: cimg/base:2021.04
     steps:
       - checkout
+        - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: list files
           command: |
             ls
-            ls frontend_build
-            ls backend_build
+            ls /tmp/workspace/build
+            ls backend
