@@ -80,6 +80,7 @@ jobs:
       - run:
           name: Deploy to staging
           command: |
+            ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
             ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/build
       - run:
           name: Run curl smoke tests
