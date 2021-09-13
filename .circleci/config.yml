@@ -45,6 +45,8 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run python manage.py test
+      - jira/notify:
+          environment_type: development
   frontend-build-and-test:
     docker:
     - image: node:16
@@ -66,6 +68,8 @@ jobs:
           root: frontend
           paths:
             - build
+      - jira/notify:
+          environment_type: development
   deploy-staging:
     docker:
       - image: cimg/base:2021.04
@@ -74,6 +78,14 @@ jobs:
       - attach_workspace:
           at: /tmp/frontend/build
       - run:
-          name: list files
+          name: Deploy to staging
           command: |
-            ls -R /tmp/frontend
+            ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/build
+      - smoke_tests:
+          name: Run curl smoke tests
+          command: |
+            ./scripts/deployment/staging/smoke_test https://api.staging.gaqsa.com/
+            ./scripts/deployment/stagign/smoke_test https://staging.gaqsa.com/
+      - jira/notify:
+          environment_type: staging
+          job_type: deployment
