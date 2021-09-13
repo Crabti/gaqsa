@@ -81,7 +81,7 @@ jobs:
           name: Deploy to staging
           command: |
             ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/build
-      - smoke_tests:
+      - run:
           name: Run curl smoke tests
           command: |
             ./scripts/deployment/staging/smoke_test https://api.staging.gaqsa.com/
