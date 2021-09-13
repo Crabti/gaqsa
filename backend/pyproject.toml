@@ -7,6 +7,7 @@ authors = ["Topiltzin Hernández Mares <topiltzin.hernandez@crabti.com>"]
 [tool.poetry.dependencies]
 python = "3.8.1"
 django = "^3.2.7"
+mysqlclient = "^2.0.3"
 
 [tool.poetry.dev-dependencies]
 

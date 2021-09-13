@@ -21,7 +21,8 @@ services:
       - ./backend:/app/backend
     ports:
       - "8000:8000"
-    environment: 
+    environment:
+      - ENV=dev
       - WAIT_HOSTS=db:3306
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=5
