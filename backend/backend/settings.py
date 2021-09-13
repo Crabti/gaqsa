@@ -23,11 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-35!h^w0^vffmbcmg^r4+popgutd0bt(5gmhpzdq+scz6c!18#(')
 
+ENVIRONMENT = os.getenv('ENV', 'dev')
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENVIRONMENT == 'dev'
 
 ALLOWED_HOSTS = ['api.staging.gaqsa.com', 'api.prod.gaqsa.com', 'localhost']
 
+SECURE_SSL_REDIRECT= not DEBUG
+SESSION_COOKIE_SECURE= not DEBUG
+
+SECURE_HSTS_SECONDS = 31536000
+
+CSRF_COOKIE_SECURE = not DEBUG
+
+SECURE_HSTS_PRELOAD = not DEBUG
+
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
 
 # Application definition
 
@@ -38,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'backend'
 ]
 
 MIDDLEWARE = [
@@ -70,21 +83,48 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '3306'),
-    },
-}
-
+if ENVIRONMENT == 'dev':
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+            'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+            'USER': os.getenv('DB_USER', 'root'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'password'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '3306'),
+        },
+    }
+elif ENVIRONMENT == 'staging':
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('STAGING_DB_ENGINE', 'django.db.backends.mysql'),
+            'NAME': os.getenv('STAGING_DB_NAME', BASE_DIR / 'db.sqlite3'),
+            'USER': os.getenv('STAGING_DB_USER', 'root'),
+            'PASSWORD': os.getenv('STAGING_DB_PASSWORD', 'password'),
+            'HOST': os.getenv('STAGING_DB_HOST', 'localhost'),
+            'PORT': os.getenv('STAGING_DB_PORT', '3306'),
+            'OPTIONS': {
+                'sql_mode': 'traditional',
+            },
+        },
+    }
+elif ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv('PRODUCTION_DB_ENGINE', 'django.db.backends.mysql'),
+            'NAME': os.getenv('PRODUCTION_DB_NAME', BASE_DIR / 'db.sqlite3'),
+            'USER': os.getenv('PRODUCTION_DB_USER', 'root'),
+            'PASSWORD': os.getenv('PRODUCTION_DB_PASSWORD', 'password'),
+            'HOST': os.getenv('PRODUCTION_DB_HOST', 'localhost'),
+            'PORT': os.getenv('PRODUCTION_DB_PORT', '3306'),
+            'OPTIONS': {
+                'sql_mode': 'traditional',
+            },
+        },
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
