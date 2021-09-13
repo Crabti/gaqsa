@@ -15,12 +15,18 @@ workflows:
     # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows 
     jobs:
       - backend-build-and-test
-      - frontend-build-and-test
+      - frontend-build-and-test:
+          post-steps:
+            - jira/notify:
+                environment_type: development
       - deploy-staging:
           requires:
             - frontend-build-and-test
             - backend-build-and-test
-
+          post-steps:
+            - jira/notify:
+                environment_type: staging
+                job_type: deployment
 jobs:
   backend-build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
@@ -45,8 +51,6 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run python manage.py test
-      - jira/notify:
-          environment_type: development
   frontend-build-and-test:
     docker:
     - image: node:16
@@ -68,8 +72,6 @@ jobs:
           root: frontend
           paths:
             - build
-      - jira/notify:
-          environment_type: development
   deploy-staging:
     docker:
       - image: cibuilds/hugo:0.42.1
@@ -85,8 +87,5 @@ jobs:
       - run:
           name: Run curl smoke tests
           command: |
-            ./scripts/deployment/staging/smoke_test https://api.staging.gaqsa.com/
-            ./scripts/deployment/stagign/smoke_test https://staging.gaqsa.com/
-      - jira/notify:
-          environment_type: staging
-          job_type: deployment
+            ./scripts/deployment/staging/smoke_test.sh https://api.staging.gaqsa.com/
+            ./scripts/deployment/staging/smoke_test.sh https://staging.gaqsa.com/
