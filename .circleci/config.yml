@@ -5,7 +5,7 @@ orbs:
   # Orb commands and jobs help you with common scripting around a language/tool
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
-  python: circleci/python@1.4.0
+  python: circleci/python@1.2
   jira: circleci/jira@1.3.1
   node: circleci/node@4.7.0
 
@@ -37,10 +37,14 @@ jobs:
     # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
-      - python/test:
-          pkg-manager: poetry 
-          version: '3.8.1' 
+      - python/install-packages:
+          pkg-manager: poetry
           app-dir: ./backend
+      - run:
+          name: Run tests
+          working_directory: ./backend
+          command: |
+            pipenv run python manage.py test
       - store_artifacts:
           path: ./backend
           destination: backend_build
