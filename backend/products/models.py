@@ -23,7 +23,10 @@ class Product(models.Model):
     )
     more_info = models.CharField(max_length=200, blank=True, verbose_name="Información")
     is_generic = models.CharField(
-        max_length=2, choices=IS_GENERIC_CHOICES, default=NOT_GENERIC,
+        max_length=2,
+        choices=IS_GENERIC_CHOICES,
+        default=NOT_GENERIC,
+        verbose_name="Genérico",
     )
 
     def __str__(self):
