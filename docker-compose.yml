@@ -15,8 +15,10 @@ services:
     networks:
       - app
   django:
+    container_name: django
     build: ./backend
     command: sh -c "/wait && ./scripts/serve.sh"
+    tty: true
     volumes:
       - ./backend:/app/backend
     ports:
@@ -39,8 +41,9 @@ services:
       - app
     restart: always
   frontend:
+    container_name: react
     build: ./frontend
-    command: ["yarn", "start"]
+    command: sh -c "yarn && yarn start"
     environment: 
       - BACKEND=django
     volumes:
