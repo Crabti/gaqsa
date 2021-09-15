@@ -13,6 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='product',
             name='is_generic',
-            field=models.CharField(choices=[('Sí', 'Sí'), ('No', 'No')], default='No', max_length=2, verbose_name='Genérico'),
+            field=models.CharField(
+                choices=[('Sí', 'Sí'), ('No', 'No')],
+                default='No',
+                max_length=2,
+                verbose_name='Genérico',
+            ),
         ),
     ]
