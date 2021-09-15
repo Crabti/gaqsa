@@ -29,7 +29,12 @@ ENVIRONMENT = os.getenv('ENV', 'dev')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = ENVIRONMENT == 'dev'
 
-ALLOWED_HOSTS = ['api.staging.gaqsa.com', 'api.prod.gaqsa.com', 'localhost']
+ALLOWED_HOSTS = [
+    'api.staging.gaqsa.com',
+    'api.prod.gaqsa.com',
+    'localhost',
+    '127.0.0.1'
+    ]
 
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
@@ -51,7 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend'
+    'backend',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -134,20 +140,20 @@ elif ENVIRONMENT == 'production':
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation \
-        .UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation' +
+        '.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation \
-            .MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation' +
+        '.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation \
-            .CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation' +
+        '.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation \
-            .NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation' +
+        '.NumericPasswordValidator',
     },
 ]
 
