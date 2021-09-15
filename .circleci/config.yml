@@ -75,7 +75,11 @@ jobs:
       - run:
           name: Lint
           working_directory: ./frontend
-          command: yarn eslint "src/**" --fix
+          command: yarn lint
+      - run:
+          name: Typecheck
+          working_directory: ./frontend
+          command: yarn typecheck
       - run:
           name: test
           working_directory: ./frontend
