@@ -30,6 +30,7 @@ ENVIRONMENT = os.getenv('ENV', 'dev')
 DEBUG = ENVIRONMENT == 'dev'
 
 ALLOWED_HOSTS = [
+    'api.gaqsa.com',
     'api.staging.gaqsa.com',
     'api.prod.gaqsa.com',
     'localhost',
