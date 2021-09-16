@@ -47,14 +47,10 @@ workflows:
       - wait-for-approval:
           type: approval
           requires:
-            - frontend-build-and-test
-            - backend-build-and-test
             - deploy-staging
       - deploy-production:
           requires:
             - wait-for-approval
-            - frontend-build-and-test
-            - backend-build-and-test
           filters:
             branches:
               only:
