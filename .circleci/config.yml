@@ -42,7 +42,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v.*/
+              only: /.*/
           post-steps:
             - jira/notify:
                 environment_type: production
