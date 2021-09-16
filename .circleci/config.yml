@@ -49,7 +49,7 @@ workflows:
           requires:
             - frontend-build-and-test
             - backend-build-and-test
-            - deploy_staging
+            - deploy-staging
       - deploy-production:
           requires:
             - wait-for-approval
