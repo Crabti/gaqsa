@@ -43,9 +43,16 @@ workflows:
                 webhook_url: $MS_TEAMS_WEBHOOK_URL
             - jira/notify:
                 environment_type: staging
-                job_type: deployment        
+                job_type: deployment
+      - wait-for-approval:
+          type: approval
+          requires:
+            - frontend-build-and-test
+            - backend-build-and-test
+            - deploy_staging
       - deploy-production:
           requires:
+            - wait-for-approval
             - frontend-build-and-test
             - backend-build-and-test
           filters:
