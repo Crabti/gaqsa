@@ -26,6 +26,10 @@ workflows:
           requires:
             - frontend-build-and-test
             - backend-build-and-test
+          filters:
+            branches:
+              only:
+                - main
           post-steps:
             - jira/notify:
                 environment_type: staging
@@ -68,6 +72,14 @@ jobs:
       - node/install-packages:
           app-dir: ./frontend
           pkg-manager: yarn
+      - run:
+          name: Lint
+          working_directory: ./frontend
+          command: yarn lint
+      - run:
+          name: Typecheck
+          working_directory: ./frontend
+          command: yarn typecheck
       - run:
           name: test
           working_directory: ./frontend

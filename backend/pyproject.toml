@@ -9,6 +9,10 @@ python = "3.8.1"
 django = "^3.2.7"
 mysqlclient = "^2.0.3"
 flake8 = "^3.9.2"
+djangorestframework = "^3.12.4"
+Markdown = "^3.3.4"
+django-filter = "^2.4.0"
+factory-boy = "^3.2.0"
 
 [tool.poetry.dev-dependencies]
 
