@@ -34,6 +34,19 @@ workflows:
             - jira/notify:
                 environment_type: staging
                 job_type: deployment
+      - deploy-production:
+          requires:
+            - frontend-build-and-test
+            - backend-build-and-test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          post-steps:
+            - jira/notify:
+                environment_type: production
+                job_type: deployment
 jobs:
   backend-build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
     # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
@@ -109,3 +122,20 @@ jobs:
           command: |
             ./scripts/deployment/staging/smoke_test.sh https://api.staging.gaqsa.com/
             ./scripts/deployment/staging/smoke_test.sh https://staging.gaqsa.com/
+  deploy-production:
+    docker:
+      - image: cibuilds/hugo:0.42.1
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/frontend/build
+      - run:
+          name: Deploy to production
+          command: |
+            ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
+            ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/build
+      - run:
+          name: Run curl smoke tests
+          command: |
+            ./scripts/deployment/production/smoke_test.sh https://api.gaqsa.com/
+            ./scripts/deployment/production/smoke_test.sh https://prod.gaqsa.com/
