@@ -70,16 +70,25 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run flake8 --exclude=*.pyc,venv/
-      - run: mkdir test-reports
+      - run:
+          name: Create test artifact folders
+          command: |
+            mkdir test-reports-html
+            mkdir test-reports-xml
       - run:
           name: Run tests
           working_directory: ./backend
           command: |
             poetry run coverage run manage.py test
             poetry run coverage report --fail-under=80
-            poetry run coverage xml -o test-reports/coverage.xml
+            poetry run coverage html -o test-reports-html
+            poetry run coverage xml -o test-reports-xml/coverage.xml
+      - store_artifacts:
+          path: test-reports-html
+      - store_artifacts:
+          path: test-reports-xml
       - store_test_results:
-          path: test-reports
+          path: test-reports-xml
   frontend-build-and-test:
     docker:
     - image: node:16
