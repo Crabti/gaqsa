@@ -86,15 +86,12 @@ jobs:
           command: |
             poetry run coverage report --fail-under=80
       - run:
-          name: Generate test coverage html
+          name: Upload test coverage
           working_directory: ./backend
           command: |
             poetry run coverage html -d /tmp/artifacts
-      - run:
-          name: Generate test coverage xml
-          working_directory: ./backend
-          command: |
             poetry run coverage xml -o /tmp/test-results/coverage.xml
+          when: always
       - store_artifacts:
           path: /tmp/artifacts
       - store_test_results:
