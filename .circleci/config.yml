@@ -70,11 +70,11 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run flake8 --exclude=*.pyc,venv/
+      - run: mkdir test-reports
       - run:
           name: Run tests
           working_directory: ./backend
           command: |
-            mkdir test-reports
             poetry run coverage run manage.py test
             poetry run coverage report --fail-under=80
             poetry run coverage xml -o test-reports/coverage.xml
