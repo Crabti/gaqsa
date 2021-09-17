@@ -80,8 +80,20 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run coverage run manage.py test
+      - run:
+          name: Check test coverage above required
+          working_directory: ./backend
+          command: |
             poetry run coverage report --fail-under=80
+      - run:
+          name: Generate test coverage html
+          working_directory: ./backend
+          command: |
             poetry run coverage html -d /tmp/artifacts
+      - run:
+          name: Generate test coverage xml
+          working_directory: ./backend
+          command: |
             poetry run coverage xml -o /tmp/test-results/coverage.xml
       - store_artifacts:
           path: /tmp/artifacts
