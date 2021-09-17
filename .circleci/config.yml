@@ -74,6 +74,7 @@ jobs:
           name: Create test artifact folders
           command: |
             mkdir /tmp/artifacts
+            mkdir /tmp/test-results
       - run:
           name: Run tests
           working_directory: ./backend
@@ -81,11 +82,11 @@ jobs:
             poetry run coverage run manage.py test
             poetry run coverage report --fail-under=80
             poetry run coverage html -d /tmp/artifacts
-            poetry run coverage xml -o /tmp/artifacts/coverage.xml
+            poetry run coverage xml -o /tmp/test-results/coverage.xml
       - store_artifacts:
           path: /tmp/artifacts
       - store_test_results:
-          path: /tmp/artifacts
+          path: /tmp/test-results
   frontend-build-and-test:
     docker:
     - image: node:16
