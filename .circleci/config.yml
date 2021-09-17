@@ -81,7 +81,7 @@ jobs:
           command: |
             poetry run coverage run manage.py test
             poetry run coverage report --fail-under=80
-            poetry run coverage html -o test-reports-html
+            poetry run coverage html -d test-reports-html
             poetry run coverage xml -o test-reports-xml/coverage.xml
       - store_artifacts:
           path: test-reports-html
