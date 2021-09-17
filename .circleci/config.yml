@@ -74,7 +74,7 @@ jobs:
           name: Run tests
           working_directory: ./backend
           command: |
-            poetry run python manage.py test
+            poetry run coverage run python manage.py test
             poetry run coverage report --fail-under=80
             poetry run coverage xml -o test-reports/coverage.xml
       - store_test_results:
