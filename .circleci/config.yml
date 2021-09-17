@@ -75,15 +75,10 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run python manage.py test
-      - run:
-          name: Check test coverage
-          working_directory: ./backend
-          command: |
             poetry run coverage report --fail-under=80
-            poetry run coverage html
-      - store_artifacts:
-          path: ./backend/htmlcov
-          destination: html-coverage
+            poetry run coverage xml -o test-reports/coverage.xml
+      - store_test_results:
+          path: test-reports
   frontend-build-and-test:
     docker:
     - image: node:16
