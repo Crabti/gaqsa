@@ -190,3 +190,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--verbosity=2',  # verbose output
+    '--with-xunit',  # enable XUnit plugin
+    '--xunit-file=nosetests.xml',  # the XUnit report file
+]

@@ -90,7 +90,7 @@ jobs:
           working_directory: ./backend
           command: |
             poetry run coverage html -d /tmp/artifacts
-            poetry run coverage xml -o /tmp/test-results/coverage.xml
+            mv nosetests.xml /tmp/test-results/nosetests.xml
           when: always
       - store_artifacts:
           path: /tmp/artifacts
