@@ -69,7 +69,7 @@ jobs:
           name: Lint
           working_directory: ./backend
           command: |
-            poetry run flake8 --exclude=*.pyc,venv/
+            poetry run flake8 --exclude="*.pyc,venv/,*/migrations/*"
       - run:
           name: Create test artifact folders
           command: |

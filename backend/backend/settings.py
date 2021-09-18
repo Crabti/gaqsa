@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'backend',
     'users',
-    'products'
+    'products',
+    'providers'
 ]
 
 MIDDLEWARE = [
@@ -191,7 +192,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
-    '--verbosity=2',  # verbose output
     '--with-xunit',  # enable XUnit plugin
     '--xunit-file=nosetests.xml',  # the XUnit report file
+    '--nologcapture'
 ]

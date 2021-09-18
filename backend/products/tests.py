@@ -5,13 +5,21 @@ from django.test import TestCase
 from django.urls import reverse
 
 from products.factories.product import ProductFactory
-from products.serializers.product import CreateProductSerializer
+from products.models import Product
+from products.serializers.product import (
+    CreateProductSerializer
+)
+from providers.factories.provider import ProviderFactory
+from users.factories.user import UserFactory
 
 
 class RegisterRequestToCreateProduct(TestCase):
     def setUp(self) -> None:
+        user = UserFactory.create()
+        provider = ProviderFactory.create(user=user)
+        product = ProductFactory.build(provider=provider)
         self.valid_payload = CreateProductSerializer(
-            ProductFactory.build(),
+            product,
         ).data
 
     def test_request_to_create_product_with_valid_data_should_succeed(
@@ -24,3 +32,29 @@ class RegisterRequestToCreateProduct(TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
+
+
+class ListPendingProductRequests(TestCase):
+    def setUp(self) -> None:
+        self.unactive_amount = 20
+        active_amount = 20
+
+        user = UserFactory.create()
+        provider = ProviderFactory.create(user=user)
+        # Create pending products
+        ProductFactory.create_batch(self.unactive_amount, provider=provider)
+        # Create active products
+        ProductFactory.create_batch(active_amount, provider=provider,
+                                    status=Product.ACCEPTED)
+
+    def test_request_to_create_product_with_valid_data_should_succeed(
+        self,
+    ) -> None:
+        response = self.client.get(
+            reverse("pending_product_requests"),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), self.unactive_amount)
+        for product in result:
+            self.assertEqual(product['status'], Product.PENDING)
