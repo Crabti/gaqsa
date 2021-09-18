@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Install dependencies
+echo "Installing dependencies if new found"
+poetry install
+
 # Apply database migrations
 echo "Apply database migrations..."
 python manage.py migrate
