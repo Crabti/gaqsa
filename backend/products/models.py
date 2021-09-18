@@ -1,4 +1,5 @@
 from django.db import models
+from providers.models import Provider
 
 
 class Product(models.Model):
@@ -7,6 +8,17 @@ class Product(models.Model):
     IS_GENERIC_CHOICES = [
         (GENERIC, GENERIC),
         (NOT_GENERIC, NOT_GENERIC),
+    ]
+
+    ACCEPTED = 'Aceptado'
+    PENDING = 'Pendiente'
+    REJECTED = 'Rechazado'
+    INACTIVE = 'Inactivo'
+    STATUSES = [
+        (ACCEPTED, ACCEPTED),
+        (PENDING, PENDING),
+        (REJECTED, REJECTED),
+        (INACTIVE, INACTIVE)
     ]
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,6 +44,18 @@ class Product(models.Model):
         default=NOT_GENERIC,
         verbose_name="Genérico",
     )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        default=PENDING,
+        verbose_name="Estado de producto",
+    )
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    reject_reason = models.CharField(
+        max_length=500,
+        default="N/A"
+    )
 
     def __str__(self):
-        return f"{self.key} - {self.name} - {self.presentation}"
+        return f"{self.key} - {self.provider.name} \
+         - {self.name} - {self.presentation} - {self.status}"
