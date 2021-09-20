@@ -1,3 +1,4 @@
+from backend.providers.models import Provider
 import json
 from http import HTTPStatus
 
@@ -77,7 +78,7 @@ class ListAllProducts(TestCase):
         self,
     ) -> None:
         response = self.client.get(
-            reverse("list_all_products"),
+            reverse("list_all_products",provider),
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))
