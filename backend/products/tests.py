@@ -1,4 +1,4 @@
-from backend.providers.models import Provider
+from providers.models import Provider
 import json
 from http import HTTPStatus
 
@@ -67,18 +67,18 @@ class ListAllProducts(TestCase):
         active_amount = 20
 
         user = UserFactory.create()
-        provider = ProviderFactory.create(user=user)
+        self.provider = ProviderFactory.create(user=user)
         # Create pending products
-        ProductFactory.create_batch(self.unactive_amount, provider=provider)
+        ProductFactory.create_batch(self.unactive_amount, provider=self.provider)
         # Create active products
-        ProductFactory.create_batch(active_amount, provider=provider,
+        ProductFactory.create_batch(active_amount, provider=self.provider,
                                     status=Product.ACCEPTED)
 
-    def test_request_to_create_product_with_valid_data_should_succeed(
+    def test_list_all_products(
         self,
     ) -> None:
         response = self.client.get(
-            reverse("list_all_products",provider),
+            reverse("list_all_products", kwargs={'pk': self.provider.id}),
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))

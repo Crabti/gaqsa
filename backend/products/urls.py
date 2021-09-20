@@ -5,6 +5,6 @@ urlpatterns = [
     path('request/', views.request_product, name="request_product"),
     path('products/requests/pending', views.list_pending_products,
          name="pending_product_requests"),
-    path('products/requests/<int:pk>', views.list_all_products,
+    path('providers/<int:pk>/products', views.list_all_products,
          name="list_all_products")
 ]
