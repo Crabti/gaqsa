@@ -22,6 +22,7 @@ def request_product(request: Request) -> Response:
         "more_info": request.data.get("more_info"),
         "is_generic": request.data.get("is_generic"),
         "provider": request.data.get("provider"),
+        "status": Product.PENDING,
     }
 
     serializer = CreateProductSerializer(data=data)
