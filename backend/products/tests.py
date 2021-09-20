@@ -85,3 +85,4 @@ class ListAllProducts(TestCase):
         self.assertEqual(len(result), self.unactive_amount)
         for product in result:
             self.assertEqual(product['status'], Product.ACCEPTED)
+            self.assertEqual(product['provider'], self.provider.id)
