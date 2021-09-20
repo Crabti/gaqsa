@@ -1,4 +1,3 @@
-from providers.models import Provider
 import json
 from http import HTTPStatus
 
@@ -69,7 +68,8 @@ class ListAllProducts(TestCase):
         user = UserFactory.create()
         self.provider = ProviderFactory.create(user=user)
         # Create pending products
-        ProductFactory.create_batch(self.unactive_amount, provider=self.provider)
+        ProductFactory.create_batch(self.unactive_amount,
+                                    provider=self.provider)
         # Create active products
         ProductFactory.create_batch(active_amount, provider=self.provider,
                                     status=Product.ACCEPTED)
