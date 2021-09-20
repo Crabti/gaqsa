@@ -38,6 +38,7 @@ def list_pending_products(request: Request) -> Response:
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
 
+
 @api_view(["GET"])
 def list_all_products(request: Request, pk: int) -> Response:
     products = Product.objects.filter(provider=pk, status=Product.ACCEPTED)
