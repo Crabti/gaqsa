@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { Route } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import {
   UserOutlined,
@@ -6,10 +7,22 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons';
 import Header from 'components/Header';
+import routes, { Routes, RoutesType } from 'Routes';
 import { Content, BaseLayout } from './App.styled';
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
+
+const getRoutes = (routes_: Routes): React.ReactNodeArray => (
+  Object.keys(routes_).map(
+    (key) => {
+      const { path, view, props }: RoutesType = routes[key];
+
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      return <Route path={path} component={view} {...props} />;
+    },
+  )
+);
 
 const App: React.FC = ({ children }) => (
   <BaseLayout>
@@ -60,7 +73,7 @@ const App: React.FC = ({ children }) => (
             minHeight: 280,
           }}
         >
-          {children}
+          {getRoutes(routes)}
         </Content>
       </Layout>
     </Layout>
