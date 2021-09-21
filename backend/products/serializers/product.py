@@ -16,7 +16,7 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "more_info",
             "is_generic",
             "status",
-            "provider"
+            "provider",
         )
 
 
@@ -51,5 +51,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "more_info",
             "is_generic",
             "status",
-            "provider"
+            "provider",
         )

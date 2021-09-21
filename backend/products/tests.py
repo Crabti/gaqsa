@@ -18,7 +18,9 @@ class RegisterRequestToCreateProduct(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        product = ProductFactory.build(provider=provider)
+        product = ProductFactory.build(
+            provider=provider, status=Product.PENDING,
+        )
         self.valid_payload = CreateProductSerializer(
             product,
         ).data
