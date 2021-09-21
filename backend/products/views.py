@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from products.models import Product
 from django.shortcuts import get_object_or_404
- 
+
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
