@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
+    'django_filters',
     'rest_framework',
     'backend',
     'users',
@@ -196,3 +197,7 @@ NOSE_ARGS = [
     '--xunit-file=nosetests.xml',  # the XUnit report file
     '--nologcapture'
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend']
+}

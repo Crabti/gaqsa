@@ -11,6 +11,9 @@ from products.serializers.product import (
     UpdateProductSerializer
 )
 
+from products.filters import ProductFilter
+from django_filters.utils import translate_validation
+
 
 @api_view(["POST"])
 def request_product(request: Request) -> Response:
@@ -36,9 +39,12 @@ def request_product(request: Request) -> Response:
 
 
 @api_view(["GET"])
-def list_pending_products(request: Request) -> Response:
-    products = Product.objects.filter(status=Product.PENDING)
-    serializer = ProductSerializer(products, many=True)
+def get_list_products(request: Request) -> Response:
+    queryset = Product.objects.all()
+    filterset = ProductFilter(request.GET, queryset=queryset)
+    if not filterset.is_valid():
+        raise translate_validation(filterset.errors)
+    serializer = ProductSerializer(filterset.qs, many=True)
     return Response(serializer.data)
 
 
@@ -74,10 +80,3 @@ def manage_product(request: Request, *args, **kwargs) -> Response:
         serializer = ProductSerializer(product)
 
         return Response(serializer.data, status=HTTPStatus.OK)
-
-
-@api_view(["GET"])
-def list_all_products(request: Request, pk: int) -> Response:
-    products = Product.objects.filter(provider=pk, status=Product.ACCEPTED)
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
