@@ -6,12 +6,12 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons';
 import Header from 'components/Header';
-import './App.css';
+import { Content } from './App.styled';
 
 const { SubMenu } = Menu;
-const { Content, Sider } = Layout;
+const { Sider } = Layout;
 
-const App: React.FC = () => (
+const App: React.FC = ({ children }) => (
   <Layout>
     <Header />
     <Layout>
@@ -56,7 +56,7 @@ const App: React.FC = () => (
             minHeight: 280,
           }}
         >
-          Content
+          {children}
         </Content>
       </Layout>
     </Layout>
