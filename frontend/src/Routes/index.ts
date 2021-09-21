@@ -13,7 +13,7 @@ export interface Routes {
 
 const routes: Routes = {
   home: {
-    path: '',
+    path: '/',
     view: HomeView,
   },
 };
