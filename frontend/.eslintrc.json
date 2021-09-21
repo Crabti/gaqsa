@@ -38,6 +38,13 @@
         "max-len": ["warn", { "code": 80 }],
         "react/prop-types": "off",
         "import/prefer-default-export": "off",
+        "import/order": [
+            "error",
+            {
+              "groups": ["builtin", "external", "internal", "sibling", "index"],
+              "newlines-between": "never"
+            }
+        ],
         "import/extensions": [
             "error", "ignorePackages", {
                 "ts": "never",
@@ -47,7 +54,10 @@
     },
     "settings": {
         "import/resolver": {
-        "typescript": {}
+            "node": {
+                "paths": ["src"],
+                "extensions": [".js", ".jsx", ".ts", ".tsx"]
+            }
         }
     }
 }

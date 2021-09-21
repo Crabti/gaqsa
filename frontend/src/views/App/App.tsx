@@ -5,21 +5,15 @@ import {
   LaptopOutlined,
   NotificationOutlined,
 } from '@ant-design/icons';
+import Header from 'components/Header';
 import './App.css';
 
 const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 const App: React.FC = () => (
   <Layout>
-    <Header className="header">
-      <div className="logo" />
-      <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-        <Menu.Item key="1">nav 1</Menu.Item>
-        <Menu.Item key="2">nav 2</Menu.Item>
-        <Menu.Item key="3">nav 3</Menu.Item>
-      </Menu>
-    </Header>
+    <Header />
     <Layout>
       <Sider width={200} className="site-layout-background">
         <Menu
