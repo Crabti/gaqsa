@@ -58,3 +58,31 @@ class ListPendingProductRequests(TestCase):
         self.assertEqual(len(result), self.unactive_amount)
         for product in result:
             self.assertEqual(product['status'], Product.PENDING)
+
+
+class ListAllProducts(TestCase):
+    def setUp(self) -> None:
+        self.unactive_amount = 20
+        active_amount = 20
+
+        user = UserFactory.create()
+        self.provider = ProviderFactory.create(user=user)
+        # Create pending products
+        ProductFactory.create_batch(self.unactive_amount,
+                                    provider=self.provider)
+        # Create active products
+        ProductFactory.create_batch(active_amount, provider=self.provider,
+                                    status=Product.ACCEPTED)
+
+    def test_list_all_products(
+        self,
+    ) -> None:
+        response = self.client.get(
+            reverse("list_all_products", kwargs={'pk': self.provider.id}),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), self.unactive_amount)
+        for product in result:
+            self.assertEqual(product['status'], Product.ACCEPTED)
+            self.assertEqual(product['provider'], self.provider.id)
