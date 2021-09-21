@@ -20,6 +20,24 @@ class CreateProductSerializer(serializers.ModelSerializer):
         )
 
 
+class UpdateProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "pk",
+            "key",
+            "name",
+            "dose",
+            "presentation",
+            "price",
+            "iva",
+            "more_info",
+            "is_generic",
+            "status",
+            "provider"
+        )
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
