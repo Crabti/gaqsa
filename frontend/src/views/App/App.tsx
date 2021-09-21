@@ -66,7 +66,7 @@ const App: React.FC = () => (
           <Breadcrumb.Item>App</Breadcrumb.Item>
         </Breadcrumb>
         <Content
-          className="site-layout-background"
+          data-testid="content-container"
           style={{
             padding: 24,
             margin: 0,
