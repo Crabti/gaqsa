@@ -24,7 +24,7 @@ const getRoutes = (routes_: Routes): React.ReactNodeArray => (
   )
 );
 
-const App: React.FC = ({ children }) => (
+const App: React.FC = () => (
   <BaseLayout>
     <Header />
     <Layout>
