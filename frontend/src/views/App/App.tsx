@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import {
   UserOutlined,
@@ -6,13 +6,13 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons';
 import Header from 'components/Header';
-import { Content } from './App.styled';
+import { Content, BaseLayout } from './App.styled';
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
 
 const App: React.FC = ({ children }) => (
-  <Layout>
+  <BaseLayout>
     <Header />
     <Layout>
       <Sider width={200} className="site-layout-background">
@@ -34,7 +34,11 @@ const App: React.FC = ({ children }) => (
             <Menu.Item key="7">option7</Menu.Item>
             <Menu.Item key="8">option8</Menu.Item>
           </SubMenu>
-          <SubMenu key="sub3" icon={<NotificationOutlined />} title="subnav 3">
+          <SubMenu
+            key="sub3"
+            icon={<NotificationOutlined />}
+            title="subnav 3"
+          >
             <Menu.Item key="9">option9</Menu.Item>
             <Menu.Item key="10">option10</Menu.Item>
             <Menu.Item key="11">option11</Menu.Item>
@@ -60,7 +64,7 @@ const App: React.FC = ({ children }) => (
         </Content>
       </Layout>
     </Layout>
-  </Layout>
+  </BaseLayout>
 );
 
 export default App;

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import App from './views/App';
 import 'antd/dist/antd.css';
@@ -17,9 +18,11 @@ const globalTheme: DefaultTheme = {
 
 ReactDOM.render(
   <React.StrictMode>
-    <ThemeProvider theme={globalTheme}>
-      <App />
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider theme={globalTheme}>
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),
 );
