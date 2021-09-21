@@ -7,5 +7,6 @@ urlpatterns = [
         'products/requests/pending',
         views.list_pending_products,
         name="pending_product_requests",
-    )
+    ),
+    path('<int:pk>', views.manage_product, name='manage_product'),
 ]

@@ -35,6 +35,9 @@ class Product(models.Model):
     iva = models.DecimalField(
         decimal_places=2, max_digits=5, verbose_name="IVA", default=0.0,
     )
+    ieps = models.DecimalField(
+        decimal_places=2, max_digits=5, verbose_name="IEPS", default=0.0,
+    )
     more_info = models.CharField(
         max_length=200, blank=True, verbose_name="Información",
     )

@@ -1,3 +1,4 @@
+
 """
 WSGI config for backend project.
 
@@ -8,8 +9,14 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 """
 
 import os
-
 from django.core.wsgi import get_wsgi_application
-os.environ['ENV'] = 'production'
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
-application = get_wsgi_application()
+
+
+def application(environ, start_response):
+    os.environ['ENV'] = 'production'
+    os.environ['PRODUCTION_DB_NAME'] = environ['PRODUCTION_DB_NAME']
+    os.environ['PRODUCTION_DB_USER'] = environ['PRODUCTION_DB_USER']
+    os.environ['PRODUCTION_DB_PASSWORD'] = environ['PRODUCTION_DB_PASSWORD']
+    os.environ['SECRET_KEY'] = environ['SECRET_KEY']
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+    return get_wsgi_application()(environ, start_response)
