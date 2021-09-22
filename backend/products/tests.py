@@ -29,7 +29,7 @@ class RegisterRequestToCreateProduct(TestCase):
         self,
     ) -> None:
         response = self.client.post(
-            reverse("request_product"),
+            reverse("create_product"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
@@ -54,7 +54,8 @@ class ListPendingProductRequests(TestCase):
         self,
     ) -> None:
         response = self.client.get(
-            reverse("pending_product_requests"),
+            reverse("list_products"),
+            {'status': Product.PENDING},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -72,7 +73,7 @@ class UpdateProductTest(TestCase):
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.put(
-            reverse("manage_product", kwargs={'pk': 99999999}),
+            reverse("update_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
@@ -84,7 +85,7 @@ class UpdateProductTest(TestCase):
             new_product,
         ).data
         response = self.client.put(
-            reverse("manage_product", kwargs={'pk': self.product.pk}),
+            reverse("update_product", kwargs={'pk': self.product.pk}),
             data=json.dumps(valid_product),
             content_type="application/json",
         )
@@ -100,14 +101,14 @@ class DetailProductTest(TestCase):
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.get(
-            reverse("manage_product", kwargs={'pk': 99999999}),
+            reverse("detail_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_get_product_detail(self) -> None:
         response = self.client.get(
-            reverse("manage_product", kwargs={'pk': self.product.pk}),
+            reverse("detail_product", kwargs={'pk': self.product.pk}),
             content_type="application/json"
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -115,29 +116,34 @@ class DetailProductTest(TestCase):
         self.assertEqual(serializer.data, response.data)
 
 
-class ListAllProducts(TestCase):
+class ListAllActiveProductsOfProvider(TestCase):
     def setUp(self) -> None:
-        self.unactive_amount = 20
-        active_amount = 20
-
         user = UserFactory.create()
+        other_user = UserFactory.create()
+
         self.provider = ProviderFactory.create(user=user)
-        # Create pending products
-        ProductFactory.create_batch(self.unactive_amount,
+        other_provider = ProviderFactory.create(user=other_user)
+
+        ProductFactory.create_batch(20,
                                     provider=self.provider)
-        # Create active products
-        ProductFactory.create_batch(active_amount, provider=self.provider,
+        ProductFactory.create_batch(5,
+                                    provider=self.provider,
+                                    status=Product.ACCEPTED)
+        ProductFactory.create_batch(10, provider=other_provider,
                                     status=Product.ACCEPTED)
 
-    def test_list_all_products(
+    def test_list_only_products_of_provider(
         self,
     ) -> None:
         response = self.client.get(
-            reverse("list_all_products", kwargs={'pk': self.provider.id}),
+            reverse("list_products"),
+            {
+                'provider': self.provider.id,
+                'status': Product.ACCEPTED
+            },
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))
-        self.assertEqual(len(result), self.unactive_amount)
+        self.assertEqual(len(result), 5)
         for product in result:
-            self.assertEqual(product['status'], Product.ACCEPTED)
             self.assertEqual(product['provider'], self.provider.id)
