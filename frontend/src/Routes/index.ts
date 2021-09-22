@@ -1,5 +1,6 @@
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
+import ProductForm from 'views/ProductForm';
 
 export interface RoutesType {
   path: string;
@@ -15,6 +16,10 @@ const routes: Routes = {
   home: {
     path: '/',
     view: HomeView,
+  },
+  productForm: {
+    path: '/product-form',
+    view: ProductForm,
   },
 };
 
