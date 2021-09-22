@@ -29,7 +29,7 @@ class RegisterRequestToCreateProduct(TestCase):
         self,
     ) -> None:
         response = self.client.post(
-            reverse("products"),
+            reverse("create_product"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
@@ -54,7 +54,7 @@ class ListPendingProductRequests(TestCase):
         self,
     ) -> None:
         response = self.client.get(
-            reverse("products"),
+            reverse("list_products"),
             {'status': Product.PENDING},
             content_type="application/json",
         )
@@ -73,7 +73,7 @@ class UpdateProductTest(TestCase):
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.put(
-            reverse("product_detail", kwargs={'pk': 99999999}),
+            reverse("update_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
@@ -85,7 +85,7 @@ class UpdateProductTest(TestCase):
             new_product,
         ).data
         response = self.client.put(
-            reverse("product_detail", kwargs={'pk': self.product.pk}),
+            reverse("update_product", kwargs={'pk': self.product.pk}),
             data=json.dumps(valid_product),
             content_type="application/json",
         )
@@ -101,14 +101,14 @@ class DetailProductTest(TestCase):
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.get(
-            reverse("product_detail", kwargs={'pk': 99999999}),
+            reverse("detail_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_get_product_detail(self) -> None:
         response = self.client.get(
-            reverse("product_detail", kwargs={'pk': self.product.pk}),
+            reverse("detail_product", kwargs={'pk': self.product.pk}),
             content_type="application/json"
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -136,7 +136,7 @@ class ListAllActiveProductsOfProvider(TestCase):
         self,
     ) -> None:
         response = self.client.get(
-            reverse("products"),
+            reverse("list_products"),
             {
                 'provider': self.provider.id,
                 'status': Product.ACCEPTED
