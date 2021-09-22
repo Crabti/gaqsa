@@ -15,41 +15,39 @@ from products.filters import ProductFilter
 from django_filters.utils import translate_validation
 
 
-@api_view(["POST"])
-def request_product(request: Request) -> Response:
-    data = {
-        "key": request.data.get("key"),
-        "name": request.data.get("name"),
-        "dose": request.data.get("dose"),
-        "presentation": request.data.get("presentation"),
-        "iva": request.data.get("iva"),
-        "price": request.data.get("price"),
-        "more_info": request.data.get("more_info"),
-        "is_generic": request.data.get("is_generic"),
-        "provider": request.data.get("provider"),
-        "status": Product.PENDING,
-    }
+@api_view(["POST", "GET"])
+def products(request: Request) -> Response:
+    if request.method == 'POST':
+        data = {
+            "key": request.data.get("key"),
+            "name": request.data.get("name"),
+            "dose": request.data.get("dose"),
+            "presentation": request.data.get("presentation"),
+            "iva": request.data.get("iva"),
+            "price": request.data.get("price"),
+            "more_info": request.data.get("more_info"),
+            "is_generic": request.data.get("is_generic"),
+            "provider": request.data.get("provider"),
+            "status": Product.PENDING,
+        }
 
-    serializer = CreateProductSerializer(data=data)
+        serializer = CreateProductSerializer(data=data)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=HTTPStatus.CREATED)
-    return Response(serializer.errors, status=HTTPStatus.BAD_REQUEST)
-
-
-@api_view(["GET"])
-def get_list_products(request: Request) -> Response:
-    queryset = Product.objects.all()
-    filterset = ProductFilter(request.GET, queryset=queryset)
-    if not filterset.is_valid():
-        raise translate_validation(filterset.errors)
-    serializer = ProductSerializer(filterset.qs, many=True)
-    return Response(serializer.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=HTTPStatus.CREATED)
+        return Response(serializer.errors, status=HTTPStatus.BAD_REQUEST)
+    elif request.method == 'GET':
+        queryset = Product.objects.all()
+        filterset = ProductFilter(request.GET, queryset=queryset)
+        if not filterset.is_valid():
+            raise translate_validation(filterset.errors)
+        serializer = ProductSerializer(filterset.qs, many=True)
+        return Response(serializer.data)
 
 
 @api_view(["PUT", "GET"])
-def manage_product(request: Request, *args, **kwargs) -> Response:
+def product_detail(request: Request, *args, **kwargs) -> Response:
     if request.method == 'PUT':
         pk = kwargs.get("pk")
         product = get_object_or_404(Product, pk=pk)
