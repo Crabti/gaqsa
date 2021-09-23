@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
+import { BackendProvider } from 'integrations';
 import App from './views/App';
 import 'antd/dist/antd.css';
-import { BackendProvider } from 'integrations';
 
 const globalTheme: DefaultTheme = {
   colors: {

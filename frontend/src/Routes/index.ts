@@ -24,8 +24,8 @@ const routes: Routes = {
   },
   updateProduct: {
     path: '/productos/:id/modificar',
-    view: ProductsUpdateForm
-  }
+    view: ProductsUpdateForm,
+  },
 };
 
 export default routes;

@@ -3,7 +3,7 @@ import { Typography } from 'antd';
 
 type TitleProps = {
   text: string,
-}
+};
 
 const Title: React.FC<TitleProps> = (props) => {
   const { text } = props;

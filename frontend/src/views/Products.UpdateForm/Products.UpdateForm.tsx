@@ -1,25 +1,23 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
-import { 
+import {
   Button,
   Form,
-  notification
+  notification,
 } from 'antd';
+import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
   Product, UpdateProductForm,
 } from '@types';
 import ProductForm from 'components/ProductForm';
-import { useHistory, useParams } from 'react-router';
-
 
 const UpdateForm: React.FC = () => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | undefined>(undefined);
 
@@ -39,20 +37,28 @@ const UpdateForm: React.FC = () => {
 
     setProduct(result.data);
     setLoading(false);
-  }, [backend.products]);
+  }, [backend.products, id]);
 
-    useEffect(() => {
-        fetchProduct();
-    }, [history, fetchProduct]);
+  useEffect(() => {
+    fetchProduct();
+  }, [history, fetchProduct]);
 
+
+  const onFinishFailed = () => {
+    notification.error({
+      message: '¡Ocurrió un error al intentar guardar!',
+      description: 'Intentalo después.',
+    });
+  };
+  
   const onFinish = async (values: UpdateProductForm) => {
     setLoading(true);
     console.log(values);
-    //TODO: Get provider id from user
+    // TODO: Get provider id from user
     const [result, error] = await backend.products.updateOne(id, {
-      ...values
+      ...values,
     });
-    
+
     if (error) {
       onFinishFailed();
     } else {
@@ -62,7 +68,7 @@ const UpdateForm: React.FC = () => {
         btn: (
           <Button
             type="primary"
-            //TODO: Redirect to another page
+            // TODO: Redirect to another page
             onClick={() => history.push('/')}
           >
             Ir a home
@@ -72,21 +78,15 @@ const UpdateForm: React.FC = () => {
       form.resetFields();
     }
     setLoading(false);
-  }
+  };
 
-  const onFinishFailed = () => {
-    notification.error({
-      message: '¡Ocurrió un error al intentar guardar!',
-      description: 'Intentalo después.',
-    });
-  }
 
   return (
     <Content>
       <Title text="Modificar producto" />
       <ProductForm
         form={form}
-        onFinish={onFinish} 
+        onFinish={onFinish}
         isLoading={isLoading}
         onFinishFailed={onFinishFailed}
         initialState={product as UpdateProductForm}

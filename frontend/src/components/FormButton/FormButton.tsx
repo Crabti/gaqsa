@@ -4,7 +4,7 @@ import { Button, Row } from 'antd';
 type FormButtonProps = {
   text: string,
   loading: boolean,
-}
+};
 
 const FormButton: React.FC<FormButtonProps> = (props) => {
   const { text, loading } = props;

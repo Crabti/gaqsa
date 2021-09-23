@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import { CreateProductForm, UpdateProductForm} from '@types';
+import { CreateProductForm, UpdateProductForm } from '@types';
 
 export default interface Props {
   initialState: CreateProductForm | UpdateProductForm;
