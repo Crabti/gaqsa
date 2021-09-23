@@ -20,5 +20,5 @@ class Requisition(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
-    quantity_aceppted = models.PositiveIntegerField(default=0)
+    quantity_accepted = models.PositiveIntegerField(default=0)
     price = models.FloatField()
