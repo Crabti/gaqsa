@@ -4,7 +4,7 @@ from products.models import Product
 from providers.models import Provider
 
 
-class Purchase_Order(models.Model):
+class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     key = models.CharField(max_length=8, verbose_name="OrdenCompra",
@@ -15,9 +15,10 @@ class Purchase_Order(models.Model):
 class Requisition(models.Model):
     key = models.CharField(max_length=8, verbose_name="Requisicion",
                            unique=True)
-    purchase_order = models.ForeignKey(Purchase_Order,
+    purchase_order = models.ForeignKey(Order,
                                        on_delete=models.CASCADE)
-    idProveedor = models.ForeignKey(Provider, on_delete=models.CASCADE)
-    idProduct = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity_req = models.IntegerField()
-    quantity_acep = models.IntegerField(default=0)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity_requested = models.PositiveIntegerField()
+    quantity_aceppted = models.PositiveIntegerField(default=0)
+    price = models.FloatField()
