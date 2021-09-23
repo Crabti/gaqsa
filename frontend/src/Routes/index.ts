@@ -1,7 +1,6 @@
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import ProductsCreateForm from 'views/Products.CreateForm';
-import ProductForm from 'views/Products.CreateForm';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 
 export interface RoutesType {
