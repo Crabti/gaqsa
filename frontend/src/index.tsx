@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import App from './views/App';
 import 'antd/dist/antd.css';
+import { BackendProvider } from 'integrations';
 
 const globalTheme: DefaultTheme = {
   colors: {
@@ -19,9 +20,11 @@ const globalTheme: DefaultTheme = {
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider theme={globalTheme}>
-        <App />
-      </ThemeProvider>
+      <BackendProvider>
+        <ThemeProvider theme={globalTheme}>
+          <App />
+        </ThemeProvider>
+      </BackendProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),

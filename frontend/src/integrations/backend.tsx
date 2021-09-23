@@ -31,8 +31,8 @@ export const BackendProvider: React.FC = ({ children }) => (
   <BackendContext.Provider
     value={
         new Backend(BACKEND_MAIN_EP, {
+          // TODO: Implement authentication in backend
           headers: {
-            // TODO: Implement authentication in backend
             // const { idToken } = useAuth();
           // Authorization: idToken || undefined,
           },

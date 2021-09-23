@@ -16,6 +16,7 @@ factory-boy = "^3.2.0"
 coverage = "^5.5"
 django-nose = "^1.4.7"
 Faker = "^8.13.2"
+django-cors-headers = "^3.8.0"
 
 [tool.poetry.dev-dependencies]
 
