@@ -28,17 +28,12 @@ export class Backend {
 export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => (
-  <BackendContext.Provider
-    value={
-        new Backend(BACKEND_MAIN_EP, {
-          // TODO: Implement authentication in backend
-          headers: {
-            // const { idToken } = useAuth();
-          // Authorization: idToken || undefined,
-          },
-        })
-}
-  >
+  <BackendContext.Provider value = {new Backend(BACKEND_MAIN_EP, 
+      {
+        headers: {},
+      }
+    )
+  }>
     {children}
   </BackendContext.Provider>
 );
