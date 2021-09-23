@@ -20,3 +20,4 @@ class Requisition(models.Model):
     idProveedor = models.ForeignKey(Provider, on_delete=models.CASCADE)
     idProduct = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_req = models.IntegerField()
+    quantity_acep = models.IntegerField(default=0)
