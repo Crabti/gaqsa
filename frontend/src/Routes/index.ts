@@ -1,6 +1,7 @@
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import ProductsCreateForm from 'views/Products.CreateForm';
+import ProductsListPending from 'views/Products.ListPending';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 
 export interface RoutesType {
@@ -26,6 +27,10 @@ const routes: Routes = {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
   },
+  listPendingProduct: {
+    path: '/productos/pendientes',
+    view: ProductsListPending
+  }
 };
 
 export default routes;

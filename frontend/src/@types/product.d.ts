@@ -11,10 +11,12 @@ export type Product = CommonType & {
   ieps: number;
   more_info: string;
   is_generic: string;
-  provider?: number;
+  provider?: string;
   key: string;
   status: string;
   reject_reason: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type CreateProductForm = {

@@ -21,7 +21,7 @@ const INITIAL_STATE : CreateProductForm = {
   iva: 0.16,
   ieps: 0.00,
   more_info: '',
-  is_generic: 'Si',
+  is_generic: 'Sí',
 };
 
 const CreateForm: React.FC = () => {
@@ -72,7 +72,7 @@ const CreateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Crear petición de nuevo producto" />
+      <Title text="Alta de Producto" />
       <ProductForm
         form={form}
         onFinish={onFinish}

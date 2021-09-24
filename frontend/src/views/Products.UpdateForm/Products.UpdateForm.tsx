@@ -83,7 +83,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Modificar producto" />
+      <Title text="Modificar Producto" />
       <ProductForm
         form={form}
         onFinish={onFinish}

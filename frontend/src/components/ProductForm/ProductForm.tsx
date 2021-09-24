@@ -2,9 +2,10 @@
 import {
   Form, Input, InputNumber, Select, Col, Row,
 } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormButton from 'components/FormButton';
 import Props from './ProductForm.type';
+import { UpdateProductForm } from '@types';
 
 const { Option } = Select;
 
@@ -21,10 +22,14 @@ const ProductForm: React.FC<Props> = ({
   isLoading,
   isUpdate,
 }) => {
+
+  const [isProductRejected, setIsProductRejected] = useState(isUpdate &&
+    initialState && (initialState as UpdateProductForm).status == 'Rechazado');
+
   useEffect(() => {
     form.setFieldsValue({ ...initialState });
   }, [form, initialState]);
-
+  
   return (
     <Form
       {...layout}
@@ -60,12 +65,12 @@ const ProductForm: React.FC<Props> = ({
         </Col>
         <Col span={8}>
           <Form.Item name="price" label="Precio" rules={[{ required: true }]}>
-            <InputNumber />
+            <InputNumber style={{ width: "100%" }}/>
           </Form.Item>
         </Col>
       </Row>
       <Row justify="space-around">
-
+        
         <Col span={8}>
           <Form.Item name="iva" label="IVA" rules={[{ required: true }]}>
             <Select>
@@ -76,7 +81,7 @@ const ProductForm: React.FC<Props> = ({
         </Col>
         <Col span={8}>
           <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
-            <InputNumber />
+            <InputNumber style={{ width: "100%" }}/>
           </Form.Item>
         </Col>
       </Row>
@@ -109,22 +114,23 @@ const ProductForm: React.FC<Props> = ({
               label="Estado"
               rules={[{ required: true }]}
             >
-              <Select>
+              <Select onChange={
+                (status) => setIsProductRejected(status != 'Rechazado')}>
                 <Option value="Aceptado">Aceptado</Option>
                 <Option value="Cancelado">Cancelado</Option>
                 <Option value="Rechazado">Rechazado</Option>
+                <Option value="Pendinete">Pendiente</Option>
                 <Option value="Inactivo">Inactivo</Option>
               </Select>
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item
+            <Form.Item shouldUpdate
               name="reject_reason"
               label="Razon de rechazo (Si aplica)"
               rules={[]}
             >
-              <Input.TextArea />
-
+              <Input.TextArea disabled={isProductRejected}/>
             </Form.Item>
           </Col>
         </Row>
@@ -137,12 +143,10 @@ const ProductForm: React.FC<Props> = ({
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item shouldUpdate className="submit">
         <FormButton
           loading={isLoading}
           text="Confirmar"
         />
-      </Form.Item>
     </Form>
   );
 };

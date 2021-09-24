@@ -41,7 +41,7 @@
         "import/resolver": {
             "node": {
                 "moduleDirectory": ["src/"],
-                "extensions": [".js", ".jsx", ".ts", ".tsx", ".d.ts", ".type.ts"]
+                "extensions": [".js", ".jsx", ".ts", ".tsx", ".d.ts", ".type.ts", ".css"]
             }
         }
     }
