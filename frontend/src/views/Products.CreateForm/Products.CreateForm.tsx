@@ -40,16 +40,14 @@ const CreateForm: React.FC = () => {
   
   const onFinish = async (values: CreateProductForm) => {
     setLoading(true);
-    console.log(values);
     // TODO: Get provider id from user
-    const [result, error] = await backend.products.createOne({
+    const [, error] = await backend.products.createOne({
       ...values, provider: 1,
     });
 
     if (error) {
       onFinishFailed();
     } else {
-      console.log(result);
       notification.success({
         message: '¡Petición de producto creado exitosamente!',
         description: 'Su petición sera validado por un administrador \
