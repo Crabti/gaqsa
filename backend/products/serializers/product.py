@@ -17,7 +17,6 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "is_generic",
             "status",
             "provider",
-            "key",
         )
 
 

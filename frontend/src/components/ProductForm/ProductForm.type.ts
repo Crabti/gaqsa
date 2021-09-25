@@ -1,7 +1,7 @@
 import { FormInstance } from 'antd';
 import { CreateProductForm, UpdateProductForm } from '@types';
 
-export default interface Props {
+interface Props {
   initialState: CreateProductForm | UpdateProductForm;
   onFinish: (values: any) => void;
   onFinishFailed: (values: any) => void;
@@ -9,3 +9,5 @@ export default interface Props {
   isLoading: boolean;
   isUpdate?: boolean;
 }
+
+export default Props;

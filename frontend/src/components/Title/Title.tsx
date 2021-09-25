@@ -13,7 +13,7 @@ const Title: React.FC<TitleProps> = (props) => {
   }, [text]);
 
   return (
-    <Typography style={{marginBottom: 50}}>
+    <Typography style={{ marginBottom: 50 }}>
       <Typography.Title level={4}>
         { text }
       </Typography.Title>

@@ -29,8 +29,8 @@ const routes: Routes = {
   },
   listPendingProduct: {
     path: '/productos/pendientes',
-    view: ProductsListPending
-  }
+    view: ProductsListPending,
+  },
 };
 
 export default routes;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   Form,
   notification,
 } from 'antd';
@@ -16,7 +15,6 @@ import ProductForm from 'components/ProductForm';
 const INITIAL_STATE : CreateProductForm = {
   name: '',
   price: 0.00,
-  key: '',
   dose: '',
   iva: 0.16,
   ieps: 0.00,
@@ -30,19 +28,18 @@ const CreateForm: React.FC = () => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(false);
 
-
-  const onFinishFailed = () => {
+  const onFinishFailed = () : void => {
     notification.error({
       message: '¡Ocurrió un error al intentar guardar!',
       description: 'Intentalo después.',
     });
   };
-  
-  const onFinish = async (values: CreateProductForm) => {
+
+  const onFinish = async (values: CreateProductForm) : Promise<void> => {
     setLoading(true);
     // TODO: Get provider id from user
     const [, error] = await backend.products.createOne({
-      ...values, provider: 1,
+      ...values, provider: 2,
     });
 
     if (error) {
@@ -50,23 +47,15 @@ const CreateForm: React.FC = () => {
     } else {
       notification.success({
         message: '¡Petición de producto creado exitosamente!',
-        description: 'Su petición sera validado por un administrador \
-          proximamente. Sera notificado ya que esta petición cambie de estado',
-        btn: (
-          <Button
-            type="primary"
-            // TODO: Redirect to another page
-            onClick={() => history.push('/')}
-          >
-            Ir al home
-          </Button>
-        ),
+        description: 'Su petición sera validado por un administrador proxima'
+          + 'proximamente. Sera notificado ya que esta petición '
+          + 'cambie de estado',
       });
       form.resetFields();
+      history.replace('/');
     }
     setLoading(false);
   };
-
 
   return (
     <Content>
