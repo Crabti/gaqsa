@@ -1,5 +1,7 @@
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
+import ProductsCreateForm from 'views/Products.CreateForm';
+import ProductsUpdateForm from 'views/Products.UpdateForm';
 
 export interface RoutesType {
   path: string;
@@ -15,6 +17,14 @@ const routes: Routes = {
   home: {
     path: '/',
     view: HomeView,
+  },
+  createProduct: {
+    path: '/productos/nuevo',
+    view: ProductsCreateForm,
+  },
+  updateProduct: {
+    path: '/productos/:id/modificar',
+    view: ProductsUpdateForm,
   },
 };
 

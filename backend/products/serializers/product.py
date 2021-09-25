@@ -7,16 +7,17 @@ class CreateProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            "key",
             "name",
             "dose",
             "presentation",
             "price",
             "iva",
+            "ieps",
             "more_info",
             "is_generic",
             "status",
             "provider",
+            "key",
         )
 
 
@@ -31,10 +32,12 @@ class UpdateProductSerializer(serializers.ModelSerializer):
             "presentation",
             "price",
             "iva",
+            "ieps",
             "more_info",
             "is_generic",
             "status",
-            "provider"
+            "provider",
+            "reject_reason"
         )
 
 
@@ -48,8 +51,10 @@ class ProductSerializer(serializers.ModelSerializer):
             "presentation",
             "price",
             "iva",
+            "ieps",
             "more_info",
             "is_generic",
             "status",
             "provider",
+            "reject_reason"
         )
