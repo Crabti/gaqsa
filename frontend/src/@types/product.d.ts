@@ -3,7 +3,6 @@ import CommonType from './common';
 // TODO: Add rest of fields
 
 export type Product = CommonType & {
-  id?: number;
   name: string;
   price: number;
   dose: string;
@@ -11,7 +10,7 @@ export type Product = CommonType & {
   ieps: number;
   more_info: string;
   is_generic: string;
-  provider?: number;
+  provider?: string;
   key: string;
   status: string;
   reject_reason: string;
@@ -26,7 +25,6 @@ export type CreateProductForm = {
   more_info: string;
   is_generic: string;
   provider?: number;
-  key: string;
 };
 
 export type UpdateProductForm = {

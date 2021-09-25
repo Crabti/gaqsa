@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   Form,
   notification,
 } from 'antd';
@@ -12,6 +11,8 @@ import {
   Product, UpdateProductForm,
 } from '@types';
 import ProductForm from 'components/ProductForm';
+import routes from 'Routes';
+import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
 const UpdateForm: React.FC = () => {
   const [form] = Form.useForm();
@@ -43,18 +44,17 @@ const UpdateForm: React.FC = () => {
     fetchProduct();
   }, [history, fetchProduct]);
 
-
-  const onFinishFailed = () => {
+  const onFinishFailed = () : void => {
     notification.error({
       message: '¡Ocurrió un error al intentar guardar!',
       description: 'Intentalo después.',
     });
   };
-  
-  const onFinish = async (values: UpdateProductForm) => {
+
+  const onFinish = async (values: UpdateProductForm) : Promise<void> => {
     setLoading(true);
     // TODO: Get provider id from user
-    const [,error] = await backend.products.updateOne(id, {
+    const [, error] = await backend.products.updateOne(id, {
       ...values,
     });
 
@@ -63,21 +63,16 @@ const UpdateForm: React.FC = () => {
     } else {
       notification.success({
         message: '¡Producto modificado exitosamente!',
-        btn: (
-          <Button
-            type="primary"
-            // TODO: Redirect to another page
-            onClick={() => history.push('/')}
-          >
-            Ir a home
-          </Button>
-        ),
       });
       form.resetFields();
+      history.replace(routes.listPendingProduct.path);
     }
     setLoading(false);
   };
 
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
 
   return (
     <Content>

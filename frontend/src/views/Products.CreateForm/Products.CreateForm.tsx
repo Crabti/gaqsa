@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   Form,
   notification,
 } from 'antd';
@@ -15,13 +14,12 @@ import ProductForm from 'components/ProductForm';
 
 const INITIAL_STATE : CreateProductForm = {
   name: '',
-  price: 0.00,
-  key: '',
+  price: 0.01,
   dose: '',
   iva: 0.16,
   ieps: 0.00,
   more_info: '',
-  is_generic: 'Si',
+  is_generic: 'Sí',
 };
 
 const CreateForm: React.FC = () => {
@@ -30,17 +28,16 @@ const CreateForm: React.FC = () => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(false);
 
-
-  const onFinishFailed = () => {
+  const onFinishFailed = () : void => {
     notification.error({
       message: '¡Ocurrió un error al intentar guardar!',
       description: 'Intentalo después.',
     });
   };
-  
-  const onFinish = async (values: CreateProductForm) => {
+
+  const onFinish = async (values: CreateProductForm) : Promise<void> => {
     setLoading(true);
-    // TODO: Get provider id from user
+    // TODO: Get provider id from user. Hard coded to provider 1 right now
     const [, error] = await backend.products.createOne({
       ...values, provider: 1,
     });
@@ -50,27 +47,19 @@ const CreateForm: React.FC = () => {
     } else {
       notification.success({
         message: '¡Petición de producto creado exitosamente!',
-        description: 'Su petición sera validado por un administrador \
-          proximamente. Sera notificado ya que esta petición cambie de estado',
-        btn: (
-          <Button
-            type="primary"
-            // TODO: Redirect to another page
-            onClick={() => history.push('/')}
-          >
-            Ir al home
-          </Button>
-        ),
+        description: 'Su petición sera validado por un administrador proxima'
+          + 'proximamente. Sera notificado ya que esta petición '
+          + 'cambie de estado',
       });
       form.resetFields();
+      history.replace('/');
     }
     setLoading(false);
   };
 
-
   return (
     <Content>
-      <Title text="Crear petición de nuevo producto" />
+      <Title text="Alta de Producto" />
       <ProductForm
         form={form}
         onFinish={onFinish}

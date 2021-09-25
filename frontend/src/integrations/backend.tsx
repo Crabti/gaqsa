@@ -28,16 +28,15 @@ export class Backend {
 export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => (
-  <BackendContext.Provider value = {new Backend(BACKEND_MAIN_EP, 
-      {
-        headers: {},
-      }
-    )
-  }>
+  <BackendContext.Provider
+    value={
+      new Backend(BACKEND_MAIN_EP)
+    }
+  >
     {children}
   </BackendContext.Provider>
 );
 
-export const useBackend = () => React.useContext(BackendContext);
+export const useBackend = () : Backend => React.useContext(BackendContext);
 
 export default BackendContext;

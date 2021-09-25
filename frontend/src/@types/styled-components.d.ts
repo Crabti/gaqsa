@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-self-import
 import 'styled-components';
 
 declare module 'styled-components' {

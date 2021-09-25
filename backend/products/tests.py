@@ -146,4 +146,4 @@ class ListAllActiveProductsOfProvider(TestCase):
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), 5)
         for product in result:
-            self.assertEqual(product['provider'], self.provider.id)
+            self.assertEqual(product['provider'], self.provider.name)

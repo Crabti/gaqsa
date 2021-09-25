@@ -1,7 +1,7 @@
 from products.models import Product
 
 from products.serializers.product import (
-    CreateProductSerializer, ProductSerializer,
+    CreateProductSerializer, ListProductSerializer, ProductSerializer,
     UpdateProductSerializer
 )
 
@@ -11,7 +11,7 @@ from rest_framework import generics
 
 class ListProductView(generics.ListAPIView):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ListProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['provider', 'status']
 

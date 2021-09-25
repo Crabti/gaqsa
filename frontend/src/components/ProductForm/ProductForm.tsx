@@ -2,7 +2,7 @@
 import {
   Form, Input, InputNumber, Select, Col, Row,
 } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormButton from 'components/FormButton';
 import Props from './ProductForm.type';
 
@@ -13,6 +13,14 @@ const layout = {
   wrapperCol: { span: 18 },
 };
 
+enum ProductStatus {
+  DECLINED = 'Rechazado',
+  PENDING = 'Pendiente',
+  INACTIVE = 'Inactivo',
+  CANCELLED = 'Cancelado',
+  ACCEPTED = 'Aceptado'
+}
+
 const ProductForm: React.FC<Props> = ({
   initialState,
   onFinish,
@@ -21,8 +29,15 @@ const ProductForm: React.FC<Props> = ({
   isLoading,
   isUpdate,
 }) => {
+  const [isProductRejected, setIsProductRejected] = useState(false);
+
+  const handleStateDropdown = (status : string) : void => setIsProductRejected(
+    status !== 'Rechazado',
+  );
+
   useEffect(() => {
     form.setFieldsValue({ ...initialState });
+    handleStateDropdown(form.getFieldValue('status'));
   }, [form, initialState]);
 
   return (
@@ -60,7 +75,13 @@ const ProductForm: React.FC<Props> = ({
         </Col>
         <Col span={8}>
           <Form.Item name="price" label="Precio" rules={[{ required: true }]}>
-            <InputNumber />
+            <InputNumber
+              min={0.01}
+              style={{ width: '100%' }}
+              formatter={(value) => `$ ${value}`.replace(
+                /\B(?=(\d{3})+(?!\d))/g, ',',
+              )}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -76,7 +97,10 @@ const ProductForm: React.FC<Props> = ({
         </Col>
         <Col span={8}>
           <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
-            <InputNumber />
+            <InputNumber
+              style={{ width: '100%' }}
+              formatter={(value) => `${value}%`}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -102,47 +126,53 @@ const ProductForm: React.FC<Props> = ({
       </Row>
       {
         isUpdate && (
-        <Row justify="space-around">
-          <Col span={8}>
-            <Form.Item
-              name="status"
-              label="Estado"
-              rules={[{ required: true }]}
-            >
-              <Select>
-                <Option value="Aceptado">Aceptado</Option>
-                <Option value="Cancelado">Cancelado</Option>
-                <Option value="Rechazado">Rechazado</Option>
-                <Option value="Inactivo">Inactivo</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name="reject_reason"
-              label="Razon de rechazo (Si aplica)"
-              rules={[]}
-            >
-              <Input.TextArea />
-
-            </Form.Item>
-          </Col>
-        </Row>
+        <>
+          <Row justify="space-around">
+            <Col span={8}>
+              <Form.Item
+                name="status"
+                label="Estado"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  onChange={handleStateDropdown}
+                >
+                  { Object.values(ProductStatus).map(
+                    (status) => <Option value={status}>{status}</Option>,
+                  )}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                shouldUpdate
+                name="reject_reason"
+                label="Razon de rechazo"
+                rules={[]}
+              >
+                <Input.TextArea disabled={isProductRejected} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row justify="space-around">
+            <Col span={8}>
+              <Form.Item
+                name="key"
+                label="Clave"
+                rules={[{ required: true, max: 8 }]}
+              >
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+        </>
         )
         }
-      <Row justify="space-around">
-        <Col span={8}>
-          <Form.Item name="key" label="Clave" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Form.Item shouldUpdate className="submit">
-        <FormButton
-          loading={isLoading}
-          text="Confirmar"
-        />
-      </Form.Item>
+
+      <FormButton
+        loading={isLoading}
+        text="Confirmar"
+      />
     </Form>
   );
 };

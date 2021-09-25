@@ -17,7 +17,6 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "is_generic",
             "status",
             "provider",
-            "key",
         )
 
 
@@ -56,5 +55,34 @@ class ProductSerializer(serializers.ModelSerializer):
             "is_generic",
             "status",
             "provider",
-            "reject_reason"
+            "reject_reason",
+            "created_at",
+            "updated_at"
+        )
+
+
+class ListProductSerializer(serializers.ModelSerializer):
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "key",
+            "name",
+            "dose",
+            "presentation",
+            "price",
+            "iva",
+            "ieps",
+            "more_info",
+            "is_generic",
+            "status",
+            "provider",
+            "reject_reason",
+            "created_at",
+            "updated_at"
         )

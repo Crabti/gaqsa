@@ -1,5 +1,17 @@
 from django.db import models
 from providers.models import Provider
+from random import sample
+from string import ascii_uppercase
+
+
+KEY_LEN = 8
+
+
+def generate_unique_key():
+    while True:
+        key = ''.join(sample(ascii_uppercase, KEY_LEN))
+        if not Product.objects.filter(key=key).exists():
+            return key
 
 
 class Product(models.Model):
@@ -24,7 +36,8 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     key = models.CharField(
-            max_length=8, verbose_name="Clave", unique=True)
+            max_length=KEY_LEN, verbose_name="Clave",
+            unique=True, default=generate_unique_key)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
     dose = models.CharField(max_length=30, verbose_name="Dosis", blank=True)
     presentation = models.CharField(
