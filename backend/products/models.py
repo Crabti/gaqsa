@@ -35,7 +35,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     key = models.CharField(
-            max_length=8, verbose_name="Clave",
+            max_length=KEY_LEN, verbose_name="Clave",
             unique=True, default=generate_unique_key)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
     dose = models.CharField(max_length=30, verbose_name="Dosis", blank=True)
