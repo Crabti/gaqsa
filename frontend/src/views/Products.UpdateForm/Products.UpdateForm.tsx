@@ -54,7 +54,7 @@ const UpdateForm: React.FC = () => {
   const onFinish = async (values: UpdateProductForm) => {
     setLoading(true);
     // TODO: Get provider id from user
-    const [result, error] = await backend.products.updateOne(id, {
+    const [,error] = await backend.products.updateOne(id, {
       ...values,
     });
 

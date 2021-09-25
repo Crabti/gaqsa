@@ -41,7 +41,7 @@ const CreateForm: React.FC = () => {
   const onFinish = async (values: CreateProductForm) => {
     setLoading(true);
     // TODO: Get provider id from user
-    const [result, error] = await backend.products.createOne({
+    const [, error] = await backend.products.createOne({
       ...values, provider: 1,
     });
 
