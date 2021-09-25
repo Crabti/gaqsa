@@ -1,12 +1,14 @@
 from django.db import models
 from providers.models import Provider
-from random import choice
+from random import sample
 from string import ascii_uppercase
 
 
+KEY_LEN = 8
+
 def generate_unique_key():
     while True:
-        key = ''.join(choice(ascii_uppercase) for i in range(8))
+        key = ''.join(sample(ascii_uppercase, KEY_LEN))
         if not Product.objects.filter(key=key).exists():
             return key
 
