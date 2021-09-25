@@ -14,7 +14,7 @@ import ProductForm from 'components/ProductForm';
 
 const INITIAL_STATE : CreateProductForm = {
   name: '',
-  price: 0.00,
+  price: 0.01,
   dose: '',
   iva: 0.16,
   ieps: 0.00,

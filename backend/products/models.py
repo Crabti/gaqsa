@@ -6,6 +6,7 @@ from string import ascii_uppercase
 
 KEY_LEN = 8
 
+
 def generate_unique_key():
     while True:
         key = ''.join(sample(ascii_uppercase, KEY_LEN))

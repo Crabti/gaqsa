@@ -13,6 +13,14 @@ const layout = {
   wrapperCol: { span: 18 },
 };
 
+enum ProductStatus {
+  DECLINED = 'Rechazado',
+  PENDING = 'Pendiente',
+  INACTIVE = 'Inactivo',
+  CANCELLED = 'Cancelado',
+  ACCEPTED = 'Aceptado'
+}
+
 const ProductForm: React.FC<Props> = ({
   initialState,
   onFinish,
@@ -129,11 +137,9 @@ const ProductForm: React.FC<Props> = ({
                 <Select
                   onChange={handleStateDropdown}
                 >
-                  <Option value="Aceptado">Aceptado</Option>
-                  <Option value="Cancelado">Cancelado</Option>
-                  <Option value="Rechazado">Rechazado</Option>
-                  <Option value="Pendinete">Pendiente</Option>
-                  <Option value="Inactivo">Inactivo</Option>
+                  { Object.values(ProductStatus).map(
+                    (status) => <Option value={status}>{status}</Option>,
+                  )}
                 </Select>
               </Form.Item>
             </Col>

@@ -78,9 +78,9 @@ const UpdateForm: React.FC = () => {
           <Button
             shape="circle"
             icon={<SearchOutlined />}
-            onClick={
-                        () => history.push(`/productos/${id}/modificar`)
-                    }
+            onClick={() => history.push(
+              `/productos/${id}/modificar`,
+            )}
           />
         </Tooltip>
       ),
