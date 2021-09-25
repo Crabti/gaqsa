@@ -53,7 +53,6 @@ const UpdateForm: React.FC = () => {
   
   const onFinish = async (values: UpdateProductForm) => {
     setLoading(true);
-    console.log(values);
     // TODO: Get provider id from user
     const [result, error] = await backend.products.updateOne(id, {
       ...values,
@@ -62,7 +61,6 @@ const UpdateForm: React.FC = () => {
     if (error) {
       onFinishFailed();
     } else {
-      console.log(result);
       notification.success({
         message: '¡Producto modificado exitosamente!',
         btn: (
