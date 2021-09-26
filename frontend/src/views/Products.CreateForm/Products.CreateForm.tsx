@@ -59,7 +59,7 @@ const CreateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Alta de Producto" />
+      <Title viewName="Alta de Producto" />
       <ProductForm
         form={form}
         onFinish={onFinish}

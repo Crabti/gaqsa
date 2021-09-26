@@ -7,6 +7,8 @@ import ProductsUpdateForm from 'views/Products.UpdateForm';
 export interface RoutesType {
   path: string;
   view: RouteProps['component'];
+  verboseName: string;
+  showInMenu: boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
 }
 
@@ -18,18 +20,26 @@ const routes: Routes = {
   home: {
     path: '/',
     view: HomeView,
+    verboseName: 'Inicio',
+    showInMenu: true,
   },
   createProduct: {
     path: '/productos/nuevo',
     view: ProductsCreateForm,
+    verboseName: 'Registrar Producto',
+    showInMenu: true,
   },
   updateProduct: {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
+    verboseName: 'Actualizalizar Producto',
+    showInMenu: false,
   },
   listPendingProduct: {
     path: '/productos/pendientes',
     view: ProductsListPending,
+    verboseName: 'Productos Pendientes',
+    showInMenu: true,
   },
 };
 

@@ -2,20 +2,20 @@ import React, { useEffect } from 'react';
 import { Typography } from 'antd';
 
 type TitleProps = {
-  text: string,
+  viewName: string,
 };
 
 const Title: React.FC<TitleProps> = (props) => {
-  const { text } = props;
+  const { viewName } = props;
 
   useEffect(() => {
-    document.title = `${document.title} - ${text}`;
-  }, [text]);
+    document.title = `Gaqsa | ${viewName}`;
+  }, [viewName]);
 
   return (
     <Typography style={{ marginBottom: 50 }}>
       <Typography.Title level={4}>
-        { text }
+        { viewName }
       </Typography.Title>
     </Typography>
   );

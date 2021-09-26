@@ -76,7 +76,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Modificar producto" />
+      <Title viewName="Modificar producto" />
       <ProductForm
         form={form}
         onFinish={onFinish}
