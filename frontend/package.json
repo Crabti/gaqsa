@@ -27,6 +27,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build-staging": "REACT_APP_BACKEND_ROUTE=https://api.staging.gaqsa.com react-scripts build && mv build staging_build",
+    "build-production": "REACT_APP_BACKEND_ROUTE=https://api.gaqsa.com react-scripts build && mv build production_build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**' --fix",
