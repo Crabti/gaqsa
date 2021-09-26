@@ -151,9 +151,6 @@ jobs:
       - attach_workspace:
           at: /tmp/frontend
       - run:
-          command: |
-            ls -lR /tmp/frontend/
-      - run:
           name: Deploy to staging
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
