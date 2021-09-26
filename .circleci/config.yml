@@ -144,12 +144,15 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/frontend/build
+          at: /tmp/frontend
+      - run:
+          command: |
+            ls -lR
       - run:
           name: Deploy to staging
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
-            ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/staging_build
+            ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/staging_build/staging_build
       - run:
           name: Run curl smoke tests
           command: |
@@ -161,12 +164,12 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/frontend/build
+          at: /tmp/frontend
       - run:
           name: Deploy to production
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
-            ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/build/production_build
+            ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/production_build/production_build
       - run:
           name: Run curl smoke tests
           command: |
