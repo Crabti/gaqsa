@@ -1,9 +1,9 @@
 import React from 'react';
-import { HeaderCont } from './Header.styled';
+import { HeaderCont, Logo } from './Header.styled';
 
 const Header: React.FC = () => (
   <HeaderCont>
-    <div className="logo" />
+    <Logo />
   </HeaderCont>
 );
 

@@ -11,10 +11,10 @@ import {
   Product, UpdateProductForm,
 } from '@types';
 import ProductForm from 'components/ProductForm';
-import routes from 'Routes';
+import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
-const UpdateForm: React.FC = () => {
+const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
@@ -65,7 +65,7 @@ const UpdateForm: React.FC = () => {
         message: '¡Producto modificado exitosamente!',
       });
       form.resetFields();
-      history.replace(routes.listPendingProduct.path);
+      history.replace(productRoutes.listPendingProduct.path);
     }
     setLoading(false);
   };
@@ -76,7 +76,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Modificar producto" />
+      <Title viewName={verboseName} parentName={parentName} />
       <ProductForm
         form={form}
         onFinish={onFinish}
