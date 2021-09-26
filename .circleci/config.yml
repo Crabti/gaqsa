@@ -118,14 +118,14 @@ jobs:
           working_directory: ./frontend
           command: yarn test
       - when:
-        condition:
-          not:
-            equal: [ main, << pipeline.git.branch >>]
-        steps:
-        - run:
-            name: build
-            working_directory: ./frontend
-            command: yarn build
+          condition:
+            not:
+              equal: [ main, << pipeline.git.branch >>]
+          steps:
+          - run:
+              name: build
+              working_directory: ./frontend
+              command: yarn build
       - when:
           condition:
             equal: [ main, << pipeline.git.branch >>]
