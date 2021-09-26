@@ -117,7 +117,7 @@ jobs:
           name: test
           working_directory: ./frontend
           command: yarn test
-      -when:
+      - when:
         condition:
           not:
             equal: [ main, << pipeline.git.branch >>]
