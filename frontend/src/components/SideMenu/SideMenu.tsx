@@ -35,11 +35,11 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
                     const { path, verboseName }: RoutesType = route;
 
                     return (
-                      <Link to={path}>
-                        <Menu.Item key={`${verboseName}-menu-item`}>
+                      <Menu.Item key={`${verboseName}-menu-item`}>
+                        <Link to={path}>
                           {verboseName}
-                        </Menu.Item>
-                      </Link>
+                        </Link>
+                      </Menu.Item>
                     );
                   },
                 )}
