@@ -1,10 +1,10 @@
 import { FileDoneOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { Menu } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { RegisteredGroup, RoutesType } from 'Routes';
+import { Sider } from './SideMenu.styled';
 
-const { Sider } = Layout;
 const { SubMenu } = Menu;
 
 const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (

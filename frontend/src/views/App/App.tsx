@@ -9,7 +9,7 @@ import SideMenu from 'components/SideMenu';
 import useNavigation from 'hooks/navigation/useNavigation';
 import registerdGroups from 'Routes';
 import RoutesComponents from 'Routes/Routes';
-import { Content, BaseLayout } from './App.styled';
+import { Content, BaseLayout, ContentLayout } from './App.styled';
 
 const App: React.FC = () => {
   const { viewName, parentName } = useNavigation();
@@ -19,23 +19,16 @@ const App: React.FC = () => {
         <Header />
         <Layout>
           <SideMenu groups={registerdGroups} />
-          <Layout style={{ padding: '0 24px 24px' }}>
+          <ContentLayout style={{ padding: '0 24px 24px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item>Gaqsa</Breadcrumb.Item>
               <Breadcrumb.Item>{parentName}</Breadcrumb.Item>
               <Breadcrumb.Item>{viewName}</Breadcrumb.Item>
             </Breadcrumb>
-            <Content
-              data-testid="content-container"
-              style={{
-                padding: 24,
-                margin: 0,
-                minHeight: 280,
-              }}
-            >
+            <Content data-testid="content-container">
               <RoutesComponents groups={registerdGroups} />
             </Content>
-          </Layout>
+          </ContentLayout>
         </Layout>
       </BaseLayout>
     </ConfigProvider>
