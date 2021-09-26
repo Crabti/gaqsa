@@ -12,6 +12,16 @@ if [ $# -eq 3 ]
     then
     echo "Deploying to production..."
 
+    # Check that folders exist
+    if [ ! -d $LOCAL_BACKEND ]
+        echo "$LOCAL_BACKEND does not exist."
+        exit 1
+    fi
+    if [ ! -d $LOCAL_FRONTEND ]
+        echo "$LOCAL_FRONTEND does not exist."
+        exit 1
+    fi
+
     # Create backups
     ssh $1 'bash -s' < $SCRIPT_DIR/create_backup.sh $PRODUCTION_API_DIR $PRODUCTION_FRONTEND_DIR
     

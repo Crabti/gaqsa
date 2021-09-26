@@ -117,10 +117,15 @@ jobs:
           name: test
           working_directory: ./frontend
           command: yarn test
-      - run:
-          name: build
-          working_directory: ./frontend
-          command: yarn build
+      -when:
+        condition:
+          not:
+            equal: [ main, << pipeline.git.branch >>]
+        steps:
+        - run:
+            name: build
+            working_directory: ./frontend
+            command: yarn build
       - when:
           condition:
             equal: [ main, << pipeline.git.branch >>]
@@ -147,12 +152,12 @@ jobs:
           at: /tmp/frontend
       - run:
           command: |
-            ls -lR
+            ls -lR /tmp/frontend/
       - run:
           name: Deploy to staging
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
-            ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/staging_build/staging_build
+            ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/staging_build
       - run:
           name: Run curl smoke tests
           command: |
@@ -169,7 +174,7 @@ jobs:
           name: Deploy to production
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
-            ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/production_build/production_build
+            ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/production_build
       - run:
           name: Run curl smoke tests
           command: |
