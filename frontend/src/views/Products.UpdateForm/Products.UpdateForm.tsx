@@ -11,7 +11,7 @@ import {
   Product, UpdateProductForm,
 } from '@types';
 import ProductForm from 'components/ProductForm';
-import routes from 'Routes';
+import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
 const UpdateForm: React.FC = () => {
@@ -65,7 +65,7 @@ const UpdateForm: React.FC = () => {
         message: '¡Producto modificado exitosamente!',
       });
       form.resetFields();
-      history.replace(routes.listPendingProduct.path);
+      history.replace(productRoutes.listPendingProduct.path);
     }
     setLoading(false);
   };

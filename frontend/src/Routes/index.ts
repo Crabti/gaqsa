@@ -1,3 +1,4 @@
+import { AppstoreOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import ProductsCreateForm from 'views/Products.CreateForm';
@@ -8,7 +9,7 @@ export interface RoutesType {
   path: string;
   view: React.VC;
   verboseName: string;
-  showInMenu: boolean;
+  showInMenu?: boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
 }
 
@@ -16,13 +17,16 @@ export interface Routes {
   [key: string]: RoutesType;
 }
 
-const routes: Routes = {
-  home: {
-    path: '/',
-    view: HomeView,
-    verboseName: 'Inicio',
-    showInMenu: false,
-  },
+export interface RegisteredGroup {
+  [key: string]: {
+    routes: Routes;
+    showInMenu?: boolean;
+    icon?: React.FC;
+    verboseName?: string;
+  }
+}
+
+export const productRoutes: Routes = {
   createProduct: {
     path: '/productos/nuevo',
     view: ProductsCreateForm,
@@ -33,13 +37,32 @@ const routes: Routes = {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
     verboseName: 'Actualizalizar Producto',
-    showInMenu: false,
   },
   listPendingProduct: {
     path: '/productos/pendientes',
     view: ProductsListPending,
     verboseName: 'Productos Pendientes',
     showInMenu: true,
+  },
+};
+
+const otherRoutes: Routes = {
+  home: {
+    path: '/',
+    view: HomeView,
+    verboseName: 'Inicio',
+  },
+};
+
+const routes: RegisteredGroup = {
+  otherRoutes: {
+    routes: otherRoutes,
+  },
+  product: {
+    routes: productRoutes,
+    showInMenu: true,
+    verboseName: 'Productos',
+    icon: AppstoreOutlined,
   },
 };
 
