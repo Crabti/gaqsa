@@ -14,10 +14,12 @@ if [ $# -eq 3 ]
 
     # Check that folders exist
     if [ ! -d $LOCAL_BACKEND ]
+        then
         echo "$LOCAL_BACKEND does not exist."
         exit 1
     fi
     if [ ! -d $LOCAL_FRONTEND ]
+        then
         echo "$LOCAL_FRONTEND does not exist."
         exit 1
     fi
