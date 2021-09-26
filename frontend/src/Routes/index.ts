@@ -36,12 +36,12 @@ export const productRoutes: Routes = {
   updateProduct: {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
-    verboseName: 'Actualizalizar Producto',
+    verboseName: 'Modificar producto',
   },
   listPendingProduct: {
     path: '/productos/pendientes',
     view: ProductsListPending,
-    verboseName: 'Productos Pendientes',
+    verboseName: 'Productos Por Aprobar',
     showInMenu: true,
   },
 };

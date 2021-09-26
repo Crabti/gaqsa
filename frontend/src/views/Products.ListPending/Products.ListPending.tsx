@@ -16,7 +16,7 @@ import Table from 'components/Table';
 import moment from 'moment';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
-const UpdateForm: React.FC = () => {
+const UpdateForm: React.VC = ({ verboseName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title viewName="Productos Por Aprobar" />
+      <Title viewName={verboseName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <Table
           data={

@@ -15,39 +15,37 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
       defaultOpenKeys={['sub1']}
       style={{ height: '100%', borderRight: 0 }}
     >
-      <>
-        {Object.values(groups).map(
-          (group) => {
-            if (!group.showInMenu) return null;
+      {Object.values(groups).map(
+        (group) => {
+          if (!group.showInMenu) return null;
 
-            const Icon = group.icon || FileDoneOutlined;
+          const Icon = group.icon || FileDoneOutlined;
 
-            return (
-              <SubMenu
-                key={`${group.verboseName}-subMenu`}
-                icon={<Icon />}
-                title={group.verboseName}
-              >
-                {Object.values(group.routes).map(
-                  (route) => {
-                    if (!route.showInMenu) return null;
+          return (
+            <SubMenu
+              key={`${group.verboseName}-subMenu`}
+              icon={<Icon />}
+              title={group.verboseName}
+            >
+              {Object.values(group.routes).map(
+                (route) => {
+                  if (!route.showInMenu) return null;
 
-                    const { path, verboseName }: RoutesType = route;
+                  const { path, verboseName }: RoutesType = route;
 
-                    return (
-                      <Menu.Item key={`${verboseName}-menu-item`}>
-                        <Link to={path}>
-                          {verboseName}
-                        </Link>
-                      </Menu.Item>
-                    );
-                  },
-                )}
-              </SubMenu>
-            );
-          },
-        )}
-      </>
+                  return (
+                    <Menu.Item key={`${verboseName}-menu-item`}>
+                      <Link to={path}>
+                        {verboseName}
+                      </Link>
+                    </Menu.Item>
+                  );
+                },
+              )}
+            </SubMenu>
+          );
+        },
+      )}
     </Menu>
   </Sider>
 );

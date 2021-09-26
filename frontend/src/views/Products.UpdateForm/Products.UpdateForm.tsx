@@ -14,7 +14,7 @@ import ProductForm from 'components/ProductForm';
 import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
-const UpdateForm: React.FC = () => {
+const UpdateForm: React.VC = ({ verboseName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
@@ -76,7 +76,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title viewName="Modificar producto" />
+      <Title viewName={verboseName} />
       <ProductForm
         form={form}
         onFinish={onFinish}
