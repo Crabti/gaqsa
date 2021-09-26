@@ -3,6 +3,7 @@ import React from 'react';
 
 interface ViewProps {
   verboseName: string;
+  parentName: string;
 }
 
 declare module 'react' {

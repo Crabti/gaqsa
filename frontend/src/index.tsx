@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import { BackendProvider } from 'integrations';
+import { NavContextProvider } from 'hooks/navigation';
 import App from './views/App';
 import 'antd/dist/antd.css';
 
@@ -21,9 +22,11 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <BackendProvider>
-        <ThemeProvider theme={globalTheme}>
-          <App />
-        </ThemeProvider>
+        <NavContextProvider>
+          <ThemeProvider theme={globalTheme}>
+            <App />
+          </ThemeProvider>
+        </NavContextProvider>
       </BackendProvider>
     </BrowserRouter>
   </React.StrictMode>,

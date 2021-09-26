@@ -15,7 +15,12 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
             return (
               <Route
                 path={path}
-                component={() => <View verboseName={verboseName} />}
+                component={() => (
+                  <View
+                    verboseName={verboseName}
+                    parentName={group.verboseName || 'Gaqsa'}
+                  />
+                )}
                 exact
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...props}

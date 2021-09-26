@@ -22,7 +22,7 @@ const INITIAL_STATE : CreateProductForm = {
   is_generic: 'Sí',
 };
 
-const CreateForm: React.VC = ({ verboseName }) => {
+const CreateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
@@ -59,7 +59,7 @@ const CreateForm: React.VC = ({ verboseName }) => {
 
   return (
     <Content>
-      <Title viewName={verboseName} />
+      <Title viewName={verboseName} parentName={parentName} />
       <ProductForm
         form={form}
         onFinish={onFinish}
