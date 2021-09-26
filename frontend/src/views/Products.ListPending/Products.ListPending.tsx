@@ -89,7 +89,7 @@ const UpdateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title text="Productos Por Aprobar" />
+      <Title viewName="Productos Por Aprobar" />
       {isLoading || !products ? <LoadingIndicator /> : (
         <Table
           data={

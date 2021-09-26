@@ -6,7 +6,7 @@ import ProductsUpdateForm from 'views/Products.UpdateForm';
 
 export interface RoutesType {
   path: string;
-  view: RouteProps['component'];
+  view: React.VC;
   verboseName: string;
   showInMenu: boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
@@ -21,12 +21,12 @@ const routes: Routes = {
     path: '/',
     view: HomeView,
     verboseName: 'Inicio',
-    showInMenu: true,
+    showInMenu: false,
   },
   createProduct: {
     path: '/productos/nuevo',
     view: ProductsCreateForm,
-    verboseName: 'Registrar Producto',
+    verboseName: 'Alta de Producto',
     showInMenu: true,
   },
   updateProduct: {

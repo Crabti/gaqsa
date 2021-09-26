@@ -22,7 +22,7 @@ const INITIAL_STATE : CreateProductForm = {
   is_generic: 'Sí',
 };
 
-const CreateForm: React.FC = () => {
+const CreateForm: React.VC = ({ verboseName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
@@ -59,7 +59,7 @@ const CreateForm: React.FC = () => {
 
   return (
     <Content>
-      <Title viewName="Alta de Producto" />
+      <Title viewName={verboseName} />
       <ProductForm
         form={form}
         onFinish={onFinish}

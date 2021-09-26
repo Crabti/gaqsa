@@ -10,7 +10,7 @@ const { Option } = Select;
 
 const layout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 18 },
+  wrapperCol: { span: 16 },
 };
 
 enum ProductStatus {
@@ -51,20 +51,17 @@ const ProductForm: React.FC<Props> = ({
       size="large"
     >
       <Row justify="space-around">
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="dose" label="Dosis" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
         </Col>
-      </Row>
-      <Row justify="space-around">
-
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item
             name="presentation"
             label="Presentación"
@@ -73,7 +70,7 @@ const ProductForm: React.FC<Props> = ({
             <Input />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="price" label="Precio" rules={[{ required: true }]}>
             <InputNumber
               min={0.01}
@@ -84,10 +81,8 @@ const ProductForm: React.FC<Props> = ({
             />
           </Form.Item>
         </Col>
-      </Row>
-      <Row justify="space-around">
 
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="iva" label="IVA" rules={[{ required: true }]}>
             <Select>
               <Option value="0.08"> 0.08 </Option>
@@ -95,7 +90,7 @@ const ProductForm: React.FC<Props> = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
             <InputNumber
               style={{ width: '100%' }}
@@ -103,10 +98,8 @@ const ProductForm: React.FC<Props> = ({
             />
           </Form.Item>
         </Col>
-      </Row>
-      <Row justify="space-around">
 
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item
             name="more_info"
             label="Información"
@@ -115,7 +108,7 @@ const ProductForm: React.FC<Props> = ({
             <Input.TextArea />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={12}>
           <Form.Item name="is_generic" label="Genérico" rules={[]}>
             <Select>
               <Option value="Sí">Sí</Option>
@@ -123,12 +116,9 @@ const ProductForm: React.FC<Props> = ({
             </Select>
           </Form.Item>
         </Col>
-      </Row>
-      {
-        isUpdate && (
-        <>
-          <Row justify="space-around">
-            <Col span={8}>
+        {isUpdate && (
+          <>
+            <Col span={12}>
               <Form.Item
                 name="status"
                 label="Estado"
@@ -143,7 +133,7 @@ const ProductForm: React.FC<Props> = ({
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 shouldUpdate
                 name="reject_reason"
@@ -153,9 +143,7 @@ const ProductForm: React.FC<Props> = ({
                 <Input.TextArea disabled={isProductRejected} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row justify="space-around">
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item
                 name="key"
                 label="Clave"
@@ -164,10 +152,9 @@ const ProductForm: React.FC<Props> = ({
                 <Input />
               </Form.Item>
             </Col>
-          </Row>
-        </>
-        )
-        }
+          </>
+        )}
+      </Row>
 
       <FormButton
         loading={isLoading}

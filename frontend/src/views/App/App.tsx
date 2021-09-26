@@ -11,21 +11,32 @@ import {
   NotificationOutlined,
 } from '@ant-design/icons';
 import Header from 'components/Header';
-import routes, { Routes, RoutesType } from 'Routes';
+import registerdRoutes, { Routes, RoutesType } from 'Routes';
 import { Content, BaseLayout } from './App.styled';
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
 
-const getRoutes = (routes_: Routes): React.ReactNodeArray => (
-  Object.keys(routes_).map(
-    (key) => {
-      const { path, view, props }: RoutesType = routes[key];
+const RoutesComponents: React.FC<{routes: Routes}> = ({ routes }) => (
+  <>
+    {Object.keys(routes).map(
+      (key) => {
+        const {
+          path, view: View, props, verboseName,
+        }: RoutesType = routes[key];
 
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      return <Route path={path} component={view} {...props} exact />;
-    },
-  )
+        return (
+          <Route
+            path={path}
+            component={() => <View verboseName={verboseName} />}
+            exact
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+          />
+        );
+      },
+    )}
+  </>
 );
 
 const App: React.FC = () => (
@@ -78,9 +89,7 @@ const App: React.FC = () => (
               minHeight: 280,
             }}
           >
-            {
-            getRoutes(routes)
-            }
+            <RoutesComponents routes={registerdRoutes} />
           </Content>
         </Layout>
       </Layout>
