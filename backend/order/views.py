@@ -1,7 +1,6 @@
-from order.models import Order, Requisition
-from django_filters.rest_framework import DjangoFilterBackend
+from order.models import Order
 from rest_framework import generics
-from .serializers import OrderSerializer, RequisitionSerializer
+from .serializers import OrderSerializer
 
 
 class ListAllRequisitions(generics.ListAPIView):
