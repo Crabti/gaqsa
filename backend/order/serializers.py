@@ -4,11 +4,11 @@ from rest_framework import serializers
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Requisition
+        model = Order
         fields = '__all__'
 
 
 class RequisitionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Order
+        model = Requisition
         fields = '__all__'
