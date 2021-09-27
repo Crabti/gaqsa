@@ -1,27 +1,16 @@
-import json
 from http import HTTPStatus
 
 from django.test import TestCase
 from django.urls import reverse
 
 from products.factories.product import ProductFactory
-from products.models import Product
-from products.serializers.product import (
-    CreateProductSerializer,
-    ProductSerializer
-)
+
 from order.factories.order import (
     OrderFactory,
     RequisitionFactory
 )
-from order.models import (
-    Order,
-    Requisition
-)
-from order.serializers import (
-    OrderSerializer,
-    RequisitionSerializer
-)
+
+
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
 
