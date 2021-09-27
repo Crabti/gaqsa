@@ -3,7 +3,7 @@ from rest_framework import generics
 from .serializers import OrderSerializer
 
 
-class ListAllRequisitions(generics.ListAPIView):
+class ListOrders(generics.ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
