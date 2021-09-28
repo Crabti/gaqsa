@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+  </style>
+<body style="text-align:center">
+    <div id="header" style="margin-bottom: 10px">
+        <img src="https://www.gaqsa.com/images/gaqsa(2).png" />
+    </div>
+    <div id="title" style="text-decoration:underline">
+        <h3>{% block title %}{% endblock %}</h3> 
+    </div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    <div id="footer">
+        <h4 class="">Información de contacto:</h4>
+        <p>
+            Teléfono: <strong>01 (442) 2530038</strong>
+            <br/>
+            Correo: <strong><a href="emailto:gaqsa@gaqsa.com">gaqsa@gaqsa.com</a></strong>
+        </p>
+    </div>
+</body>
+</html>

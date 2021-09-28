@@ -3,7 +3,6 @@ from providers.models import Provider
 from random import sample
 from string import ascii_uppercase
 
-
 KEY_LEN = 8
 
 

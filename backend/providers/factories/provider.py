@@ -14,3 +14,4 @@ class ProviderFactory(django.DjangoModelFactory):
     name = LazyAttribute(lambda _: sfaker.unique.company())
     rfc = LazyAttribute(lambda _: sfaker.unique.rfc())
     address = LazyAttribute(lambda _: sfaker.address())
+    email = LazyAttribute(lambda _: sfaker.email())

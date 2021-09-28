@@ -24,6 +24,7 @@ class Provider(models.Model):
     address = models.CharField(
         max_length=150,
     )
+    email = models.EmailField(verbose_name='Correo Electrónico')
 
     def __str__(self):
         return f'{self.name} - {self.rfc}'
