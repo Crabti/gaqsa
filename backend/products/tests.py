@@ -6,6 +6,9 @@ from django.urls import reverse
 from django.core import mail
 
 from products.factories.product import ProductFactory
+from products.factories.laboratory import LaboratoryFactory
+from products.factories.category import CategoryFactory
+
 from products.models import Product
 from products.serializers.product import (
     CreateProductSerializer,
@@ -19,8 +22,11 @@ class RegisterRequestToCreateProduct(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
         product = ProductFactory.build(
             provider=provider, status=Product.PENDING,
+            category=category, laboratory=laboratory
         )
         self.valid_payload = CreateProductSerializer(
             product,
@@ -46,10 +52,17 @@ class ListPendingProductRequests(TestCase):
 
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
         # Create pending products
-        ProductFactory.create_batch(self.unactive_amount, provider=provider)
+        ProductFactory.create_batch(self.unactive_amount,
+                                    provider=provider,
+                                    category=category,
+                                    laboratory=laboratory,
+                                    )
         # Create active products
         ProductFactory.create_batch(active_amount, provider=provider,
+                                    category=category, laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
     def test_list_pending_products(
@@ -71,7 +84,12 @@ class UpdateProductTest(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        self.product = ProductFactory.create(provider=provider)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.product = ProductFactory.create(
+            provider=provider, category=category,
+            laboratory=laboratory
+        )
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.put(
@@ -102,7 +120,12 @@ class DetailProductTest(TestCase):
     def setUp(self):
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        self.product = ProductFactory.create(provider=provider)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.product = ProductFactory.create(
+            provider=provider, category=category,
+            laboratory=laboratory
+        )
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.get(
@@ -128,13 +151,22 @@ class ListAllActiveProductsOfProvider(TestCase):
 
         self.provider = ProviderFactory.create(user=user)
         other_provider = ProviderFactory.create(user=other_user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
 
         ProductFactory.create_batch(20,
-                                    provider=self.provider)
+                                    provider=self.provider,
+                                    category=category,
+                                    laboratory=laboratory
+                                    )
         ProductFactory.create_batch(5,
                                     provider=self.provider,
+                                    category=category,
+                                    laboratory=laboratory,
                                     status=Product.ACCEPTED)
         ProductFactory.create_batch(10, provider=other_provider,
+                                    category=category,
+                                    laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
     def test_list_only_products_of_provider(

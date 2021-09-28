@@ -1,4 +1,6 @@
 from http import HTTPStatus
+from products.factories.laboratory import LaboratoryFactory
+from products.factories.category import CategoryFactory
 
 from django.test import TestCase
 from django.urls import reverse
@@ -19,7 +21,13 @@ class CreateOrderTest(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        self.product = ProductFactory.create(provider=provider)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.product = ProductFactory.create(
+            provider=provider,
+            category=category,
+            laboratory=laboratory
+        )
         self.order = OrderFactory.create(user=user)
         self.requisition = RequisitionFactory.create(
             provider=provider,
