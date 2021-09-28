@@ -13,12 +13,14 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import useShoppingCart from 'hooks/shoppingCart';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
+  const { addProducts } = useShoppingCart();
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -83,7 +85,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
           <Button
             shape="circle"
             icon={<PlusOutlined />}
-            onClick={() => console.log(product)}
+            onClick={() => addProducts({
+              product: { ...product },
+              amount: 1,
+            })}
           />
         </Tooltip>
       ),
@@ -97,6 +102,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
         <Table
           data={
             products.map((product) => ({
+              id: product.id,
               name: product.name,
               provider: product.provider,
               presentation: product.presentation,

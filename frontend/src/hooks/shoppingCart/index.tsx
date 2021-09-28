@@ -38,6 +38,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const addProducts = (newProduct: ShoppingCartProductType): void => {
+    console.log(newProduct);
     if (products.some((e) => e.product.id === newProduct.product.id)) {
       persistProducts(
         products.map((e) => (e.product.id === newProduct.product.id
