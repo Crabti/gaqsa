@@ -13,6 +13,7 @@ export interface ShoppingCartType {
 }
 
 export const ShoppingCartContext = (
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   React.createContext<ShoppingCartType>(undefined!)
 );
 
@@ -38,7 +39,6 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const addProducts = (newProduct: ShoppingCartProductType): void => {
-    console.log(newProduct);
     if (products.some((e) => e.product.id === newProduct.product.id)) {
       persistProducts(
         products.map((e) => (e.product.id === newProduct.product.id

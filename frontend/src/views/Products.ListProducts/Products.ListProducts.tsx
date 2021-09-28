@@ -12,7 +12,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 
