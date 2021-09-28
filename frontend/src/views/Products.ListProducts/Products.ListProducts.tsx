@@ -2,10 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   notification,
-  Tooltip,
-  Button,
 } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
@@ -13,7 +10,6 @@ import {
   Product,
 } from '@types';
 import Table from 'components/Table';
-import moment from 'moment';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
