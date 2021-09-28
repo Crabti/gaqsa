@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django_nose',
     'django_filters',
     'rest_framework',
+    'rest_framework.authtoken',
     'backend',
     'users',
     'products',
@@ -204,7 +205,10 @@ NOSE_ARGS = [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend']
+        'django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
 EMAIL_HOST = os.getenv('EMAIL_HOST')
