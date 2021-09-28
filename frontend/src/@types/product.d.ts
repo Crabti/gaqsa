@@ -14,6 +14,7 @@ export type Product = CommonType & {
   key: string;
   status: string;
   reject_reason: string;
+  presentation: string;
 };
 
 export type CreateProductForm = {
