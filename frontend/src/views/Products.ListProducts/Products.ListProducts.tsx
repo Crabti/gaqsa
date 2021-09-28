@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  notification,
+  Button,
+  notification, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -11,6 +12,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -71,6 +73,20 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       title: 'IEPS',
       dataIndex: 'ieps',
       key: 'ieps',
+    },
+    {
+      title: 'Acciones',
+      dataIndex: 'action',
+      key: 'action',
+      render: (id: number, product: Product) => (
+        <Tooltip title="Añadir al carrito">
+          <Button
+            shape="circle"
+            icon={<PlusOutlined />}
+            onClick={() => console.log(product)}
+          />
+        </Tooltip>
+      ),
     },
   ];
 
