@@ -14,6 +14,7 @@ import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
+import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -82,6 +83,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'action',
       render: (id: number, product: Product) => (
         <Tooltip title="Añadir al carrito">
+          { SHOW_ADD_TO_CART_BTN && (
           <Button
             shape="circle"
             icon={<PlusOutlined />}
@@ -90,6 +92,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               amount: 1,
             })}
           />
+          )}
         </Tooltip>
       ),
     },
