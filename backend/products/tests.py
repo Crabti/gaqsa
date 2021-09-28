@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 from django.test import TestCase
 from django.urls import reverse
+from django.core import mail
 
 from products.factories.product import ProductFactory
 from products.models import Product
@@ -35,6 +36,7 @@ class RegisterRequestToCreateProduct(TestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
+        self.assertGreater(len(mail.outbox), 0)
 
 
 class ListPendingProductRequests(TestCase):
@@ -79,6 +81,7 @@ class UpdateProductTest(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_update_product_test(self) -> None:
+        mail.outbox = []
         new_product = self.product
         new_product.status = Product.ACCEPTED
         valid_product = CreateProductSerializer(
@@ -90,7 +93,9 @@ class UpdateProductTest(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.data['pk'], self.product.pk)
         self.assertEqual(response.data['status'], Product.ACCEPTED)
+        self.assertGreater(len(mail.outbox), 0)
 
 
 class DetailProductTest(TestCase):

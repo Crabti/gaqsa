@@ -1,0 +1,38 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h4>{{ provider.name}}</h5>
+    <h4>RFC: {{ provider.rfc }}</h4>
+  </div>
+  <h4>Se ha solicitado la alta del producto:</h4>
+  <table style="width:100%">
+    <tr>
+      <th>
+        Atributo
+      </th>
+      <th>
+        Valor
+      </th>
+    </tr>
+    <tr>
+      <td>Nombre</td>
+      <td>{{ product.name }}</td>
+    </tr>
+    <tr>    
+      <td>Dosis</td>
+      <td>{{ product.dose}}</td>
+    </tr>
+    <tr>    
+      <td>Presentación</td>
+      <td>{{ product.presentation }}</td>
+    </tr>
+    <tr>    
+      <td>Precio</td>
+      <td>{{ product.price }}</td>
+    </tr>
+  </table>
+{% endblock %}
+
