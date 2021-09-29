@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  notification,
+  Button,
+  notification, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -11,12 +12,16 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { PlusOutlined } from '@ant-design/icons';
+import useShoppingCart from 'hooks/shoppingCart';
+import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
+  const { addProducts } = useShoppingCart();
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -72,6 +77,25 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       dataIndex: 'ieps',
       key: 'ieps',
     },
+    {
+      title: 'Acciones',
+      dataIndex: 'action',
+      key: 'action',
+      render: (id: number, product: Product) => (
+        <Tooltip title="Añadir al carrito">
+          { SHOW_ADD_TO_CART_BTN && (
+          <Button
+            shape="circle"
+            icon={<PlusOutlined />}
+            onClick={() => addProducts({
+              product: { ...product },
+              amount: 1,
+            })}
+          />
+          )}
+        </Tooltip>
+      ),
+    },
   ];
 
   return (
@@ -81,6 +105,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
         <Table
           data={
             products.map((product) => ({
+              id: product.id,
               name: product.name,
               provider: product.provider,
               presentation: product.presentation,
