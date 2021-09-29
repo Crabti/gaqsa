@@ -107,6 +107,7 @@ jobs:
       - node/install-packages:
           app-dir: ./frontend
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Lint
           working_directory: ./frontend
