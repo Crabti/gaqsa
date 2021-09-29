@@ -208,7 +208,13 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend']
 }
 
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST = os.getenv('EMAIL_HOST', None)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
+EMAIL_PORT = os.getenv('EMAIL_PORT', None)
+
+# If email settings not set, use console email backend for development
+if (EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT):
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
