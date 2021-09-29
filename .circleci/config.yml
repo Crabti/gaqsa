@@ -98,7 +98,7 @@ jobs:
           path: /tmp/test-results
   frontend-build-and-test:
     docker:
-    - image: node:16
+    - image: cimg/base:stable
     steps:
       - checkout
       - node/install-yarn
