@@ -17,6 +17,8 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "more_info",
             "status",
             "provider",
+            "animal_groups",
+            "active_substance",
         )
 
 
@@ -36,7 +38,9 @@ class UpdateProductSerializer(serializers.ModelSerializer):
             "more_info",
             "status",
             "provider",
-            "reject_reason"
+            "reject_reason",
+            "animal_groups",
+            "active_substance",
         )
 
 
@@ -57,7 +61,9 @@ class ProductSerializer(serializers.ModelSerializer):
             "provider",
             "reject_reason",
             "created_at",
-            "updated_at"
+            "updated_at",
+            "animal_groups",
+            "active_substance"
         )
 
 
@@ -74,6 +80,11 @@ class ListProductSerializer(serializers.ModelSerializer):
     laboratory = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
+    )
+    animal_groups = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+        many=True
     )
 
     class Meta:
@@ -93,5 +104,7 @@ class ListProductSerializer(serializers.ModelSerializer):
             "provider",
             "reject_reason",
             "created_at",
-            "updated_at"
+            "updated_at",
+            "animal_groups",
+            "active_substance",
         )

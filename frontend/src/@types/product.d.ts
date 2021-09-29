@@ -1,43 +1,56 @@
+import { AnimalGroup } from '@types';
 import CommonType from './common';
-
-// TODO: Add rest of fields
+import Laboratory from './laboratory';
+import Category from './category';
 
 export type Product = CommonType & {
   name: string;
   price: number;
-  dose: string;
   iva: number;
   ieps: number;
   more_info: string;
-  is_generic: string;
   provider?: string;
   key: string;
   status: string;
   reject_reason: string;
   presentation: string;
+  animal_groups: number[] | string[];
+  laboratory: number | string;
+  category: number | string;
+  active_substance: string;
 };
 
 export type CreateProductForm = {
   name: string;
   price: number;
-  dose: string;
   iva: number;
   ieps: number;
   more_info: string;
-  is_generic: string;
   provider?: number;
+  category: number;
+  laboratory: number;
+  animal_groups: number[];
+  active_substance: string;
 };
 
 export type UpdateProductForm = {
   name: string;
   price: number;
-  dose: string;
   iva: number;
   ieps: number;
   more_info: string;
-  is_generic: string;
   provider?: number;
   key: string;
   status: string;
   reject_reason: string;
+  category: number;
+  laboratory: number;
+  animal_groups: number[];
+  active_substance: string;
+};
+
+export type ProductOptions = {
+  categories: Category[],
+  laboratories: Laboratory[],
+  animal_groups: AnimalGroup[],
 };

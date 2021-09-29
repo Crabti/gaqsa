@@ -17,7 +17,7 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(
-        max_length=150, verbose_name="Nombre de la categoria")
+        max_length=150, verbose_name="Nombre de la categoría")
 
     def __str__(self):
         return f"{self.name}"
@@ -28,6 +28,16 @@ class Laboratory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(
         max_length=300, verbose_name="Nombre del laboratorio")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class AnimalGroup(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=300, verbose_name="Nombre de especie")
 
     def __str__(self):
         return f"{self.name}"
@@ -78,7 +88,10 @@ class Product(models.Model):
         max_length=500,
         default="N/A"
     )
+    active_substance = models.CharField(
+        max_length=150, verbose_name="Sustancia activa")
 
+    animal_groups = models.ManyToManyField(AnimalGroup)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
 
