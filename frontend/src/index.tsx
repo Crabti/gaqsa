@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import { BackendProvider } from 'integrations';
 import { NavContextProvider } from 'hooks/navigation';
+import { ShoppingCartContextProvider } from 'hooks/shoppingCart';
 import App from './views/App';
 import 'antd/dist/antd.css';
 
@@ -23,9 +24,11 @@ ReactDOM.render(
     <BrowserRouter>
       <BackendProvider>
         <NavContextProvider>
-          <ThemeProvider theme={globalTheme}>
-            <App />
-          </ThemeProvider>
+          <ShoppingCartContextProvider>
+            <ThemeProvider theme={globalTheme}>
+              <App />
+            </ThemeProvider>
+          </ShoppingCartContextProvider>
         </NavContextProvider>
       </BackendProvider>
     </BrowserRouter>
