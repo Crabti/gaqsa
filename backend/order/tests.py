@@ -1,8 +1,10 @@
+from users.factories.user import UserFactory
+from utils.tests import BaseTestCase
+import json
 from http import HTTPStatus
 from products.factories.laboratory import LaboratoryFactory
 from products.factories.category import CategoryFactory
 
-from django.test import TestCase
 from django.urls import reverse
 
 from products.factories.product import ProductFactory
@@ -14,30 +16,47 @@ from order.factories.order import (
 
 
 from providers.factories.provider import ProviderFactory
-from users.factories.user import UserFactory
 
 
-class CreateOrderTest(TestCase):
+class ListOrderTest(BaseTestCase):
     def setUp(self) -> None:
-        user = UserFactory.create()
-        provider = ProviderFactory.create(user=user)
+        super().setUp()
+        provider = ProviderFactory.create(user=self.provider_user)
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
-        self.product = ProductFactory.create(
+        product = ProductFactory.create(
             provider=provider,
             category=category,
             laboratory=laboratory
         )
-        self.order = OrderFactory.create(user=user)
-        self.requisition = RequisitionFactory.create(
-            provider=provider,
-            order=self.order,
-            product=self.product
-        )
+        self.orders_amount = 10
+        requisitions_per_order = 3
+        # Create multiple orders with random users and a list of requisitions
+        for i in range(self.orders_amount):
+            user = UserFactory.create()
+            order = OrderFactory.create(user=user)
+            RequisitionFactory.create_batch(
+                requisitions_per_order,
+                provider=provider,
+                order=order,
+                product=product
+            )
 
-    def test_create_order(self) -> None:
+    def test_list_orders(self) -> None:
         response = self.client.get(
             reverse("list_order"),
             content_type="application/json",
         )
+        result = json.loads(json.dumps(response.data))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(len(result), self.orders_amount)
+
+    def test_list_client_history_orders(self) -> None:
+        my_orders = OrderFactory.create_batch(5, user=self.client_user)
+        response = self.service_client.get(
+            reverse("list_order"),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(len(result), len(my_orders))
