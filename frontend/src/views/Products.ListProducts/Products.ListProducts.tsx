@@ -63,6 +63,21 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'presentation',
     },
     {
+      title: 'Susbtancia activa',
+      dataIndex: 'active_substance',
+      key: 'active_substance',
+    },
+    {
+      title: 'Laboratorio',
+      dataIndex: 'laboratory',
+      key: 'laboratory',
+    },
+    {
+      title: 'Categoría',
+      dataIndex: 'category',
+      key: 'category',
+    },
+    {
       title: 'Precio',
       dataIndex: 'price',
       key: 'price',
@@ -109,10 +124,12 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               name: product.name,
               provider: product.provider,
               presentation: product.presentation,
+              active_substance: product.active_substance,
+              laboratory: product.laboratory,
+              category: product.category,
               price: product.price,
               iva: product.iva,
               ieps: product.ieps,
-
             }))
         }
           columns={columns}

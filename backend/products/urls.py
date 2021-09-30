@@ -8,4 +8,6 @@ urlpatterns = [
          views.UpdateProductView.as_view(), name="update_product"),
     path('<int:pk>',
          views.RetrieveProductView.as_view(), name='detail_product'),
+    path('options', views.ListProductSelectOptions.as_view(),
+         name='list_product_options'),
 ]

@@ -28,6 +28,7 @@ const ProductForm: React.FC<Props> = ({
   form,
   isLoading,
   isUpdate,
+  options,
 }) => {
   const [isProductRejected, setIsProductRejected] = useState(false);
 
@@ -48,25 +49,10 @@ const ProductForm: React.FC<Props> = ({
       initialValues={initialState}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
-      size="large"
     >
       <Row justify="space-around">
         <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item name="dose" label="Dosis" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="presentation"
-            label="Presentación"
-            rules={[{ required: true }]}
-          >
             <Input />
           </Form.Item>
         </Col>
@@ -81,13 +67,29 @@ const ProductForm: React.FC<Props> = ({
             />
           </Form.Item>
         </Col>
-
         <Col span={12}>
-          <Form.Item name="iva" label="IVA" rules={[{ required: true }]}>
+          <Form.Item
+            name="presentation"
+            label="Presentación"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
             <Select>
-              <Option value="0.08"> 0.08 </Option>
-              <Option value="0.16"> 0.16 </Option>
+              <Option value="0.00" key="0.00"> 0.00 %</Option>
+              <Option value="0.16" key="0.16"> 0.16 %</Option>
             </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="more_info"
+            label="Información"
+          >
+            <Input.TextArea />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -98,22 +100,64 @@ const ProductForm: React.FC<Props> = ({
             />
           </Form.Item>
         </Col>
-
         <Col span={12}>
           <Form.Item
-            name="more_info"
-            label="Información"
+            name="laboratory"
+            label="Laboratorio"
             rules={[{ required: true }]}
           >
-            <Input.TextArea />
+            <Select>
+              { Object.values(options.laboratories).map(
+                (lab) => (
+                  <Option value={lab.id} key={lab.id}>
+                    {lab.name}
+                  </Option>
+                ),
+              )}
+            </Select>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="is_generic" label="Genérico" rules={[]}>
+          <Form.Item
+            name="category"
+            label="Categoría"
+            rules={[{ required: true }]}
+          >
             <Select>
-              <Option value="Sí">Sí</Option>
-              <Option value="No">No</Option>
+              { Object.values(options.categories).map(
+                (category) => (
+                  <Option value={category.id} key={category.id}>
+                    {category.name}
+                  </Option>
+                ),
+              )}
             </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="animal_groups"
+            label="Especie"
+            rules={[{ required: true }]}
+          >
+            <Select mode="multiple">
+              { Object.values(options.animal_groups).map(
+                (group) => (
+                  <Option value={group.id} key={group.id}>
+                    {group.name}
+                  </Option>
+                ),
+              )}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="active_substance"
+            label="Substancia activa"
+            rules={[{ required: true }]}
+          >
+            <Input />
           </Form.Item>
         </Col>
         {isUpdate && (
@@ -128,7 +172,11 @@ const ProductForm: React.FC<Props> = ({
                   onChange={handleStateDropdown}
                 >
                   { Object.values(ProductStatus).map(
-                    (status) => <Option value={status}>{status}</Option>,
+                    (status) => (
+                      <Option value={status} key={status}>
+                        {status}
+                      </Option>
+                    ),
                   )}
                 </Select>
               </Form.Item>

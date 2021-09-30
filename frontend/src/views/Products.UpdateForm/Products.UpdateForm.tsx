@@ -8,11 +8,12 @@ import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
-  Product, UpdateProductForm,
+  Product, ProductOptions, UpdateProductForm,
 } from '@types';
 import ProductForm from 'components/ProductForm';
 import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { PRODUCTS_OPTIONS_ROOT } from 'settings';
 
 const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
@@ -21,6 +22,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [isLoading, setLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | undefined>(undefined);
+  const [options, setOptions] = useState<ProductOptions | undefined>(undefined);
 
   const fetchProduct = useCallback(async () => {
     setLoading(true);
@@ -40,9 +42,29 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
     setLoading(false);
   }, [backend.products, id]);
 
+  const fetchOptions = useCallback(async () => {
+    setLoading(true);
+
+    const [result, error] = await backend.products.get<ProductOptions>(
+      PRODUCTS_OPTIONS_ROOT,
+    );
+
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al cargar las opciones!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setOptions(result.data);
+  }, [backend.products]);
+
   useEffect(() => {
     fetchProduct();
-  }, [history, fetchProduct]);
+    fetchOptions();
+  }, [history, fetchProduct, fetchOptions]);
 
   const onFinishFailed = () : void => {
     notification.error({
@@ -70,7 +92,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
     setLoading(false);
   };
 
-  if (isLoading) {
+  if (isLoading || !options) {
     return <LoadingIndicator />;
   }
 
@@ -83,6 +105,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
         isLoading={isLoading}
         onFinishFailed={onFinishFailed}
         initialState={product as UpdateProductForm}
+        options={options}
         isUpdate
       />
     </Content>

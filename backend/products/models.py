@@ -13,14 +13,37 @@ def generate_unique_key():
             return key
 
 
-class Product(models.Model):
-    GENERIC = 'Sí'
-    NOT_GENERIC = 'No'
-    IS_GENERIC_CHOICES = [
-        (GENERIC, GENERIC),
-        (NOT_GENERIC, NOT_GENERIC),
-    ]
+class Category(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=150, verbose_name="Nombre de la categoría")
 
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Laboratory(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=300, verbose_name="Nombre del laboratorio")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class AnimalGroup(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    name = models.CharField(
+        max_length=300, verbose_name="Nombre de especie")
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Product(models.Model):
     ACCEPTED = 'Aceptado'
     PENDING = 'Pendiente'
     REJECTED = 'Rechazado'
@@ -38,7 +61,6 @@ class Product(models.Model):
             max_length=KEY_LEN, verbose_name="Clave",
             unique=True, default=generate_unique_key)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
-    dose = models.CharField(max_length=30, verbose_name="Dosis", blank=True)
     presentation = models.CharField(
         max_length=20, verbose_name="Presenta", blank=True,
     )
@@ -54,12 +76,7 @@ class Product(models.Model):
     more_info = models.CharField(
         max_length=200, blank=True, verbose_name="Información",
     )
-    is_generic = models.CharField(
-        max_length=2,
-        choices=IS_GENERIC_CHOICES,
-        default=NOT_GENERIC,
-        verbose_name="Genérico",
-    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUSES,
@@ -71,6 +88,12 @@ class Product(models.Model):
         max_length=500,
         default="N/A"
     )
+    active_substance = models.CharField(
+        max_length=150, verbose_name="Sustancia activa")
+
+    animal_groups = models.ManyToManyField(AnimalGroup)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.key} - {self.provider.name} \
