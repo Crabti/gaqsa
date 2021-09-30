@@ -32,3 +32,16 @@ class BaseTestCase(TestCase):
             username=self.client_user.username,
             password=client_password
         )
+
+        # Create admin user and client for convenient use
+        admin_password = 'admin'
+        self.admin_user = UserFactory.create(
+            password=make_password(admin_password)
+        )
+        admin_group = Group.objects.get(name='Administrador')
+        self.admin_user.groups.add(admin_group)
+        self.admin_client = Client()
+        self.admin_client.login(
+            username=self.admin_user.username,
+            password=admin_password
+        )

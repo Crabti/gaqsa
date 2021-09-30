@@ -12,3 +12,19 @@ class RequisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisition
         fields = '__all__'
+
+
+class ListOrderSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    requisitions = RequisitionSerializer(
+        many=True,
+        read_only=True,
+        source='requisition_set'
+    )
+
+    class Meta:
+        model = Order
+        fields = '__all__'

@@ -1,5 +1,5 @@
 from users.factories.user import UserFactory
-from utils.tests import BaseTestCase
+from backend.utils.tests import BaseTestCase
 import json
 from http import HTTPStatus
 from products.factories.laboratory import LaboratoryFactory
@@ -42,8 +42,8 @@ class ListOrderTest(BaseTestCase):
                 product=product
             )
 
-    def test_list_orders(self) -> None:
-        response = self.client.get(
+    def test_list_all_orders_admin(self) -> None:
+        response = self.admin_client.get(
             reverse("list_order"),
             content_type="application/json",
         )
