@@ -24,6 +24,7 @@ const Home: React.ViewComponent = ({ verboseName }) => {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onFinish = async (values: LoginForm) : Promise<void> => {
     setLoading(true);
     // TODO: Get login data

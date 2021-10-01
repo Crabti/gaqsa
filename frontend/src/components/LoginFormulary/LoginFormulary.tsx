@@ -34,7 +34,11 @@ const LoginFormulary: React.FC<Props> = ({
         <Col span={6} />
         <Col span={5} />
         <Col span={13}>
-          <Form.Item name="password" label="Contraseña" rules={[{ required: true }]}>
+          <Form.Item
+            name="password"
+            label="Contraseña"
+            rules={[{ required: true }]}
+          >
             <Input.Password
               placeholder="Introducir contraseña"
             />
