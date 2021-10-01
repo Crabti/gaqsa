@@ -37,10 +37,12 @@ export interface BooleanGroups {
 export const LOCAL_STORAGE_KEY = 'auth';
 
 export type SetTokensFunc = (access: string, refresh: string) => void;
+export type LogoutFunc = () => void;
 export type GetGroups = (groups: string[]) => BooleanGroups;
 
 export interface AuthContextType extends AuthType {
   setTokens: SetTokensFunc;
+  logout: LogoutFunc;
 }
 
 export const AuthContext = React.createContext<AuthContextType>(
@@ -106,6 +108,11 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     persistState(newState);
   };
 
+  const logout: LogoutFunc = () => {
+    setAuthState(INITIAL_AUTH_STATE);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  };
+
   useEffect(() => {
     if (!authState.user) {
       retrieveState();
@@ -113,7 +120,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   }, [authState.user]);
 
   return (
-    <AuthContext.Provider value={{ ...authState, setTokens }}>
+    <AuthContext.Provider value={{ ...authState, setTokens, logout }}>
       {children}
     </AuthContext.Provider>
   );

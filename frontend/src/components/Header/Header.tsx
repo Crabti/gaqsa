@@ -1,52 +1,42 @@
-import { message, Tooltip } from 'antd';
-import useAuth from 'hooks/useAuth';
-import { useBackend } from 'integrations';
+import { Popconfirm, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useAuth from 'hooks/useAuth';
+import routes from 'Routes';
 import {
   HeaderCont,
   Logo,
   RightContainer,
-  LoginIcon,
 } from './Header.styled';
 
 const LoginBtn: React.FC = () => {
-  const backend = useBackend();
-  const { setTokens, user } = useAuth();
+  const { user, logout } = useAuth();
   const [canLogin, setCanLogin] = useState(true);
 
   useEffect(() => {
     setCanLogin(!user);
   }, [user]);
 
-  const login = async (): Promise<void> => {
-    if (!canLogin) {
-      return;
-    }
-
-    const [result, error] = await backend.users.post<
-      {access: string; refresh: string;}, {username: string; password: string;}
-    >(
-      `${backend.users.baseURL}/login/`, {
-        username: 'root',
-        password: 'Metallica#1',
-      },
+  if (!canLogin) {
+    return (
+      <Popconfirm
+        title="¿Deseas cerrar sesión?"
+        onConfirm={logout}
+        okText="Sí"
+        cancelText="No"
+        placement="bottomRight"
+      >
+        <Typography.Link>
+          Cerrar Sesión
+        </Typography.Link>
+      </Popconfirm>
     );
-
-    if (error || !result || !result.data) {
-      message.error('¡Error al iniciar sesión!');
-      return;
-    }
-
-    setTokens(result.data.access, result.data.refresh);
-    message.success('Sesión inciada');
-  };
-
-  if (!canLogin) return <></>;
+  }
 
   return (
-    <Tooltip title="Iniciar sesión">
-      <LoginIcon onClick={login} />
-    </Tooltip>
+    <Link to={routes.otherRoutes.routes.login.path} component={Typography.Link}>
+      Iniciar Sesión
+    </Link>
   );
 };
 
