@@ -3,7 +3,7 @@ import { FormInstance } from 'antd';
 export interface LoginForm {
   email: string;
   password: string;
-};
+}
 
 interface Props {
   initialState: LoginForm;
@@ -11,6 +11,6 @@ interface Props {
   onFinishFailed: () => void;
   form: FormInstance<LoginForm>;
   isLoading: boolean;
-};
+}
 
 export default Props;
