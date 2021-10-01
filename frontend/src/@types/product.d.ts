@@ -3,7 +3,7 @@ import CommonType from './common';
 import Laboratory from './laboratory';
 import Category from './category';
 
-export type Product = CommonType & {
+export interface Product extends CommonType {
   name: string;
   price: number;
   iva: number;
@@ -18,9 +18,9 @@ export type Product = CommonType & {
   laboratory: number | string;
   category: number | string;
   active_substance: string;
-};
+}
 
-export type CreateProductForm = {
+export interface CreateProductForm {
   name: string;
   price: number;
   iva: number;
@@ -31,9 +31,9 @@ export type CreateProductForm = {
   laboratory: number;
   animal_groups: number[];
   active_substance: string;
-};
+}
 
-export type UpdateProductForm = {
+export interface UpdateProductForm {
   name: string;
   price: number;
   iva: number;
@@ -47,10 +47,10 @@ export type UpdateProductForm = {
   laboratory: number;
   animal_groups: number[];
   active_substance: string;
-};
+}
 
-export type ProductOptions = {
+export interface ProductOptions {
   categories: Category[],
   laboratories: Laboratory[],
   animal_groups: AnimalGroup[],
-};
+}
