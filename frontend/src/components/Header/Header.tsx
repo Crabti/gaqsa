@@ -1,6 +1,7 @@
 import { message, Tooltip } from 'antd';
+import useAuth from 'hooks/useAuth';
 import { useBackend } from 'integrations';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   HeaderCont,
   Logo,
@@ -10,9 +11,21 @@ import {
 
 const LoginBtn: React.FC = () => {
   const backend = useBackend();
+  const { setTokens, user } = useAuth();
+  const [canLogin, setCanLogin] = useState(true);
+
+  useEffect(() => {
+    setCanLogin(!user);
+  }, [user]);
 
   const login = async (): Promise<void> => {
-    const [result, error] = await backend.users.post(
+    if (!canLogin) {
+      return;
+    }
+
+    const [result, error] = await backend.users.post<
+      {access: string; refresh: string;}, {username: string; password: string;}
+    >(
       `${backend.users.baseURL}/login/`, {
         username: 'root',
         password: 'Metallica#1',
@@ -24,9 +37,11 @@ const LoginBtn: React.FC = () => {
       return;
     }
 
+    setTokens(result.data.access, result.data.refresh);
     message.success('Sesión inciada');
-    console.log(result);
   };
+
+  if (!canLogin) return <></>;
 
   return (
     <Tooltip title="Iniciar sesión">
