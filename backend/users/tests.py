@@ -27,7 +27,7 @@ class UserLogin(TestCase):
             },
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
         # Incorrect username
         response = self.client.post(
@@ -38,7 +38,7 @@ class UserLogin(TestCase):
             },
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_login_with_valid_data_should_succeed(
         self,
@@ -52,4 +52,5 @@ class UserLogin(TestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertNotEqual(response.data['token'], None)
+        self.assertNotEqual(response.data['access'], None)
+        self.assertNotEqual(response.data['refresh'], None)

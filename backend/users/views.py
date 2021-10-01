@@ -7,8 +7,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        print(dir(user))
-        print(user.groups)
         token["first_name"] = user.first_name
         token["groups"] = list(user.groups.values_list('name', flat=True))
 
