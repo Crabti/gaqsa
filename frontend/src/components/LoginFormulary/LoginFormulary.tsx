@@ -3,9 +3,9 @@ import {
   Form, Input, Col, Row,
 } from 'antd';
 import FormButton from 'components/FormButton';
-import Props from './LoginForm.type';
+import Props from './LoginFormulary.type';
 
-const LoginForm: React.FC<Props> = ({
+const LoginFormulary: React.FC<Props> = ({
   initialState,
   onFinish,
   onFinishFailed,
@@ -19,12 +19,12 @@ const LoginForm: React.FC<Props> = ({
   return (
     <Form
       form={form}
-      name="loginForm"
+      name="loginFormulary"
       initialValues={initialState}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      <Row justify="space-around">
+      <Row justify="start">
         <Col span={6} />
         <Col span={12}>
           <Form.Item name="email" label="Email" rules={[{ required: true }]}>
@@ -32,7 +32,8 @@ const LoginForm: React.FC<Props> = ({
           </Form.Item>
         </Col>
         <Col span={6} />
-        <Col span={12}>
+        <Col span={5} />
+        <Col span={13}>
           <Form.Item name="password" label="Contraseña" rules={[{ required: true }]}>
             <Input.Password
               placeholder="Introducir contraseña"
@@ -49,4 +50,4 @@ const LoginForm: React.FC<Props> = ({
   );
 };
 
-export default LoginForm;
+export default LoginFormulary;

@@ -4,7 +4,7 @@ import {
   UpdateProductForm,
   ProductOptions,
 } from './product';
-import CommonType, { LoginForm } from './common';
+import CommonType from './common';
 import { Category, CreateCategoryForm, UpdateCategoryForm } from './category';
 import {
   Laboratory,
@@ -25,5 +25,4 @@ export type {
   CreateLaboratoryForm,
   UpdateLaboratoryForm,
   AnimalGroup,
-  LoginForm
 };

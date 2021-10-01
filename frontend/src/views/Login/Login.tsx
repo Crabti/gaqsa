@@ -5,7 +5,8 @@ import {
   notification,
 } from 'antd';
 import Title from 'components/Title';
-import LoginForm from 'components/LoginForm';
+import LoginFormulary from 'components/LoginFormulary';
+import { LoginForm } from 'components/LoginFormulary/LoginFormulary.type';
 
 const INITIAL_STATE = {
   email: '',
@@ -18,12 +19,12 @@ const Home: React.ViewComponent = ({ verboseName }) => {
 
   const onFinishFailed = () : void => {
     notification.error({
-      message: '¡Ocurrió un error al intentar guardar!',
-      description: 'Intentalo después.',
+      message: '¡Ocurrió un error al iniciar sesión!',
+      description: 'Por favor revisa tus credenciales e intentalo nuevamente',
     });
   };
 
-  const onFinish = async () : Promise<void> => {
+  const onFinish = async (values: LoginForm) : Promise<void> => {
     setLoading(true);
     // TODO: Get login data
     const error = false;
@@ -33,9 +34,6 @@ const Home: React.ViewComponent = ({ verboseName }) => {
     } else {
       notification.success({
         message: '¡Sesión iniciada correctamente',
-        description: 'Su petición sera validado por un administrador proxima'
-          + 'proximamente. Sera notificado ya que esta petición '
-          + 'cambie de estado',
       });
       form.resetFields();
     }
@@ -45,7 +43,7 @@ const Home: React.ViewComponent = ({ verboseName }) => {
   return (
     <Content>
       <Title viewName={verboseName} parentName="Iniciar Sesión" />
-      <LoginForm
+      <LoginFormulary
         form={form}
         onFinish={onFinish}
         isLoading={isLoading}
