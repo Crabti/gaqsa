@@ -3,6 +3,7 @@ import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
+import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 
 export interface RoutesType {
@@ -42,6 +43,12 @@ export const productRoutes: Routes = {
     path: '/productos/pendientes',
     view: ProductsListPending,
     verboseName: 'Productos Por Aprobar',
+    showInMenu: true,
+  },
+  listProducts: {
+    path: '/productos/',
+    view: ProductsListProducts,
+    verboseName: 'Productos Existentes',
     showInMenu: true,
   },
 };

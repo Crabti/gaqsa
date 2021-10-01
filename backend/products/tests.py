@@ -6,6 +6,10 @@ from django.urls import reverse
 from django.core import mail
 
 from products.factories.product import ProductFactory
+from products.factories.laboratory import LaboratoryFactory
+from products.factories.category import CategoryFactory
+from products.factories.animal_groups import AnimalGroupFactory
+
 from products.models import Product
 from products.serializers.product import (
     CreateProductSerializer,
@@ -19,12 +23,20 @@ class RegisterRequestToCreateProduct(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        animal_groups = AnimalGroupFactory.create_batch(5)
         product = ProductFactory.build(
             provider=provider, status=Product.PENDING,
+            category=category, laboratory=laboratory,
         )
         self.valid_payload = CreateProductSerializer(
             product,
         ).data
+
+        # Override serializer field to add m2m objects
+        self.valid_payload['animal_groups'] = [
+            group.id for group in animal_groups]
 
     def test_request_to_create_product_with_valid_data_should_succeed(
         self,
@@ -46,10 +58,17 @@ class ListPendingProductRequests(TestCase):
 
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
         # Create pending products
-        ProductFactory.create_batch(self.unactive_amount, provider=provider)
+        ProductFactory.create_batch(self.unactive_amount,
+                                    provider=provider,
+                                    category=category,
+                                    laboratory=laboratory,
+                                    )
         # Create active products
         ProductFactory.create_batch(active_amount, provider=provider,
+                                    category=category, laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
     def test_list_pending_products(
@@ -71,7 +90,13 @@ class UpdateProductTest(TestCase):
     def setUp(self) -> None:
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        self.product = ProductFactory.create(provider=provider)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.animal_groups = AnimalGroupFactory.create_batch(5)
+        self.product = ProductFactory.create(
+            provider=provider, category=category,
+            laboratory=laboratory
+        )
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.put(
@@ -87,6 +112,8 @@ class UpdateProductTest(TestCase):
         valid_product = CreateProductSerializer(
             new_product,
         ).data
+        valid_product['animal_groups'] = [
+            group.id for group in self.animal_groups]
         response = self.client.put(
             reverse("update_product", kwargs={'pk': self.product.pk}),
             data=json.dumps(valid_product),
@@ -95,6 +122,9 @@ class UpdateProductTest(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.data['pk'], self.product.pk)
         self.assertEqual(response.data['status'], Product.ACCEPTED)
+        # Creates new m2m animal group relation instances
+        self.assertEqual(len(response.data['animal_groups']),
+                         len(self.animal_groups))
         self.assertGreater(len(mail.outbox), 0)
 
 
@@ -102,7 +132,12 @@ class DetailProductTest(TestCase):
     def setUp(self):
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
-        self.product = ProductFactory.create(provider=provider)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.product = ProductFactory.create(
+            provider=provider, category=category,
+            laboratory=laboratory
+        )
 
     def test_error_if_product_not_found(self) -> None:
         response = self.client.get(
@@ -128,13 +163,22 @@ class ListAllActiveProductsOfProvider(TestCase):
 
         self.provider = ProviderFactory.create(user=user)
         other_provider = ProviderFactory.create(user=other_user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
 
         ProductFactory.create_batch(20,
-                                    provider=self.provider)
+                                    provider=self.provider,
+                                    category=category,
+                                    laboratory=laboratory
+                                    )
         ProductFactory.create_batch(5,
                                     provider=self.provider,
+                                    category=category,
+                                    laboratory=laboratory,
                                     status=Product.ACCEPTED)
         ProductFactory.create_batch(10, provider=other_provider,
+                                    category=category,
+                                    laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
     def test_list_only_products_of_provider(
@@ -152,3 +196,30 @@ class ListAllActiveProductsOfProvider(TestCase):
         self.assertEqual(len(result), 5)
         for product in result:
             self.assertEqual(product['provider'], self.provider.name)
+
+
+class ListAllProductSelectOptions(TestCase):
+    def setUp(self) -> None:
+        user = UserFactory.create()
+        self.lab_quantity = 10
+        self.category_quantity = 20
+        self.animal_groups_quantity = 5
+        self.provider = ProviderFactory.create(user=user)
+        CategoryFactory.create_batch(self.category_quantity)
+        LaboratoryFactory.create_batch(self.lab_quantity)
+        AnimalGroupFactory.create_batch(self.animal_groups_quantity)
+
+    def list_all_select_product_options(
+        self,
+    ) -> None:
+        response = self.client.get(
+            reverse("list_product_options"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result['laboratories']), self.lab_quantity)
+        self.assertEqual(len(result['categories']), self.category_quantity)
+        self.assertEqual(len(
+            result['animal_groups']), self.animal_groups_quantity)

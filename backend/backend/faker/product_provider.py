@@ -20,17 +20,6 @@ class ProductProvider(BaseProvider):
         "AMPIPEN",
     )
 
-    DOSES = (
-        "EXTRACTOS HERBACEOS",
-        "BIOLOGICO",
-        "TIAMULINA",
-        "TILOSINA TARTRATO AL 50%",
-        "OXITETRACI",
-        "CEFTIOFUR",
-        "AMPICILINA",
-        "AMOXICILINA 40% PREMEZC Y SOLU",
-    )
-
     PRESENTATIONS = (
         "25 DOSIS",
         "PZA 460 ML",
@@ -39,11 +28,26 @@ class ProductProvider(BaseProvider):
         "ML 100 ML",
     )
 
+    ACTIVE_SUBSTANCES = (
+        "BRUCELLA A",
+        "AMPICILINA",
+        "TILOSINA",
+        "CEFTIOFUR",
+        "ACEITE MIN",
+        "ACIDO ACET",
+        "CALCIO+GLUCONATO",
+        "CEFTIOFUR 5%",
+        "GENTAMICIN",
+        "SYRVET",
+        "LATEX",
+        "MONOMERO-A"
+    )
+
     def product_name(self) -> str:
         return self.random_element(self.PRODUCT_NAMES)
 
-    def product_dose(self) -> str:
-        return self.random_element(self.DOSES)
+    def product_active_substance(self) -> str:
+        return self.random_element(self.ACTIVE_SUBSTANCES)
 
     def product_presentation(self) -> str:
         return self.random_element(self.PRESENTATIONS)

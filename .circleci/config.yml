@@ -98,13 +98,16 @@ jobs:
           path: /tmp/test-results
   frontend-build-and-test:
     docker:
-    - image: node:16
+    - image: cimg/base:stable
     steps:
       - checkout
-      - node/install-yarn
+      - node/install:
+          install-yarn: true
+          install-npm: false
       - node/install-packages:
           app-dir: ./frontend
           pkg-manager: yarn
+          cache-version: v2
       - run:
           name: Lint
           working_directory: ./frontend

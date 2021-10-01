@@ -8,15 +8,17 @@ class CreateProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             "name",
-            "dose",
             "presentation",
+            "category",
+            "laboratory",
             "price",
             "iva",
             "ieps",
             "more_info",
-            "is_generic",
             "status",
             "provider",
+            "animal_groups",
+            "active_substance",
         )
 
 
@@ -25,18 +27,20 @@ class UpdateProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             "pk",
+            "category",
+            "laboratory",
             "key",
             "name",
-            "dose",
             "presentation",
             "price",
             "iva",
             "ieps",
             "more_info",
-            "is_generic",
             "status",
             "provider",
-            "reject_reason"
+            "reject_reason",
+            "animal_groups",
+            "active_substance",
         )
 
 
@@ -44,20 +48,23 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
+            "id",
             "key",
             "name",
-            "dose",
             "presentation",
+            "category",
+            "laboratory",
             "price",
             "iva",
             "ieps",
             "more_info",
-            "is_generic",
             "status",
             "provider",
             "reject_reason",
             "created_at",
-            "updated_at"
+            "updated_at",
+            "animal_groups",
+            "active_substance"
         )
 
 
@@ -67,22 +74,38 @@ class ListProductSerializer(serializers.ModelSerializer):
         slug_field='name',
     )
 
+    category = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+    laboratory = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+    animal_groups = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+        many=True
+    )
+
     class Meta:
         model = Product
         fields = (
             "id",
             "key",
             "name",
-            "dose",
             "presentation",
+            "category",
+            "laboratory",
             "price",
             "iva",
             "ieps",
             "more_info",
-            "is_generic",
             "status",
             "provider",
             "reject_reason",
             "created_at",
-            "updated_at"
+            "updated_at",
+            "animal_groups",
+            "active_substance",
         )
