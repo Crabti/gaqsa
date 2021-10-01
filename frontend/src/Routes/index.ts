@@ -5,6 +5,7 @@ import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
+import ListClientOrders from 'views/Orders.ListClientOrders';
 
 export interface RoutesType {
   path: string;
@@ -53,6 +54,15 @@ export const productRoutes: Routes = {
   },
 };
 
+const ordersRoutes: Routes = {
+  listOrderHistory: {
+    path: '/pedidos/historial',
+    view: ListClientOrders,
+    verboseName: 'Historial de pedidos',
+    showInMenu: true,
+  },
+};
+
 const otherRoutes: Routes = {
   home: {
     path: '/',
@@ -69,6 +79,12 @@ const routes: RegisteredGroup = {
     routes: productRoutes,
     showInMenu: true,
     verboseName: 'Productos',
+    icon: AppstoreOutlined,
+  },
+  order: {
+    routes: ordersRoutes,
+    showInMenu: true,
+    verboseName: 'Pedidos',
     icon: AppstoreOutlined,
   },
 };

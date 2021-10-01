@@ -9,6 +9,16 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class RequisitionSerializer(serializers.ModelSerializer):
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
+    product = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
     class Meta:
         model = Requisition
         fields = '__all__'

@@ -11,6 +11,9 @@ import {
   CreateLaboratoryForm, UpdateLaboratoryForm,
 } from './laboratory';
 import { AnimalGroup } from './animalGroup';
+import {
+  Order, CreateOrderForm, UpdateOrderForm, Requisition,
+} from './order';
 
 export type {
   Product,
@@ -25,4 +28,8 @@ export type {
   CreateLaboratoryForm,
   UpdateLaboratoryForm,
   AnimalGroup,
+  Order,
+  Requisition,
+  CreateOrderForm,
+  UpdateOrderForm,
 };

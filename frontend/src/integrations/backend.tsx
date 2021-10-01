@@ -5,14 +5,19 @@ import {
   Product,
   CreateProductForm,
   UpdateProductForm,
+  Order,
+  CreateOrderForm,
+  UpdateOrderForm,
 } from '@types';
-import { BACKEND_MAIN_EP, PRODUCTS_ROOT } from 'settings';
+import { BACKEND_MAIN_EP, ORDERS_ROOT, PRODUCTS_ROOT } from 'settings';
 import CRUD from './crud';
 
 export class Backend {
   rootEndpoint: string;
 
   products: CRUD<Product, CreateProductForm, UpdateProductForm>;
+
+  orders: CRUD<Order, CreateOrderForm, UpdateOrderForm>;
 
   config?: AxiosRequestConfig;
 
@@ -21,6 +26,9 @@ export class Backend {
     this.config = config;
     this.products = new CRUD(
       `${this.rootEndpoint}${PRODUCTS_ROOT}`, config,
+    );
+    this.orders = new CRUD(
+      `${this.rootEndpoint}${ORDERS_ROOT}`, config,
     );
   }
 }
