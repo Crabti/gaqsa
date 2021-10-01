@@ -1,13 +1,13 @@
 import CommonType from './common';
 
-export type Laboratory = CommonType & {
+export interface Laboratory extends CommonType {
     name: string;
 }
 
-export type CreateLaboratoryForm = {
+export interface CreateLaboratoryForm {
     name: string;
 }
 
-export type UpdateLaboratoryForm = CommonType & {
+export interface UpdateLaboratoryForm extends CommonType {
     name: string;
 }

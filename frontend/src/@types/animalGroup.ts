@@ -1,5 +1,5 @@
 import CommonType from './common';
 
-export type AnimalGroup = CommonType & {
+export interface AnimalGroup extends CommonType {
     name: string;
 }
