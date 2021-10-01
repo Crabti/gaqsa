@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AxiosRequestConfig } from 'axios';
 import {
   Product,
@@ -7,6 +7,7 @@ import {
   UpdateProductForm,
 } from '@types';
 import { BACKEND_MAIN_EP, PRODUCTS_ROOT, USERS_ROOT } from 'settings';
+import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
 
 export class Backend {
@@ -32,15 +33,26 @@ export class Backend {
 
 export const BackendContext = React.createContext<Backend>(undefined!);
 
-export const BackendProvider: React.FC = ({ children }) => (
-  <BackendContext.Provider
-    value={
-      new Backend(BACKEND_MAIN_EP)
+export const BackendProvider: React.FC = ({ children }) => {
+  const { access } = useAuth();
+  const [config, setConfig] = useState<AxiosRequestConfig>({});
+
+  useEffect(() => {
+    if (access) {
+      setConfig({ headers: { Authorization: `Bearer ${access}` } });
     }
-  >
-    {children}
-  </BackendContext.Provider>
-);
+  }, [access]);
+
+  return (
+    <BackendContext.Provider
+      value={
+        new Backend(BACKEND_MAIN_EP, config)
+      }
+    >
+      {children}
+    </BackendContext.Provider>
+  );
+};
 
 export const useBackend = () : Backend => React.useContext(BackendContext);
 
