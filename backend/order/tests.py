@@ -112,6 +112,5 @@ class ListRequisitions(BaseTestCase):
         self.assertEqual(
             len(result), self.orders_amount * self.requisitions_per_order
         )
-        print(response)
         for requisition in result:
-            self.assertEqual(requisition['provider'], self.provider.pk)
+            self.assertEqual(requisition['provider'], self.provider.name)

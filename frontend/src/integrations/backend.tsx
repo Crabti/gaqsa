@@ -15,7 +15,7 @@ import {
 
 import {
   BACKEND_MAIN_EP,
-  PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT, REQUISITIONS_ROOT
+  PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT, REQUISITIONS_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
