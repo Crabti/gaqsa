@@ -1,13 +1,13 @@
 import CommonType from './common';
 
-export type Category = CommonType & {
+export interface Category extends CommonType {
     name: string;
-};
+}
 
-export type CreateCategoryForm = {
+export interface CreateCategoryForm {
     name: string;
-};
+}
 
-export type UpdateCategoryForm = CommonType & {
+export interface UpdateCategoryForm extends CommonType {
     name: string;
-};
+}

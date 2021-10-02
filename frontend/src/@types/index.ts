@@ -1,8 +1,8 @@
 import {
-  Product,
   CreateProductForm,
-  UpdateProductForm,
+  Product,
   ProductOptions,
+  UpdateProductForm,
 } from './product';
 import CommonType from './common';
 import { Category, CreateCategoryForm, UpdateCategoryForm } from './category';
@@ -15,24 +15,26 @@ import {
   Order, CreateOrderForm, UpdateOrderForm,
   Requisition, CreateRequisitionForm, UpdateRequisitionForm,
 } from './order';
+import User from './user';
 
 export type {
+  AnimalGroup,
+  Category,
+  CommonType,
+  CreateCategoryForm,
+  CreateLaboratoryForm,
+  CreateProductForm,
+  Laboratory,
   Product,
   ProductOptions,
-  CreateProductForm,
-  UpdateProductForm,
-  CommonType,
-  Category,
-  Laboratory,
-  CreateCategoryForm,
   UpdateCategoryForm,
-  CreateLaboratoryForm,
   UpdateLaboratoryForm,
-  AnimalGroup,
   Order,
   Requisition,
   CreateOrderForm,
   UpdateOrderForm,
   CreateRequisitionForm,
   UpdateRequisitionForm,
+  UpdateProductForm,
+  User,
 };

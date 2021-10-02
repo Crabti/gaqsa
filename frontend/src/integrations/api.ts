@@ -5,8 +5,11 @@ import axios, {
 class Api {
   private api: AxiosInstance;
 
+  public baseURL: string;
+
   public constructor(baseURL: string, config?: AxiosRequestConfig) {
     this.api = axios.create(config);
+    this.baseURL = baseURL;
     this.api.interceptors.request.use((param: AxiosRequestConfig) => ({
       baseURL,
       ...param,

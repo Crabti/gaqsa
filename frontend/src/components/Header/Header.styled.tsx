@@ -1,4 +1,4 @@
-import { Layout, Menu as MenuAntd } from 'antd';
+import { Layout } from 'antd';
 import styled, { css } from 'styled-components';
 import LogoImage from 'static/img/logo.png';
 
@@ -10,16 +10,11 @@ const headerCommonStyles = css`
 export const HeaderCont = styled(Layout.Header)`
   ${headerCommonStyles}
   display: grid;
-  grid-template-columns: 3fr 5fr 6fr;
+  grid-template-columns: 3fr 9fr;
 
   ul.ant-menu.ant-menu-dark {
     ${headerCommonStyles}
   }
-`;
-
-export const Menu = styled(MenuAntd)`
-  display: flex;
-  align-items: flex-end;
 `;
 
 export const Logo = styled.div`
@@ -27,4 +22,19 @@ export const Logo = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   transform: scale(1.2); // this is just to adjust the image size
+`;
+
+export const RightContainer = styled.div`
+  color: ${({ theme }) => theme.colors.bgContent};
+
+  a {
+    color: ${({ theme }) => theme.colors.bgContent};
+  }
+
+  font-size: 1rem;
+  position: relative;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;

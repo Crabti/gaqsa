@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, DefaultTheme } from 'styled-components';
 import { BackendProvider } from 'integrations';
 import { NavContextProvider } from 'hooks/navigation';
+import { AuthContextProvider } from 'hooks/useAuth';
 import { ShoppingCartContextProvider } from 'hooks/shoppingCart';
 import App from './views/App';
 import 'antd/dist/antd.css';
@@ -21,17 +22,19 @@ const globalTheme: DefaultTheme = {
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <BackendProvider>
-        <NavContextProvider>
-          <ShoppingCartContextProvider>
-            <ThemeProvider theme={globalTheme}>
-              <App />
-            </ThemeProvider>
-          </ShoppingCartContextProvider>
-        </NavContextProvider>
-      </BackendProvider>
-    </BrowserRouter>
+    <AuthContextProvider>
+      <BrowserRouter>
+        <BackendProvider>
+          <NavContextProvider>
+            <ShoppingCartContextProvider>
+              <ThemeProvider theme={globalTheme}>
+                <App />
+              </ThemeProvider>
+            </ShoppingCartContextProvider>
+          </NavContextProvider>
+        </BackendProvider>
+      </BrowserRouter>
+    </AuthContextProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
