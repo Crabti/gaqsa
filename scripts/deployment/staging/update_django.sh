@@ -2,7 +2,7 @@
 
 cd $1
 echo "Activating python virtual environment in $1..."
-source venv/bin/activate
+source $HOME/.pyenv/versions/staging/bin/activate
 
 export ENV=staging
 
