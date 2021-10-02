@@ -1,6 +1,7 @@
 import { AppstoreOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
+import LoginView from 'views/Login';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
@@ -58,6 +59,11 @@ const otherRoutes: Routes = {
     path: '/',
     view: HomeView,
     verboseName: 'Inicio',
+  },
+  login: {
+    path: '/iniciar-sesion',
+    view: LoginView,
+    verboseName: 'Iniciar Sesión',
   },
 };
 

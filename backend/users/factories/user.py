@@ -1,4 +1,5 @@
 from factory import django, LazyAttribute
+from django.contrib.auth.hashers import make_password
 
 from backend.faker import sfaker
 from django.contrib.auth.models import User
@@ -11,4 +12,4 @@ class UserFactory(django.DjangoModelFactory):
     username = LazyAttribute(
         lambda _:
         sfaker.simple_profile()['username'])
-    password = LazyAttribute(lambda _: sfaker.password())
+    password = make_password('password')
