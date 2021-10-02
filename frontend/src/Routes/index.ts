@@ -6,6 +6,8 @@ import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 import ListClientOrders from 'views/Orders.ListClientOrders';
+import ListRequisitions from 'views/Orders.ListRequisitions';
+import { LIST_CLIENT_ORDERS, LIST_REQUISITIONS } from 'constants/featureFlags';
 
 export interface RoutesType {
   path: string;
@@ -58,8 +60,14 @@ const ordersRoutes: Routes = {
   listOrderHistory: {
     path: '/pedidos/historial',
     view: ListClientOrders,
-    verboseName: 'Historial de pedidos',
-    showInMenu: true,
+    verboseName: 'Historial de Pedidos',
+    showInMenu: LIST_CLIENT_ORDERS,
+  },
+  listRequisitions: {
+    path: '/pedidos',
+    view: ListRequisitions,
+    verboseName: 'Pedidos Realizados',
+    showInMenu: LIST_REQUISITIONS,
   },
 };
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 class BaseTestCase(TestCase):
     def setUp(self) -> None:
         # Create provider user and client for convenient use
-        provider_password = 'client'
+        provider_password = 'provider'
         self.provider_user = UserFactory.create(
             password=make_password(provider_password)
         )

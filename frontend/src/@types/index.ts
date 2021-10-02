@@ -12,7 +12,8 @@ import {
 } from './laboratory';
 import { AnimalGroup } from './animalGroup';
 import {
-  Order, CreateOrderForm, UpdateOrderForm, Requisition,
+  Order, CreateOrderForm, UpdateOrderForm,
+  Requisition, CreateRequisitionForm, UpdateRequisitionForm,
 } from './order';
 
 export type {
@@ -32,4 +33,6 @@ export type {
   Requisition,
   CreateOrderForm,
   UpdateOrderForm,
+  CreateRequisitionForm,
+  UpdateRequisitionForm,
 };

@@ -1,6 +1,6 @@
 import { CommonType } from '@types';
 
-export type Requisition = {
+export interface Requisition {
     id: number;
     order: number;
     provider: number | string;
@@ -11,15 +11,22 @@ export type Requisition = {
     status: string;
 };
 
-export type Order = CommonType & {
+export interface Order extends CommonType {
     id: number;
     user: number | string;
     created_at: Date;
     requisitions: Requisition[];
-};
-
-export type CreateOrderForm = {
 }
 
-export type UpdateOrderForm = {
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CreateOrderForm { }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface UpdateOrderForm {
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CreateRequisitionForm { }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface UpdateRequisitionForm { }

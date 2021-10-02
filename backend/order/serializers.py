@@ -38,3 +38,19 @@ class ListOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+
+class ListRequisitionSerializer(serializers.ModelSerializer):
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
+    product = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
+    class Meta:
+        model = Requisition
+        fields = '__all__'

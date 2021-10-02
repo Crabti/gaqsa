@@ -60,3 +60,58 @@ class ListOrderTest(BaseTestCase):
         result = json.loads(json.dumps(response.data))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(len(result), len(my_orders))
+
+
+class ListRequisitions(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        order = OrderFactory.create(user=self.provider_user)
+        self.provider = ProviderFactory.create(user=self.provider_user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        product = ProductFactory.create(
+            provider=self.provider,
+            category=category,
+            laboratory=laboratory
+        )
+        self.orders_amount = 10
+        self.requisitions_per_order = 3
+
+        other_user = UserFactory.create()
+        other_provider = ProviderFactory.create(user=other_user)
+
+        # Order and requisitiosn from other provider
+        for i in range(self.orders_amount):
+            user = UserFactory.create()
+            order = OrderFactory.create(user=user)
+            RequisitionFactory.create_batch(
+                self.requisitions_per_order,
+                provider=other_provider,
+                order=order,
+                product=product
+            )
+
+        # Orders with my requistiions
+        for i in range(self.orders_amount):
+            user = UserFactory.create()
+            order = OrderFactory.create(user=user)
+            RequisitionFactory.create_batch(
+                self.requisitions_per_order,
+                provider=self.provider,
+                order=order,
+                product=product
+            )
+
+    def test_list_provider_requisitions(self) -> None:
+        response = self.provider_client.get(
+            reverse("list_requisitions"),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(result), self.orders_amount * self.requisitions_per_order
+        )
+        print(response)
+        for requisition in result:
+            self.assertEqual(requisition['provider'], self.provider.pk)

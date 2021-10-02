@@ -8,8 +8,14 @@ import {
   Order,
   CreateOrderForm,
   UpdateOrderForm,
+  Requisition,
+  CreateRequisitionForm,
+  UpdateRequisitionForm,
 } from '@types';
-import { BACKEND_MAIN_EP, ORDERS_ROOT, PRODUCTS_ROOT } from 'settings';
+
+import {
+  BACKEND_MAIN_EP, ORDERS_ROOT, PRODUCTS_ROOT, REQUISITIONS_ROOT,
+} from 'settings';
 import CRUD from './crud';
 
 export class Backend {
@@ -18,6 +24,8 @@ export class Backend {
   products: CRUD<Product, CreateProductForm, UpdateProductForm>;
 
   orders: CRUD<Order, CreateOrderForm, UpdateOrderForm>;
+
+  requisitions: CRUD<Requisition, CreateRequisitionForm, UpdateRequisitionForm>;
 
   config?: AxiosRequestConfig;
 
@@ -29,6 +37,9 @@ export class Backend {
     );
     this.orders = new CRUD(
       `${this.rootEndpoint}${ORDERS_ROOT}`, config,
+    );
+    this.requisitions = new CRUD(
+      `${this.rootEndpoint}${REQUISITIONS_ROOT}`, config,
     );
   }
 }
