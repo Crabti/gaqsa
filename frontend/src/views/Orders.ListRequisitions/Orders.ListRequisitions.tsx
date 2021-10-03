@@ -34,7 +34,6 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
       return;
     }
     setRequisitions(result.data);
-    console.log(result.data);
     setLoading(false);
   }, [backend.requisitions]);
 
@@ -43,11 +42,6 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
   }, [history, fetchRequisitions]);
 
   const columns = [
-    {
-      title: 'Proveedor',
-      dataIndex: 'provider',
-      key: 'provider',
-    },
     {
       title: 'Producto',
       dataIndex: 'product',
@@ -59,7 +53,7 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
       key: 'quantity_requested',
     },
     {
-      title: 'Cantidad Recibida',
+      title: 'Cantidad Aceptada',
       dataIndex: 'quantity_accepted',
       key: 'quantity_accepted',
     },
@@ -106,11 +100,10 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       <Table
         data={requisitions.map((requisition) => ({
-          provider: requisition.provider,
           product: requisition.product,
           quantity_requested: requisition.quantity_requested,
           quantity_accepted: requisition.quantity_accepted,
-          price: requisition.price,
+          price: `$ ${requisition.price.toFixed(2)}`,
           status: requisition.status,
         }))}
         columns={columns}

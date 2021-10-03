@@ -129,7 +129,7 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
           product: requisition.product,
           quantity_requested: requisition.quantity_requested,
           quantity_accepted: requisition.quantity_accepted,
-          price: requisition.price,
+          price: `$ ${requisition.price.toFixed(2)}`,
           status: requisition.status,
         });
       });

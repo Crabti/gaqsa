@@ -1,4 +1,4 @@
-import { AppstoreOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MedicineBoxOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
@@ -8,7 +8,7 @@ import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
-import { LIST_CLIENT_ORDERS, LIST_REQUISITIONS } from 'constants/featureFlags';
+import { LIST_CLIENT_ORDERS, LIST_REQUISITIONS, SHOW_ORDERS_MENU } from 'constants/featureFlags';
 
 export interface RoutesType {
   path: string;
@@ -97,9 +97,9 @@ const routes: RegisteredGroup = {
   },
   order: {
     routes: ordersRoutes,
-    showInMenu: true,
+    showInMenu: SHOW_ORDERS_MENU,
     verboseName: 'Pedidos',
-    icon: AppstoreOutlined,
+    icon: MedicineBoxOutlined,
   },
 };
 
