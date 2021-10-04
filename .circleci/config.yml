@@ -161,9 +161,9 @@ jobs:
       - run:
           name: Create event on datadog
           command: >
-            curl -X POST "https://api.datadoghq.com/api/v1/events" \
-            -H "Content-Type: application/json" \
-            -H "DD-API-KEY: $DATADOG_KEY" \
+            curl -X POST "https://api.datadoghq.com/api/v1/events"
+            -H "Content-Type: application/json"
+            -H "DD-API-KEY: $DATADOG_KEY"
             -d '{ "text": "Deployment was created with commit $CIRCLE_SHA1", "title": "Deployment to staging $CIRCLE_SHA1", "tags": ["staging"] }'
       - run:
           name: Run curl smoke tests
@@ -185,9 +185,9 @@ jobs:
       - run:
           name: Create event on datadog
           command: >
-            curl -X POST "https://api.datadoghq.com/api/v1/events" \
-            -H "Content-Type: application/json" \
-            -H "DD-API-KEY: $DATADOG_KEY" \
+            curl -X POST "https://api.datadoghq.com/api/v1/events"
+            -H "Content-Type: application/json"
+            -H "DD-API-KEY: $DATADOG_KEY"
             -d '{ "text": "Deployment was created with commit $CIRCLE_SHA1", "title": "Deployment to staging $CIRCLE_SHA1", "tags": ["production"] }'
       - run:
           name: Run curl smoke tests
