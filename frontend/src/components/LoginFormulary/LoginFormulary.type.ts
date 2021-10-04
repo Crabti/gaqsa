@@ -1,7 +1,7 @@
 import { FormInstance } from 'antd';
 
 export interface LoginForm {
-  email: string;
+  username: string;
   password: string;
 }
 

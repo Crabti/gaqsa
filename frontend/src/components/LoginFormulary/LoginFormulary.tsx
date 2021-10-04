@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  Form, Input, Col, Row,
+  Form, Input,
 } from 'antd';
 import FormButton from 'components/FormButton';
 import Props from './LoginFormulary.type';
@@ -19,32 +19,29 @@ const LoginFormulary: React.FC<Props> = ({
   return (
     <Form
       form={form}
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 8 }}
       name="loginFormulary"
       initialValues={initialState}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
-      <Row justify="start">
-        <Col span={6} />
-        <Col span={12}>
-          <Form.Item name="email" label="Email" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-        </Col>
-        <Col span={6} />
-        <Col span={5} />
-        <Col span={13}>
-          <Form.Item
-            name="password"
-            label="Contraseña"
-            rules={[{ required: true }]}
-          >
-            <Input.Password
-              placeholder="Introducir contraseña"
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+      <Form.Item
+        name="username"
+        label="Nombre de usuario"
+        rules={[{ required: true }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        label="Contraseña"
+        rules={[{ required: true }]}
+      >
+        <Input.Password
+          placeholder="Introducir contraseña"
+        />
+      </Form.Item>
 
       <FormButton
         loading={isLoading}
