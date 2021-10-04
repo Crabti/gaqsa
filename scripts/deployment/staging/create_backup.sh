@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Creating backups..."
-cp -R $1 ~/tmp/staging_api.bak && cp -R $2 ~/tmp/staging_frontend.bak
+rsync -a $1/ ~/tmp/staging_api.bak && rsync -a $2/ ~/tmp/staging_frontend.bak
 if [ $? -ne 0 ]
     then
     echo "An error occured when creating the backups. Check that the directories exist and have the appropiate permissions"

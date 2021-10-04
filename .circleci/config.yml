@@ -159,6 +159,13 @@ jobs:
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
             ./scripts/deployment/staging/deploy_staging.sh gaqsacom@gaqsa.com backend /tmp/frontend/staging_build
       - run:
+          name: Create event on datadog
+          command: >
+            curl -X POST "https://api.datadoghq.com/api/v1/events"
+            -H "Content-Type: application/json"
+            -H "DD-API-KEY: $DATADOG_KEY"
+            -d "{ \"text\": \"Deployment was created with commit hash $CIRCLE_SHA1 \", \"title\": \"Deployment $CIRCLE_SHA1\" , \"tags\": [\"staging\"] }"
+      - run:
           name: Run curl smoke tests
           command: |
             ./scripts/deployment/staging/smoke_test.sh https://api.staging.gaqsa.com/
@@ -175,6 +182,13 @@ jobs:
           command: |
             ssh-keyscan -H gaqsa.com >> ~/.ssh/known_hosts
             ./scripts/deployment/production/deploy_production.sh gaqsacom@gaqsa.com backend /tmp/frontend/production_build
+      - run:
+          name: Create event on datadog
+          command: >
+            curl -X POST "https://api.datadoghq.com/api/v1/events"
+            -H "Content-Type: application/json"
+            -H "DD-API-KEY: $DATADOG_KEY"
+            -d "{ \"text\": \"Deployment was created with commit hash $CIRCLE_SHA1 \", \"title\": \"Deployment $CIRCLE_SHA1\" , \"tags\": [\"production\"] }"
       - run:
           name: Run curl smoke tests
           command: |
