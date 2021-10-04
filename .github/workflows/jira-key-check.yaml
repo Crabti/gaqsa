@@ -1,5 +1,7 @@
 name: Check PR title has Jira key
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, edited]
 jobs:
   CheckKey:
     runs-on: ubuntu-latest
