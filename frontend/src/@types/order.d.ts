@@ -9,7 +9,7 @@ export interface Requisition {
     quantity_accepted: number;
     price: number;
     status: string;
-};
+}
 
 export interface Order extends CommonType {
     id: number;

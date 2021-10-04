@@ -8,7 +8,10 @@ import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
-import { LIST_CLIENT_ORDERS, LIST_REQUISITIONS, SHOW_ORDERS_MENU } from 'constants/featureFlags';
+import {
+  LIST_CLIENT_ORDERS, LIST_REQUISITIONS,
+  SHOW_ORDERS_MENU,
+} from 'constants/featureFlags';
 
 export interface RoutesType {
   path: string;
