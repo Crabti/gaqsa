@@ -1,0 +1,10 @@
+name: Check PR title has Jira key
+on: [pull_request]
+jobs:
+  CheckKey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce Jira Issue Key in Pull Request Title
+        uses: ryanvade/enforce-pr-title-style-action@v1
+        with:
+          projectKey: GAQ
