@@ -1,1 +1,1 @@
-export const SHOW_ADD_TO_CART_BTN = false;
+export const SHOW_ADD_TO_CART_BTN = true;

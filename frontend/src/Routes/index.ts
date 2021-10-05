@@ -2,6 +2,7 @@ import { AppstoreOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
+import OrderCreateOrder from 'views/Order.CreateOrder';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
@@ -54,6 +55,15 @@ export const productRoutes: Routes = {
   },
 };
 
+export const orderRoutes: Routes = {
+  createOrder: {
+    path: '/ordenes/',
+    view: OrderCreateOrder,
+    verboseName: 'Ordenes',
+    showInMenu: true,
+  },
+};
+
 const otherRoutes: Routes = {
   home: {
     path: '/',
@@ -75,6 +85,12 @@ const routes: RegisteredGroup = {
     routes: productRoutes,
     showInMenu: true,
     verboseName: 'Productos',
+    icon: AppstoreOutlined,
+  },
+  order: {
+    routes: orderRoutes,
+    showInMenu: true,
+    verboseName: 'Ordenes',
     icon: AppstoreOutlined,
   },
 };

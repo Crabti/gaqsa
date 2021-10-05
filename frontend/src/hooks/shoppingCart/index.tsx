@@ -1,5 +1,5 @@
 import { Product } from '@types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface ShoppingCartProductType {
   product: Product;
@@ -11,6 +11,8 @@ export interface ShoppingCartType {
     total: number;
     addProducts: (newProduct: ShoppingCartProductType) => void;
 }
+
+export const LOCAL_STORAGE_KEY = 'product';
 
 export const ShoppingCartContext = (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -49,6 +51,20 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     }
     persistProducts([...products, newProduct]);
   };
+
+  const retrieveState = (): void => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (stored) {
+      const parsedStored = JSON.parse(stored);
+      setProducts(parsedStored);
+    }
+  };
+
+  useEffect(() => {
+    if (!products) {
+      retrieveState();
+    }
+  }, [products]);
 
   return (
     <ShoppingCartContext.Provider value={{ products, total, addProducts }}>
