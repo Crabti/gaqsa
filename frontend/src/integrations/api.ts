@@ -41,6 +41,7 @@ class Api {
               const newAccess = result.data.access;
               // Store new access token to localstorage
               const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+
               if (newAccess && stored) {
                 const parsedStored = JSON.parse(stored);
                 const newValues : AuthType = {
@@ -50,13 +51,12 @@ class Api {
                 localStorage.setItem(
                   LOCAL_STORAGE_KEY, JSON.stringify(newValues),
                 );
-
-                // Update current instance headers
-                this.api.defaults
-                  .headers.common.Authorization = `Bearer ${newAccess}`;
                 return this.api({
                   ...originalRequest,
-                  headers: { Authorization: `Bearer ${newAccess}` },
+                  headers: {
+                    Authorization: `Bearer ${newAccess}`,
+                    'Content-Type': 'application/json',
+                  },
                 });
               }
               return this.api(originalRequest);

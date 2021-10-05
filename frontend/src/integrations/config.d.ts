@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
 
 interface RefreshData {
-    refresh: string;
+    refresh?: string;
 }
 
 export type BackendConfig = AxiosRequestConfig & RefreshData;

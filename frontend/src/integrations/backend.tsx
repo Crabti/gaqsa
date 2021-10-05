@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AxiosRequestConfig } from 'axios';
 import {
   Product,
@@ -58,17 +58,10 @@ export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => {
   const { access, refresh } = useAuth();
-  const [config, setConfig] = useState<BackendConfig>();
-
-  useEffect(() => {
-    if (access && refresh) {
-      setConfig({
-        headers: { Authorization: `Bearer ${access}` },
-        refresh,
-      });
-    }
-  }, [access, refresh]);
-
+  const config : BackendConfig = {
+    headers: { Authorization: `Bearer ${access}` },
+    refresh,
+  };
   return (
     <BackendContext.Provider
       value={
