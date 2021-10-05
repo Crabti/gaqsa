@@ -7,6 +7,7 @@ from users.factories.user import UserFactory
 from django.contrib.auth.hashers import make_password
 
 from backend.faker import sfaker
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserLogin(TestCase):
@@ -54,3 +55,17 @@ class UserLogin(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertNotEqual(response.data['access'], None)
         self.assertNotEqual(response.data['refresh'], None)
+
+    def test_refresh_with_valid_token_should_succeed(
+        self,
+    ) -> None:
+        refresh = RefreshToken.for_user(self.user)
+        response = self.client.post(
+            reverse("token_refresh"),
+            data={
+                'refresh': str(refresh),
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertNotEqual(response.data['access'], None)

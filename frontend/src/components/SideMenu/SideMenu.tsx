@@ -1,53 +1,64 @@
 import { FileDoneOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-import React from 'react';
+import useAuth from 'hooks/useAuth';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { RegisteredGroup, RoutesType } from 'Routes';
 import { Sider } from './SideMenu.styled';
 
 const { SubMenu } = Menu;
 
-const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
-  <Sider width={200}>
-    <Menu
-      mode="inline"
-      defaultSelectedKeys={['1']}
-      defaultOpenKeys={['sub1']}
-      style={{ height: '100%', borderRight: 0 }}
-    >
-      {Object.values(groups).map(
-        (group) => {
-          if (!group.showInMenu) return null;
+const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
+  const { user, access, refresh } = useAuth();
 
-          const Icon = group.icon || FileDoneOutlined;
+  const isAuthenticated: boolean = useMemo(() => (
+    user !== undefined && access !== undefined && refresh !== undefined
+  ), [user, access, refresh]);
 
-          return (
-            <SubMenu
-              key={`${group.verboseName}-subMenu`}
-              icon={<Icon />}
-              title={group.verboseName}
-            >
-              {Object.values(group.routes).map(
-                (route) => {
-                  if (!route.showInMenu) return null;
+  if (!isAuthenticated) return null;
 
-                  const { path, verboseName }: RoutesType = route;
+  return (
+    <Sider width={200}>
+      <Menu
+        mode="inline"
+        defaultSelectedKeys={['1']}
+        defaultOpenKeys={['sub1']}
+        style={{ height: '100%', borderRight: 0 }}
+      >
+        {Object.values(groups).map(
+          (group) => {
+            if (!group.showInMenu) return null;
 
-                  return (
-                    <Menu.Item key={`${verboseName}-menu-item`}>
-                      <Link to={path}>
-                        {verboseName}
-                      </Link>
-                    </Menu.Item>
-                  );
-                },
-              )}
-            </SubMenu>
-          );
-        },
-      )}
-    </Menu>
-  </Sider>
-);
+            const Icon = group.icon || FileDoneOutlined;
+
+            return (
+              <SubMenu
+                key={`${group.verboseName}-subMenu`}
+                icon={<Icon />}
+                title={group.verboseName}
+              >
+                {Object.values(group.routes).map(
+                  (route) => {
+                    if (!route.showInMenu) return null;
+
+                    const { path, verboseName }: RoutesType = route;
+
+                    return (
+                      <Menu.Item key={`${verboseName}-menu-item`}>
+                        <Link to={path}>
+                          {verboseName}
+                        </Link>
+                      </Menu.Item>
+                    );
+                  },
+                )}
+              </SubMenu>
+            );
+          },
+        )}
+      </Menu>
+    </Sider>
+  );
+};
 
 export default SideMenu;

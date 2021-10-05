@@ -143,6 +143,7 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       <Table
+        rowKey="order"
         data={listItems()}
         columns={columns}
       />

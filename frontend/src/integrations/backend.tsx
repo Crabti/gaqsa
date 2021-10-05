@@ -19,6 +19,7 @@ import {
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
+import { BackendConfig } from './config';
 
 export class Backend {
   rootEndpoint: string;
@@ -33,7 +34,9 @@ export class Backend {
 
   config?: AxiosRequestConfig;
 
-  public constructor(rootEndpoint: string, config?: AxiosRequestConfig) {
+  public constructor(
+    rootEndpoint: string, config?: BackendConfig,
+  ) {
     this.rootEndpoint = rootEndpoint;
     this.config = config;
     this.products = new CRUD(
@@ -54,14 +57,17 @@ export class Backend {
 export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => {
-  const { access } = useAuth();
-  const [config, setConfig] = useState<AxiosRequestConfig>({});
+  const { access, refresh } = useAuth();
+  const [config, setConfig] = useState<BackendConfig>();
 
   useEffect(() => {
-    if (access) {
-      setConfig({ headers: { Authorization: `Bearer ${access}` } });
+    if (access && refresh) {
+      setConfig({
+        headers: { Authorization: `Bearer ${access}` },
+        refresh,
+      });
     }
-  }, [access]);
+  }, [access, refresh]);
 
   return (
     <BackendContext.Provider

@@ -120,7 +120,10 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   }, [authState.user]);
 
   return (
-    <AuthContext.Provider value={{ ...authState, setTokens, logout }}>
+    <AuthContext.Provider value={{
+      ...authState, setTokens, logout,
+    }}
+    >
       {children}
     </AuthContext.Provider>
   );

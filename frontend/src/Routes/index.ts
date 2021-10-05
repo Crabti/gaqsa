@@ -18,6 +18,7 @@ export interface RoutesType {
   view: React.VC;
   verboseName: string;
   showInMenu?: boolean;
+  isPublic?: boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
 }
 
@@ -75,7 +76,7 @@ const ordersRoutes: Routes = {
   },
 };
 
-const otherRoutes: Routes = {
+export const otherRoutes: Routes = {
   home: {
     path: '/',
     view: HomeView,
@@ -85,6 +86,7 @@ const otherRoutes: Routes = {
     path: '/iniciar-sesion',
     view: LoginView,
     verboseName: 'Iniciar Sesión',
+    isPublic: true,
   },
 };
 
