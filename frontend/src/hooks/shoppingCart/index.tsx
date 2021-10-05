@@ -56,13 +56,13 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     const stored = localStorage.getItem('shoppingCart');
     if (stored) {
       const parsedStored = JSON.parse(stored);
-      setProducts(parsedStored);
-      setTotal(parsedStored);
+      setProducts(parsedStored.products);
+      setTotal(parsedStored.total);
     }
   };
 
   useEffect(() => {
-    if (!products && !total) {
+    if (products.length === 0) {
       retrieveState();
     }
   }, [products, total]);
