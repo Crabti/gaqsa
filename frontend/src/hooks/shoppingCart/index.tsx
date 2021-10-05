@@ -12,7 +12,7 @@ export interface ShoppingCartType {
     addProducts: (newProduct: ShoppingCartProductType) => void;
 }
 
-export const LOCAL_STORAGE_KEY = 'product';
+export const LOCAL_STORAGE_KEY = 'shoppingCart';
 
 export const ShoppingCartContext = (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -53,18 +53,19 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const retrieveState = (): void => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const stored = localStorage.getItem('shoppingCart');
     if (stored) {
       const parsedStored = JSON.parse(stored);
       setProducts(parsedStored);
+      setTotal(parsedStored);
     }
   };
 
   useEffect(() => {
-    if (!products) {
+    if (!products && !total) {
       retrieveState();
     }
-  }, [products]);
+  }, [products, total]);
 
   return (
     <ShoppingCartContext.Provider value={{ products, total, addProducts }}>

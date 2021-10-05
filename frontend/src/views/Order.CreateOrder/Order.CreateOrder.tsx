@@ -23,6 +23,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const [isLoading, setLoading] = useState(false);
   const { products, addProducts, total } = useShoppingCart();
   console.log(products);
+  console.log(total);
 
   const columns = [
     {

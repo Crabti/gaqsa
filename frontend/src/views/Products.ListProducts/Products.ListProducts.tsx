@@ -19,7 +19,7 @@ import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
   const { addProducts } = useShoppingCart();
 
