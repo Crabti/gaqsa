@@ -10,7 +10,6 @@ export enum UserGroups {
 export interface AuthType {
   user?: User;
   access?: string;
-  // TODO: add mechanism to refresh access token once it expires
   refresh?: string;
   expires?: number;
   isAdmin: boolean;

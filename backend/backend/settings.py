@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -228,7 +227,3 @@ if (EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=5)
-}
