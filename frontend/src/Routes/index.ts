@@ -1,4 +1,4 @@
-import { AppstoreOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MedicineBoxOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
@@ -6,6 +6,12 @@ import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
+import ListClientOrders from 'views/Orders.ListClientOrders';
+import ListRequisitions from 'views/Orders.ListRequisitions';
+import {
+  LIST_CLIENT_ORDERS, LIST_REQUISITIONS,
+  SHOW_ORDERS_MENU,
+} from 'constants/featureFlags';
 
 export interface RoutesType {
   path: string;
@@ -54,6 +60,21 @@ export const productRoutes: Routes = {
   },
 };
 
+const ordersRoutes: Routes = {
+  listOrderHistory: {
+    path: '/pedidos/historial',
+    view: ListClientOrders,
+    verboseName: 'Historial de Pedidos',
+    showInMenu: LIST_CLIENT_ORDERS,
+  },
+  listRequisitions: {
+    path: '/pedidos',
+    view: ListRequisitions,
+    verboseName: 'Pedidos Realizados',
+    showInMenu: LIST_REQUISITIONS,
+  },
+};
+
 const otherRoutes: Routes = {
   home: {
     path: '/',
@@ -76,6 +97,12 @@ const routes: RegisteredGroup = {
     showInMenu: true,
     verboseName: 'Productos',
     icon: AppstoreOutlined,
+  },
+  order: {
+    routes: ordersRoutes,
+    showInMenu: SHOW_ORDERS_MENU,
+    verboseName: 'Pedidos',
+    icon: MedicineBoxOutlined,
   },
 };
 

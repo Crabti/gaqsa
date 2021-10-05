@@ -1,3 +1,5 @@
+import { TablePaginationConfig } from 'antd';
+
 type Column = {
     title: string;
     dataIndex: string;
@@ -10,6 +12,8 @@ type Column = {
 interface Props {
     data: any,
     columns: Column[],
+    expandedRowRender?: any,
+    pagination?: false | TablePaginationConfig | undefined,
 }
 
 export default Props;
