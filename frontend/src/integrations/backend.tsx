@@ -5,8 +5,18 @@ import {
   Product,
   CreateProductForm,
   UpdateProductForm,
+  Order,
+  CreateOrderForm,
+  UpdateOrderForm,
+  Requisition,
+  CreateRequisitionForm,
+  UpdateRequisitionForm,
 } from '@types';
-import { BACKEND_MAIN_EP, PRODUCTS_ROOT, USERS_ROOT } from 'settings';
+
+import {
+  BACKEND_MAIN_EP,
+  PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT, REQUISITIONS_ROOT,
+} from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
 
@@ -14,6 +24,10 @@ export class Backend {
   rootEndpoint: string;
 
   products: CRUD<Product, CreateProductForm, UpdateProductForm>;
+
+  orders: CRUD<Order, CreateOrderForm, UpdateOrderForm>;
+
+  requisitions: CRUD<Requisition, CreateRequisitionForm, UpdateRequisitionForm>;
 
   users: CRUD<any, any, any>;
 
@@ -24,6 +38,12 @@ export class Backend {
     this.config = config;
     this.products = new CRUD(
       `${this.rootEndpoint}${PRODUCTS_ROOT}`, config,
+    );
+    this.orders = new CRUD(
+      `${this.rootEndpoint}${ORDERS_ROOT}`, config,
+    );
+    this.requisitions = new CRUD(
+      `${this.rootEndpoint}${REQUISITIONS_ROOT}`, config,
     );
     this.users = new CRUD(
       `${this.rootEndpoint}${USERS_ROOT}`, config,

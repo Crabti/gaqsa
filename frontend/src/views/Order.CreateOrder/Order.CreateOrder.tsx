@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useCallback, useEffect, useState } from 'react';
-import { Content } from 'antd/lib/layout/layout';
+import layout, { Content } from 'antd/lib/layout/layout';
 import {
   Button,
   Form,
@@ -18,6 +18,8 @@ import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import { render } from 'react-dom';
+import form from 'antd/lib/form';
+import FormButton from 'components/FormButton';
 
 const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -113,9 +115,12 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
-      {isLoading || !products ? <LoadingIndicator /> : (
-        <Table
-          data={
+      <Form
+        name="productForm"
+      >
+        {isLoading || !products ? <LoadingIndicator /> : (
+          <Table
+            data={
             products.map((product) => ({
               id: product.product.id,
               name: product.product.name,
@@ -129,9 +134,14 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
               amount: product.amount,
             }))
         }
-          columns={columns}
+            columns={columns}
+          />
+        )}
+        <FormButton
+          loading={isLoading}
+          text="Confirmar"
         />
-      )}
+      </Form>
     </Content>
   );
 };
