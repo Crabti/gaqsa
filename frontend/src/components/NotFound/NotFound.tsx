@@ -1,12 +1,12 @@
 import React from 'react';
-import { Typography } from 'antd';
+import { Result } from 'antd';
 
 const NotFound: React.FC = () => (
-  <Typography>
-    <Typography.Title level={4}>
-      No se pudo encontrar la página solicitada
-    </Typography.Title>
-  </Typography>
+  <Result
+    status="404"
+    title="Página no encontrada (404)"
+    subTitle="Lo sentimos, la página que desea consultar no existe"
+  />
 );
 
 export default NotFound;

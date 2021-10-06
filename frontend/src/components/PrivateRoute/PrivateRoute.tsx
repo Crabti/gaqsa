@@ -3,7 +3,7 @@ import React from 'react';
 import useAuth from 'hooks/useAuth';
 import { Redirect, Route, RouteProps } from 'react-router';
 import { otherRoutes } from 'Routes';
-import NotFound from 'components/NotFound';
+import { Result } from 'antd';
 import Props from './PrivateRoute.type';
 
 const PrivateRoute: React.FC<RouteProps & Props> = ({
@@ -25,7 +25,14 @@ const PrivateRoute: React.FC<RouteProps & Props> = ({
         }
         // Access not allowed
         if (hasAccess && !hasAccess(auth)) {
-          return <NotFound />;
+          return (
+            <Result
+              status="403"
+              title="Acceso no autorizado (403)"
+              subTitle="Lo sentimos, no cuenta con
+              los permisos necesarios para acceder."
+            />
+          );
         }
         return <Component {...props} />;
       }}
