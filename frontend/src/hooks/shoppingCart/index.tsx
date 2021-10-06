@@ -10,6 +10,7 @@ export interface ShoppingCartType {
     products: ShoppingCartProductType[];
     total: number;
     addProducts: (newProduct: ShoppingCartProductType) => void;
+    removeProducts: (newProduct: ShoppingCartProductType) => void;
 }
 
 export const LOCAL_STORAGE_KEY = 'shoppingCart';
@@ -52,6 +53,24 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     persistProducts([...products, newProduct]);
   };
 
+  const removeProducts = (newProduct: ShoppingCartProductType): void => {
+    const productExist = products.find(
+      (e) => newProduct.product.id === e.product.id,
+    );
+
+    if (productExist?.amount === 1) {
+      persistProducts(
+        products.filter((e) => newProduct.product.id !== e.product.id),
+      );
+    } else {
+      persistProducts(
+        products.map((e) => (e.product.id === newProduct.product.id
+          ? { ...e, amount: e.amount + newProduct.amount }
+          : e)),
+      );
+    }
+  };
+
   const retrieveState = (): void => {
     const stored = localStorage.getItem('shoppingCart');
     if (stored) {
@@ -68,7 +87,10 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   }, [products, total]);
 
   return (
-    <ShoppingCartContext.Provider value={{ products, total, addProducts }}>
+    <ShoppingCartContext.Provider value={{
+      products, total, addProducts, removeProducts,
+    }}
+    >
       {children}
     </ShoppingCartContext.Provider>
   );
