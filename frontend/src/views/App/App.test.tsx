@@ -3,19 +3,19 @@ import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 import MockedThemeProvider from 'components/Theme';
 import { NavContextProvider } from 'hooks/navigation';
-import { AuthContextProvider } from 'hooks/useAuth';
+import MockAuthProvider from 'hooks/useAuth/MockAuthProvider';
 import App from './App';
 
 test('renders content section', () => {
   render(
     <MemoryRouter>
-      <AuthContextProvider>
+      <MockAuthProvider>
         <MockedThemeProvider>
           <NavContextProvider>
             <App />
           </NavContextProvider>
         </MockedThemeProvider>
-      </AuthContextProvider>
+      </MockAuthProvider>
     </MemoryRouter>,
   );
   const content = screen.queryByTestId('content-container');
