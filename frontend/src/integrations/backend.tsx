@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AxiosRequestConfig } from 'axios';
 import {
   Product,
@@ -58,10 +58,11 @@ export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => {
   const { access, refresh } = useAuth();
-  const config : BackendConfig = {
+  const config : BackendConfig = useMemo(() => ({
     headers: { Authorization: `Bearer ${access}` },
     refresh,
-  };
+  }), [access, refresh]);
+
   return (
     <BackendContext.Provider
       value={

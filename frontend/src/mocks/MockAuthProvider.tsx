@@ -1,5 +1,5 @@
+import { AuthContext, AuthType } from 'hooks/useAuth';
 import React from 'react';
-import { AuthContext, AuthType } from '.';
 
 const MOCK_INITIAL_STATE : AuthType = {
   user: {
@@ -21,7 +21,6 @@ const MOCK_INITIAL_STATE : AuthType = {
 
 const mockSetTokens = jest.fn();
 const mockLogout = jest.fn();
-
 const MockAuthProvider: React.FC = ({ children }) => (
   <AuthContext.Provider value={{
     ...MOCK_INITIAL_STATE,
