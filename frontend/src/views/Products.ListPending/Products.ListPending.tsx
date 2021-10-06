@@ -92,6 +92,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <Table
+          rowKey={(row) => `${row.name}-${row.created_at}`}
           data={
             products.map((product) => ({
               name: product.name,

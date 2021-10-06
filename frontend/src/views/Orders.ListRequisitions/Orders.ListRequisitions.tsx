@@ -99,7 +99,9 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       <Table
+        rowKey="id"
         data={requisitions.map((requisition) => ({
+          id: requisition.id,
           product: requisition.product,
           quantity_requested: requisition.quantity_requested,
           quantity_accepted: requisition.quantity_accepted,

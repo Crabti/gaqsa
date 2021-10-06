@@ -42,6 +42,13 @@ class ListOrderTest(BaseTestCase):
                 product=product
             )
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_order"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_list_all_orders_admin(self) -> None:
         response = self.admin_client.get(
             reverse("list_order"),
@@ -101,6 +108,13 @@ class ListRequisitions(BaseTestCase):
                 order=order,
                 product=product
             )
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_requisitions"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_list_provider_requisitions(self) -> None:
         response = self.provider_client.get(
