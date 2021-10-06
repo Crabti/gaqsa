@@ -9,7 +9,7 @@ const MOCK_INITIAL_STATE : AuthType = {
     email: '',
     firstName: '',
     lastName: '',
-    groups: [],
+    groups: [''],
   },
   access: undefined,
   refresh: undefined,

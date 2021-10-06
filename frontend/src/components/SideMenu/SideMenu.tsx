@@ -1,7 +1,7 @@
 import { FileDoneOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import useAuth from 'hooks/useAuth';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { RegisteredGroup, RoutesType } from 'Routes';
 import { Sider } from './SideMenu.styled';
@@ -9,13 +9,12 @@ import { Sider } from './SideMenu.styled';
 const { SubMenu } = Menu;
 
 const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
-  const { user, access, refresh } = useAuth();
+  const auth = useAuth();
 
-  const isAuthenticated: boolean = useMemo(() => (
-    user !== undefined && access !== undefined && refresh !== undefined
-  ), [user, access, refresh]);
-
-  if (!isAuthenticated) return null;
+  const { user } = auth;
+  if (!user) {
+    return null;
+  }
 
   return (
     <Sider width={200}>
@@ -39,7 +38,10 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
               >
                 {Object.values(group.routes).map(
                   (route) => {
-                    if (!route.showInMenu) return null;
+                    if (!route.showInMenu || (
+                      route.hasAccess && !route.hasAccess(auth))) {
+                      return null;
+                    }
 
                     const { path, verboseName }: RoutesType = route;
 

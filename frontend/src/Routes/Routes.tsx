@@ -1,8 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import NotFound from 'components/NotFound';
+import PrivateRoute from 'components/PrivateRoute';
 import React from 'react';
 import { Route, Switch } from 'react-router';
 import { RegisteredGroup, RoutesType } from 'Routes';
-import PrivateRoute from './PrivateRoute';
 
 const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
   <Switch>
@@ -11,7 +12,9 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
         Object.values(group.routes).map(
           (route) => {
             const {
-              path, view: View, props, verboseName, isPublic,
+              path, view: View,
+              props, verboseName, isPublic,
+              hasAccess,
             }: RoutesType = route;
 
             if (isPublic) {
@@ -26,7 +29,6 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
                     />
                   )}
                   exact
-                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...props}
                 />
               );
@@ -35,6 +37,7 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
               <PrivateRoute
                 key={path}
                 path={path}
+                hasAccess={hasAccess}
                 component={() => (
                   <View
                     verboseName={verboseName}
@@ -42,7 +45,6 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
                   />
                 )}
                 exact
-                  // eslint-disable-next-line react/jsx-props-no-spreading
                 {...props}
               />
             );
