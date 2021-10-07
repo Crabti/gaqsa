@@ -120,6 +120,19 @@ class Api {
       return [null, e as AxiosError];
     }
   }
+
+  public async put<T, B>(
+    url: string,
+    data?: B,
+    config?: AxiosRequestConfig,
+  ): Promise<[AxiosResponse<T> | null, AxiosError | null]> {
+    try {
+      const res = await this.api.put<T>(url, data, config);
+      return [res, null];
+    } catch (e) {
+      return [null, e as AxiosError];
+    }
+  }
 }
 
 export default Api;

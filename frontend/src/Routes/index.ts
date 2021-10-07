@@ -1,4 +1,6 @@
-import { AppstoreOutlined, MedicineBoxOutlined } from '@ant-design/icons';
+import {
+  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined,
+} from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
@@ -8,8 +10,10 @@ import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
 import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
+import ListProviders from 'views/Providers.ListProviders';
+
 import {
-  LIST_CLIENT_ORDERS, LIST_REQUISITIONS,
+  LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
   SHOW_ORDERS_MENU,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
@@ -84,6 +88,16 @@ const ordersRoutes: Routes = {
   },
 };
 
+export const providerRoutes: Routes = {
+  listProviders: {
+    path: '/proveedores',
+    view: ListProviders,
+    verboseName: 'Lista de proveedores',
+    showInMenu: LIST_PROVIDERS,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+};
+
 export const otherRoutes: Routes = {
   home: {
     path: '/',
@@ -113,6 +127,12 @@ const routes: RegisteredGroup = {
     showInMenu: SHOW_ORDERS_MENU,
     verboseName: 'Pedidos',
     icon: MedicineBoxOutlined,
+  },
+  provider: {
+    routes: providerRoutes,
+    showInMenu: true,
+    verboseName: 'Proveedores',
+    icon: TeamOutlined,
   },
 };
 
