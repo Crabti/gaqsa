@@ -21,6 +21,9 @@ class CreateOrder(generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
+    def prev_save(self, obj):
+        obj.user = self.request.user.pk
+
 
 class ListRequisitions(generics.ListAPIView):
     serializer_class = ListRequisitionSerializer
