@@ -82,7 +82,6 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const clear = (): void => {
-    console.log('lets to clear');
     persistProducts([]);
   };
 

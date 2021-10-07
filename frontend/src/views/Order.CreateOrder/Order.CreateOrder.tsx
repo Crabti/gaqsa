@@ -43,7 +43,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const onFinish = async () : Promise<void> => {
     setLoading(true);
     if (user) {
-      console.log(user);
       const [, error] = await backend.orders.createOne({
         products, user: user.id,
       });

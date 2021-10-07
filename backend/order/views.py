@@ -31,8 +31,6 @@ class CreateOrder(generics.CreateAPIView):
 
 class CreateOrder2(APIView):
     def post(self, request):
-        print(request.data)
-        print(request.user)
         order_serializer = OrderSerializer(data={"user": request.user.pk})
         if not order_serializer.is_valid():
             return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -48,7 +46,6 @@ class CreateOrder2(APIView):
                 'quantity_requested': product['amount'],
                 'price': float(product['product']['price'])
             })
-            print(data)
         
         requisition_serializer = CreateRequisitionSerializer(data=data, many=True)
         if not requisition_serializer.is_valid():
