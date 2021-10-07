@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { AxiosRequestConfig } from 'axios';
 import {
   Product,
@@ -19,6 +19,7 @@ import {
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
+import { BackendConfig } from './config';
 
 export class Backend {
   rootEndpoint: string;
@@ -33,7 +34,9 @@ export class Backend {
 
   config?: AxiosRequestConfig;
 
-  public constructor(rootEndpoint: string, config?: AxiosRequestConfig) {
+  public constructor(
+    rootEndpoint: string, config?: BackendConfig,
+  ) {
     this.rootEndpoint = rootEndpoint;
     this.config = config;
     this.products = new CRUD(
@@ -54,14 +57,11 @@ export class Backend {
 export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => {
-  const { access } = useAuth();
-  const [config, setConfig] = useState<AxiosRequestConfig>({});
-
-  useEffect(() => {
-    if (access) {
-      setConfig({ headers: { Authorization: `Bearer ${access}` } });
-    }
-  }, [access]);
+  const { access, refresh } = useAuth();
+  const config : BackendConfig = useMemo(() => ({
+    headers: { Authorization: `Bearer ${access}` },
+    refresh,
+  }), [access, refresh]);
 
   return (
     <BackendContext.Provider

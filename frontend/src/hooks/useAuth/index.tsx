@@ -1,5 +1,5 @@
 import { User } from '@types';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export enum UserGroups {
   ADMIN = 'Administrador',
@@ -10,7 +10,6 @@ export enum UserGroups {
 export interface AuthType {
   user?: User;
   access?: string;
-  // TODO: add mechanism to refresh access token once it expires
   refresh?: string;
   expires?: number;
   isAdmin: boolean;
@@ -51,9 +50,17 @@ export const AuthContext = React.createContext<AuthContextType>(
 );
 
 export const AuthContextProvider: React.FC = ({ children }) => {
-  const [authState, setAuthState] = useState<AuthType>({
-    ...INITIAL_AUTH_STATE,
-  });
+  const retrieveState = (): AuthType => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    if (stored) {
+      const parsedStored = JSON.parse(stored);
+      return parsedStored;
+    }
+    return INITIAL_AUTH_STATE;
+  };
+
+  const [authState, setAuthState] = useState<AuthType>(retrieveState);
 
   const parseJwt = (token: string): any => {
     const base64Url = token.split('.')[1];
@@ -76,15 +83,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const persistState = (newState: AuthType): void => {
     setAuthState(newState);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
-  };
-
-  const retrieveState = (): void => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-
-    if (stored) {
-      const parsedStored = JSON.parse(stored);
-      setAuthState(parsedStored);
-    }
   };
 
   const setTokens: SetTokensFunc = (access, refresh) => {
@@ -113,14 +111,11 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
-  useEffect(() => {
-    if (!authState.user) {
-      retrieveState();
-    }
-  }, [authState.user]);
-
   return (
-    <AuthContext.Provider value={{ ...authState, setTokens, logout }}>
+    <AuthContext.Provider value={{
+      ...authState, setTokens, logout,
+    }}
+    >
       {children}
     </AuthContext.Provider>
   );

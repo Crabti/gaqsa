@@ -118,6 +118,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <Table
+          rowKey={(row) => `${row.id}`}
           data={
             products.map((product) => ({
               id: product.id,

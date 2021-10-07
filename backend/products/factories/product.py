@@ -11,7 +11,7 @@ class ProductFactory(django.DjangoModelFactory):
 
     created_at = LazyAttribute(lambda _: datetime.now())
     updated_at = LazyAttribute(lambda _: datetime.now())
-    key = LazyAttribute(lambda _: f"{sfaker.bothify(text='??-##')}")
+    key = LazyAttribute(lambda _: f"{sfaker.unique.bothify(text='??-##')}")
     name = LazyAttribute(lambda _: sfaker.product_name())
     presentation = LazyAttribute(lambda _: sfaker.product_presentation())
     price = LazyAttribute(

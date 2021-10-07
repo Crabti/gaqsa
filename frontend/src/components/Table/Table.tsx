@@ -4,10 +4,11 @@ import Props from './Table.type';
 
 const GenericTable: React.FC<Props> = (
   {
-    data, columns, expandedRowRender, pagination,
+    data, columns, expandedRowRender, pagination, rowKey,
   },
 ) => (
   <Table
+    rowKey={rowKey}
     dataSource={data}
     columns={columns}
     bordered

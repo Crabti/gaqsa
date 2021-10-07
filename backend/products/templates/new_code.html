@@ -1,0 +1,15 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h4>{{ provider.name }}</h5>
+    <h4>RFC: {{ provider.rfc }}</h4>
+  </div>
+  <div>
+  <h5>El código asignado para cambio de precio de producto:</h5>
+  <h3> {{ provider.token }} </h3>
+  </div>
+{% endblock %}
+

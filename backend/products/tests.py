@@ -1,7 +1,6 @@
 import json
 from http import HTTPStatus
 
-from django.test import TestCase
 from django.urls import reverse
 from django.core import mail
 
@@ -18,9 +17,12 @@ from products.serializers.product import (
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
 
+from backend.utils.tests import BaseTestCase
 
-class RegisterRequestToCreateProduct(TestCase):
+
+class RegisterRequestToCreateProduct(BaseTestCase):
     def setUp(self) -> None:
+        super().setUp()
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
         category = CategoryFactory.create()
@@ -38,10 +40,18 @@ class RegisterRequestToCreateProduct(TestCase):
         self.valid_payload['animal_groups'] = [
             group.id for group in animal_groups]
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("create_product"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_request_to_create_product_with_valid_data_should_succeed(
         self,
     ) -> None:
-        response = self.client.post(
+        response = self.provider_client.post(
             reverse("create_product"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
@@ -51,8 +61,9 @@ class RegisterRequestToCreateProduct(TestCase):
         self.assertGreater(len(mail.outbox), 0)
 
 
-class ListPendingProductRequests(TestCase):
+class ListPendingProductRequests(BaseTestCase):
     def setUp(self) -> None:
+        super().setUp()
         self.unactive_amount = 20
         active_amount = 20
 
@@ -71,10 +82,18 @@ class ListPendingProductRequests(TestCase):
                                     category=category, laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_products"),
+            {'status': Product.PENDING},
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_list_pending_products(
         self,
     ) -> None:
-        response = self.client.get(
+        response = self.admin_client.get(
             reverse("list_products"),
             {'status': Product.PENDING},
             content_type="application/json",
@@ -86,8 +105,9 @@ class ListPendingProductRequests(TestCase):
             self.assertEqual(product['status'], Product.PENDING)
 
 
-class UpdateProductTest(TestCase):
+class UpdateProduct(BaseTestCase):
     def setUp(self) -> None:
+        super().setUp()
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
         category = CategoryFactory.create()
@@ -98,8 +118,16 @@ class UpdateProductTest(TestCase):
             laboratory=laboratory
         )
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.put(
+            reverse("update_product", kwargs={'pk': self.product.pk}),
+            data=json.dumps([]),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_error_if_product_not_found(self) -> None:
-        response = self.client.put(
+        response = self.admin_client.put(
             reverse("update_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
@@ -114,7 +142,7 @@ class UpdateProductTest(TestCase):
         ).data
         valid_product['animal_groups'] = [
             group.id for group in self.animal_groups]
-        response = self.client.put(
+        response = self.admin_client.put(
             reverse("update_product", kwargs={'pk': self.product.pk}),
             data=json.dumps(valid_product),
             content_type="application/json",
@@ -128,8 +156,9 @@ class UpdateProductTest(TestCase):
         self.assertGreater(len(mail.outbox), 0)
 
 
-class DetailProductTest(TestCase):
+class DetailProduct(BaseTestCase):
     def setUp(self):
+        super().setUp()
         user = UserFactory.create()
         provider = ProviderFactory.create(user=user)
         category = CategoryFactory.create()
@@ -139,15 +168,22 @@ class DetailProductTest(TestCase):
             laboratory=laboratory
         )
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("detail_product", kwargs={'pk': self.product.pk}),
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_error_if_product_not_found(self) -> None:
-        response = self.client.get(
+        response = self.admin_client.get(
             reverse("detail_product", kwargs={'pk': 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_get_product_detail(self) -> None:
-        response = self.client.get(
+        response = self.admin_client.get(
             reverse("detail_product", kwargs={'pk': self.product.pk}),
             content_type="application/json"
         )
@@ -156,8 +192,9 @@ class DetailProductTest(TestCase):
         self.assertEqual(serializer.data, response.data)
 
 
-class ListAllActiveProductsOfProvider(TestCase):
+class ListAllActiveProductsOfProvider(BaseTestCase):
     def setUp(self) -> None:
+        super().setUp()
         user = UserFactory.create()
         other_user = UserFactory.create()
 
@@ -181,10 +218,21 @@ class ListAllActiveProductsOfProvider(TestCase):
                                     laboratory=laboratory,
                                     status=Product.ACCEPTED)
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_products"),
+            {
+                'provider': self.provider.id,
+                'status': Product.ACCEPTED
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def test_list_only_products_of_provider(
         self,
     ) -> None:
-        response = self.client.get(
+        response = self.admin_client.get(
             reverse("list_products"),
             {
                 'provider': self.provider.id,
@@ -198,8 +246,9 @@ class ListAllActiveProductsOfProvider(TestCase):
             self.assertEqual(product['provider'], self.provider.name)
 
 
-class ListAllProductSelectOptions(TestCase):
+class ListAllProductSelectOptions(BaseTestCase):
     def setUp(self) -> None:
+        super().setUp()
         user = UserFactory.create()
         self.lab_quantity = 10
         self.category_quantity = 20
@@ -209,10 +258,17 @@ class ListAllProductSelectOptions(TestCase):
         LaboratoryFactory.create_batch(self.lab_quantity)
         AnimalGroupFactory.create_batch(self.animal_groups_quantity)
 
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_product_options"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
     def list_all_select_product_options(
         self,
     ) -> None:
-        response = self.client.get(
+        response = self.provider_client.get(
             reverse("list_product_options"),
             content_type="application/json",
         )
