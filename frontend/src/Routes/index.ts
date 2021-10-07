@@ -75,11 +75,11 @@ const ordersRoutes: Routes = {
     showInMenu: LIST_REQUISITIONS,
   },
   createOrder: {
-    path: '/ordenes/',
+    path: '/pedidos/create',
     view: OrderCreateOrder,
-    verboseName: 'Ordenes',
+    verboseName: 'Realizar pedido',
     showInMenu: true,
-  }
+  },
 };
 
 const otherRoutes: Routes = {
@@ -106,17 +106,10 @@ const routes: RegisteredGroup = {
     icon: AppstoreOutlined,
   },
   order: {
-<<<<<<< HEAD
-    routes: orderRoutes,
-    showInMenu: true,
-    verboseName: 'Ordenes',
-    icon: AppstoreOutlined,
-=======
     routes: ordersRoutes,
     showInMenu: SHOW_ORDERS_MENU,
     verboseName: 'Pedidos',
     icon: MedicineBoxOutlined,
->>>>>>> 624a0a959d6dd8bf486a1bd63ead59e17088503e
   },
 };
 

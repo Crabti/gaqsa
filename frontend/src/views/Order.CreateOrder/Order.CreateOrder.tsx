@@ -31,6 +31,34 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   console.log(products);
   console.log(total);
 
+  const onFinishFailed = () : void => {
+    notification.error({
+      message: '¡Ocurrió un error al intentar guardar!',
+      description: 'Intentalo después.',
+    });
+  };
+
+  const onFinish = async () : Promise<void> => {
+    setLoading(true);
+    // TODO: Get provider id from user. Hard coded to provider 1 right now
+    const [, error] = await backend.orders.createOne({
+      products,
+    });
+
+    if (error) {
+      onFinishFailed();
+    } else {
+      notification.success({
+        message: '¡Petición de producto creado exitosamente!',
+        description: 'Su petición sera validado por un administrador proxima'
+          + 'proximamente. Sera notificado ya que esta petición '
+          + 'cambie de estado',
+      });
+      history.replace('/');
+    }
+    setLoading(false);
+  };
+
   const columns = [
     {
       title: 'Nombre',
@@ -117,6 +145,8 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       <Form
         name="productForm"
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
       >
         {isLoading || !products ? <LoadingIndicator /> : (
           <Table
