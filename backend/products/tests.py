@@ -23,13 +23,12 @@ from backend.utils.tests import BaseTestCase
 class RegisterRequestToCreateProduct(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
-        provider = ProviderFactory.create(user=user)
+        ProviderFactory.create(user=self.provider_user)
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
         animal_groups = AnimalGroupFactory.create_batch(5)
         product = ProductFactory.build(
-            provider=provider, status=Product.PENDING,
+            status=Product.PENDING,
             category=category, laboratory=laboratory,
         )
         self.valid_payload = CreateProductSerializer(
@@ -51,6 +50,7 @@ class RegisterRequestToCreateProduct(BaseTestCase):
     def test_request_to_create_product_with_valid_data_should_succeed(
         self,
     ) -> None:
+        mail.outbox = []
         response = self.provider_client.post(
             reverse("create_product"),
             data=json.dumps(self.valid_payload),

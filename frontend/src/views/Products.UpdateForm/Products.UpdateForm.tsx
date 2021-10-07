@@ -75,7 +75,6 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async (values: UpdateProductForm) : Promise<void> => {
     setLoading(true);
-    // TODO: Get provider id from user
     const [, error] = await backend.products.updateOne(id, {
       ...values,
     });

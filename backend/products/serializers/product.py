@@ -16,7 +16,6 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "ieps",
             "more_info",
             "status",
-            "provider",
             "animal_groups",
             "active_substance",
         )
@@ -37,7 +36,6 @@ class UpdateProductSerializer(serializers.ModelSerializer):
             "ieps",
             "more_info",
             "status",
-            "provider",
             "reject_reason",
             "animal_groups",
             "active_substance",

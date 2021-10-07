@@ -43,7 +43,7 @@ export const productRoutes: Routes = {
     view: ProductsCreateForm,
     verboseName: 'Alta de Producto',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+    hasAccess: ((auth) => auth.isProvider),
   },
   updateProduct: {
     path: '/productos/:id/modificar',
