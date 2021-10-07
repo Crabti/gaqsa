@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button, Col, Layout, Row, Space, Table,
+  Button, Col, Layout, Row, Table,
 } from 'antd';
 import Props from './Table.type';
 
