@@ -88,13 +88,14 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const setTokens: SetTokensFunc = (access, refresh) => {
     const parsedToken = parseJwt(access);
     const groups = getGroups(parsedToken.groups);
+    console.log(parsedToken);
     const newState: AuthType = {
       ...groups,
       access,
       refresh,
       expires: parsedToken.experies,
       user: {
-        id: 0,
+        id: parsedToken.id,
         created_at: '',
         updated_at: '',
         email: '',

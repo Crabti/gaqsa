@@ -11,6 +11,7 @@ export interface ShoppingCartType {
     total: number;
     addProducts: (newProduct: ShoppingCartProductType) => void;
     removeProducts: (newProduct: ShoppingCartProductType) => void;
+    clear: () => void;
 }
 
 export const LOCAL_STORAGE_KEY = 'shoppingCart';
@@ -80,6 +81,11 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     }
   };
 
+  const clear = (): void => {
+    console.log('lets to clear');
+    persistProducts([]);
+  };
+
   useEffect(() => {
     if (products.length === 0) {
       retrieveState();
@@ -88,7 +94,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
 
   return (
     <ShoppingCartContext.Provider value={{
-      products, total, addProducts, removeProducts,
+      products, total, addProducts, removeProducts, clear,
     }}
     >
       {children}

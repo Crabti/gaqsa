@@ -9,6 +9,10 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    @property
+    def requisitions(self):
+        return self.requisition_set.all()
+
     def __str__(self):
         return f"{self.created_at} - {self.user} \
          - {self.updated_at} "

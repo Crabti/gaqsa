@@ -20,16 +20,18 @@ import Table from 'components/Table';
 import { render } from 'react-dom';
 import form from 'antd/lib/form';
 import FormButton from 'components/FormButton';
+import useAuth from 'hooks/useAuth';
 
 const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(false);
+
+  const { user } = useAuth();
+
   const {
-    products, addProducts, total, removeProducts,
+    products, addProducts, removeProducts, clear,
   } = useShoppingCart();
-  console.log(products);
-  console.log(total);
 
   const onFinishFailed = () : void => {
     notification.error({
@@ -40,23 +42,27 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async () : Promise<void> => {
     setLoading(true);
-    // TODO: Get provider id from user. Hard coded to provider 1 right now
-    const [, error] = await backend.orders.createOne({
-      products,
-    });
+    if (user) {
+      console.log(user);
+      const [, error] = await backend.orders.createOne({
+        products, user: user.id,
+      });
 
-    if (error) {
-      onFinishFailed();
-    } else {
+      if (error) {
+        onFinishFailed();
+        return;
+      }
+      clear();
       notification.success({
-        message: '¡Petición de producto creado exitosamente!',
+        message: '¡Petición de orden creado exitosamente!',
         description: 'Su petición sera validado por un administrador proxima'
-          + 'proximamente. Sera notificado ya que esta petición '
-          + 'cambie de estado',
+            + 'proximamente. Sera notificado ya que esta petición '
+            + 'cambie de estado',
       });
       history.replace('/');
+
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const columns = [
@@ -150,8 +156,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       >
         {isLoading || !products ? <LoadingIndicator /> : (
           <Table
-            data={
-            products.map((product) => ({
+            data={products.map((product) => ({
               id: product.product.id,
               name: product.product.name,
               provider: product.product.provider,
@@ -162,9 +167,9 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
               iva: product.product.iva,
               ieps: product.product.ieps,
               amount: product.amount,
-            }))
-        }
+            }))}
             columns={columns}
+            rowKey=""
           />
         )}
         <FormButton

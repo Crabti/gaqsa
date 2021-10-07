@@ -17,9 +17,14 @@ class RequisitionSerializer(serializers.ModelSerializer):
         model = Requisition
         fields = '__all__'
 
+class CreateRequisitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requisition
+        fields = '__all__'
+
 
 class OrderSerializer(serializers.ModelSerializer):
-    requisition = RequisitionSerializer(read_only=True, many=True)
+    #requisition = RequisitionSerializer(many=True)
     class Meta:
         model = Order
         fields = '__all__'
