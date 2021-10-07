@@ -3,7 +3,9 @@ from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
-    ListRequisitionSerializer, OrderSerializer, ListOrderSerializer, CreateRequisitionSerializer)
+    ListRequisitionSerializer, OrderSerializer,
+    ListOrderSerializer, CreateRequisitionSerializer
+    )
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -31,7 +33,9 @@ class CreateOrder(generics.CreateAPIView):
 
 class CreateOrder2(APIView):
     def post(self, request):
-        order_serializer = OrderSerializer(data={"user": request.user.pk})
+        order_serializer = OrderSerializer(
+            data={"user": request.user.pk}
+            )
         if not order_serializer.is_valid():
             return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         new_order = order_serializer.save()
@@ -55,8 +59,6 @@ class CreateOrder2(APIView):
 
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
         
-            
-
 
 class ListRequisitions(generics.ListAPIView):
     serializer_class = ListRequisitionSerializer

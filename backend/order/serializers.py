@@ -17,6 +17,7 @@ class RequisitionSerializer(serializers.ModelSerializer):
         model = Requisition
         fields = '__all__'
 
+
 class CreateRequisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisition
@@ -24,7 +25,6 @@ class CreateRequisitionSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    #requisition = RequisitionSerializer(many=True)
     class Meta:
         model = Order
         fields = '__all__'

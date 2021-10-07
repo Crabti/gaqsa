@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { useCallback, useEffect, useState } from 'react';
-import layout, { Content } from 'antd/lib/layout/layout';
+import React, { useState } from 'react';
+import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
   Form,
-  InputNumber,
   notification,
   Tooltip,
 } from 'antd';
@@ -17,8 +16,6 @@ import { Product } from '@types';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
-import { render } from 'react-dom';
-import form from 'antd/lib/form';
 import FormButton from 'components/FormButton';
 import useAuth from 'hooks/useAuth';
 
