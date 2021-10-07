@@ -37,28 +37,37 @@ class CreateOrder2(APIView):
             data={"user": request.user.pk}
             )
         if not order_serializer.is_valid():
-            return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
         new_order = order_serializer.save()
 
-        data=[]
+        data = []
 
         for product in request.data['products']:
-            data.append({ 
+            data.append({
                 'order': new_order.pk,
-                'provider': Product.objects.get(pk=product['product']['id']).provider.id,
+                'provider': Product.objects.get(
+                    pk=product['product']['id']
+                    ).provider.id,
                 'product': product['product']['id'],
                 'quantity_requested': product['amount'],
                 'price': float(product['product']['price'])
             })
-        
-        requisition_serializer = CreateRequisitionSerializer(data=data, many=True)
+
+        requisition_serializer = CreateRequisitionSerializer(
+            data=data, many=True
+            )
         if not requisition_serializer.is_valid():
-            return Response(requisition_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                requisition_serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+                )
 
         requisition_serializer.save()
 
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
-        
+
 
 class ListRequisitions(generics.ListAPIView):
     serializer_class = ListRequisitionSerializer

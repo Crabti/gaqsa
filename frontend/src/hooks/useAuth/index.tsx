@@ -88,7 +88,6 @@ export const AuthContextProvider: React.FC = ({ children }) => {
   const setTokens: SetTokensFunc = (access, refresh) => {
     const parsedToken = parseJwt(access);
     const groups = getGroups(parsedToken.groups);
-    console.log(parsedToken);
     const newState: AuthType = {
       ...groups,
       access,
