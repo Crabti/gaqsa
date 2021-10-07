@@ -66,9 +66,8 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async (values: CreateProductForm) : Promise<void> => {
     setLoading(true);
-    // TODO: Get provider id from user. Hard coded to provider 1 right now
     const [, error] = await backend.products.createOne({
-      ...values, provider: 2,
+      ...values,
     });
 
     if (error) {
