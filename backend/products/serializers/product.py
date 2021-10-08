@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from products.models import Product
+from products.models import Product, ChangePriceRequest
 
 
 class CreateProductSerializer(serializers.ModelSerializer):
@@ -69,20 +69,20 @@ class ProductSerializer(serializers.ModelSerializer):
 class ListProductSerializer(serializers.ModelSerializer):
     provider = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='name',
+        slug_field="name",
     )
 
     category = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='name',
+        slug_field="name",
     )
     laboratory = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='name',
+        slug_field="name",
     )
     animal_groups = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='name',
+        slug_field="name",
         many=True
     )
 
@@ -107,3 +107,9 @@ class ListProductSerializer(serializers.ModelSerializer):
             "animal_groups",
             "active_substance",
         )
+
+
+class CreateChangePriceRequest(serializers.ModelSerializer):
+    class Meta:
+        model = ChangePriceRequest
+        fields = "__all__"

@@ -36,7 +36,7 @@ class RegisterRequestToCreateProduct(BaseTestCase):
         ).data
 
         # Override serializer field to add m2m objects
-        self.valid_payload['animal_groups'] = [
+        self.valid_payload["animal_groups"] = [
             group.id for group in animal_groups]
 
     def test_require_authentication(self) -> None:
@@ -85,7 +85,7 @@ class ListPendingProductRequests(BaseTestCase):
     def test_require_authentication(self) -> None:
         response = self.anonymous.get(
             reverse("list_products"),
-            {'status': Product.PENDING},
+            {"status": Product.PENDING},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
@@ -95,14 +95,14 @@ class ListPendingProductRequests(BaseTestCase):
     ) -> None:
         response = self.admin_client.get(
             reverse("list_products"),
-            {'status': Product.PENDING},
+            {"status": Product.PENDING},
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), self.unactive_amount)
         for product in result:
-            self.assertEqual(product['status'], Product.PENDING)
+            self.assertEqual(product["status"], Product.PENDING)
 
 
 class UpdateProduct(BaseTestCase):
@@ -120,7 +120,7 @@ class UpdateProduct(BaseTestCase):
 
     def test_require_authentication(self) -> None:
         response = self.anonymous.put(
-            reverse("update_product", kwargs={'pk': self.product.pk}),
+            reverse("update_product", kwargs={"pk": self.product.pk}),
             data=json.dumps([]),
             content_type="application/json",
         )
@@ -128,7 +128,7 @@ class UpdateProduct(BaseTestCase):
 
     def test_error_if_product_not_found(self) -> None:
         response = self.admin_client.put(
-            reverse("update_product", kwargs={'pk': 99999999}),
+            reverse("update_product", kwargs={"pk": 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
@@ -140,18 +140,18 @@ class UpdateProduct(BaseTestCase):
         valid_product = CreateProductSerializer(
             new_product,
         ).data
-        valid_product['animal_groups'] = [
+        valid_product["animal_groups"] = [
             group.id for group in self.animal_groups]
         response = self.admin_client.put(
-            reverse("update_product", kwargs={'pk': self.product.pk}),
+            reverse("update_product", kwargs={"pk": self.product.pk}),
             data=json.dumps(valid_product),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response.data['pk'], self.product.pk)
-        self.assertEqual(response.data['status'], Product.ACCEPTED)
+        self.assertEqual(response.data["pk"], self.product.pk)
+        self.assertEqual(response.data["status"], Product.ACCEPTED)
         # Creates new m2m animal group relation instances
-        self.assertEqual(len(response.data['animal_groups']),
+        self.assertEqual(len(response.data["animal_groups"]),
                          len(self.animal_groups))
         self.assertGreater(len(mail.outbox), 0)
 
@@ -170,21 +170,21 @@ class DetailProduct(BaseTestCase):
 
     def test_require_authentication(self) -> None:
         response = self.anonymous.get(
-            reverse("detail_product", kwargs={'pk': self.product.pk}),
+            reverse("detail_product", kwargs={"pk": self.product.pk}),
             content_type="application/json"
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_error_if_product_not_found(self) -> None:
         response = self.admin_client.get(
-            reverse("detail_product", kwargs={'pk': 99999999}),
+            reverse("detail_product", kwargs={"pk": 99999999}),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_get_product_detail(self) -> None:
         response = self.admin_client.get(
-            reverse("detail_product", kwargs={'pk': self.product.pk}),
+            reverse("detail_product", kwargs={"pk": self.product.pk}),
             content_type="application/json"
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -222,8 +222,8 @@ class ListAllActiveProductsOfProvider(BaseTestCase):
         response = self.anonymous.get(
             reverse("list_products"),
             {
-                'provider': self.provider.id,
-                'status': Product.ACCEPTED
+                "provider": self.provider.id,
+                "status": Product.ACCEPTED
             },
             content_type="application/json",
         )
@@ -235,15 +235,15 @@ class ListAllActiveProductsOfProvider(BaseTestCase):
         response = self.admin_client.get(
             reverse("list_products"),
             {
-                'provider': self.provider.id,
-                'status': Product.ACCEPTED
+                "provider": self.provider.id,
+                "status": Product.ACCEPTED
             },
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), 5)
         for product in result:
-            self.assertEqual(product['provider'], self.provider.name)
+            self.assertEqual(product["provider"], self.provider.name)
 
 
 class ListAllProductSelectOptions(BaseTestCase):
@@ -275,7 +275,68 @@ class ListAllProductSelectOptions(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         result = json.loads(json.dumps(response.data))
-        self.assertEqual(len(result['laboratories']), self.lab_quantity)
-        self.assertEqual(len(result['categories']), self.category_quantity)
+        self.assertEqual(len(result["laboratories"]), self.lab_quantity)
+        self.assertEqual(len(result["categories"]), self.category_quantity)
         self.assertEqual(len(
-            result['animal_groups']), self.animal_groups_quantity)
+            result["animal_groups"]), self.animal_groups_quantity)
+
+
+class RequestProductPriceChange(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.provider = ProviderFactory.create(user=self.provider_user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+
+        self.product = ProductFactory.create(
+            provider=self.provider,
+            category=category,
+            laboratory=laboratory
+        )
+        self.expected_price = 500.
+        self.valid_payload = {
+            "price": self.expected_price,
+            "token": self.provider.token,
+            "product": self.product.pk,
+        }
+        self.invalid_payload = {
+            "price": self.expected_price,
+            "product": self.product.pk,
+            "token": "12345678",
+        }
+
+    def test_product_price_change_request_should_be_successful(self) -> None:
+        response = self.provider_client.put(
+            reverse("request_price_change"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+
+        result = json.loads(json.dumps(response.data))
+
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertEqual(float(result["new_price"]), self.expected_price)
+
+        self.provider.refresh_from_db(fields=["token_used"])
+        self.assertEqual(self.provider.token_used, True)
+
+    def test_product_price_change_request_should_fail_with_no_access(self) -> None:
+        response = self.service_client.put(
+            reverse("request_price_change"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_product_price_change_request_should_fail_with_invalid_token(
+        self,
+    ) -> None:
+        response = self.provider_client.put(
+            reverse("request_price_change"),
+            data=json.dumps(self.invalid_payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
