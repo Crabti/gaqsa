@@ -94,7 +94,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
       refresh,
       expires: parsedToken.experies,
       user: {
-        id: 0,
+        id: parsedToken.id,
         created_at: '',
         updated_at: '',
         email: '',

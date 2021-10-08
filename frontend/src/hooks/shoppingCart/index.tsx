@@ -1,5 +1,5 @@
 import { Product } from '@types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export interface ShoppingCartProductType {
   product: Product;
@@ -10,7 +10,11 @@ export interface ShoppingCartType {
     products: ShoppingCartProductType[];
     total: number;
     addProducts: (newProduct: ShoppingCartProductType) => void;
+    removeProducts: (newProduct: ShoppingCartProductType) => void;
+    clear: () => void;
 }
+
+export const LOCAL_STORAGE_KEY = 'shoppingCart';
 
 export const ShoppingCartContext = (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -50,8 +54,48 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     persistProducts([...products, newProduct]);
   };
 
+  const removeProducts = (newProduct: ShoppingCartProductType): void => {
+    const productExist = products.find(
+      (e) => newProduct.product.id === e.product.id,
+    );
+
+    if (productExist?.amount === 1) {
+      persistProducts(
+        products.filter((e) => newProduct.product.id !== e.product.id),
+      );
+    } else {
+      persistProducts(
+        products.map((e) => (e.product.id === newProduct.product.id
+          ? { ...e, amount: e.amount + newProduct.amount }
+          : e)),
+      );
+    }
+  };
+
+  const retrieveState = (): void => {
+    const stored = localStorage.getItem('shoppingCart');
+    if (stored) {
+      const parsedStored = JSON.parse(stored);
+      setProducts(parsedStored.products);
+      setTotal(parsedStored.total);
+    }
+  };
+
+  const clear = (): void => {
+    persistProducts([]);
+  };
+
+  useEffect(() => {
+    if (products.length === 0) {
+      retrieveState();
+    }
+  }, [products, total]);
+
   return (
-    <ShoppingCartContext.Provider value={{ products, total, addProducts }}>
+    <ShoppingCartContext.Provider value={{
+      products, total, addProducts, removeProducts, clear,
+    }}
+    >
       {children}
     </ShoppingCartContext.Provider>
   );

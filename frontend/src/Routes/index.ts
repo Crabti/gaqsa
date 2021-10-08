@@ -2,6 +2,7 @@ import { AppstoreOutlined, MedicineBoxOutlined } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
+import OrderCreateOrder from 'views/Order.CreateOrder';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
@@ -81,6 +82,13 @@ const ordersRoutes: Routes = {
     verboseName: 'Pedidos Realizados',
     showInMenu: LIST_REQUISITIONS,
     hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+  },
+  createOrder: {
+    path: '/pedidos/create',
+    view: OrderCreateOrder,
+    verboseName: 'Realizar pedido',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
   },
 };
 
