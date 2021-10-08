@@ -51,9 +51,9 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       clear();
       notification.success({
         message: '¡Petición de orden creado exitosamente!',
-        description: 'Su petición sera validado por un administrador proxima'
-            + 'proximamente. Sera notificado ya que esta petición '
-            + 'cambie de estado',
+        description: 'Su orden de compra ha sido recibida y será procesada'
+            + 'El proveedor le informará lo mas pronto posible '
+            + 'el estatus de su solicitud.',
       });
       history.replace('/');
 

@@ -88,6 +88,7 @@ const ordersRoutes: Routes = {
     view: OrderCreateOrder,
     verboseName: 'Realizar pedido',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
   },
 };
 
