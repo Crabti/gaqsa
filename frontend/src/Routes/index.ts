@@ -64,7 +64,7 @@ export const productRoutes: Routes = {
     view: ProductsListProducts,
     verboseName: 'Productos Existentes',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin),
+    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
 };
 
