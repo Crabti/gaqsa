@@ -22,16 +22,7 @@ class ListOrders(generics.ListAPIView):
             return Order.objects.all()
 
 
-class CreateOrder(generics.CreateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
-
-    def prev_save(self, obj):
-        print(self.request)
-        obj.user = self.request.user.pk
-
-
-class CreateOrder2(APIView):
+class CreateOrder(APIView):
     def post(self, request):
         order_serializer = OrderSerializer(
             data={"user": request.user.pk}
