@@ -71,7 +71,7 @@ class ListProductSelectOptions(ObjectMultipleModelAPIView):
 class RequestPriceChange(APIView):
     permission_classes = [IsProvider]
 
-    def put(self, request: Request) -> Response:
+    def patch(self, request: Request) -> Response:
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()

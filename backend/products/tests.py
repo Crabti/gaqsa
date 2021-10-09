@@ -307,7 +307,7 @@ class RequestProductPriceChange(BaseTestCase):
         }
 
     def test_product_price_change_request_should_be_successful(self) -> None:
-        response = self.provider_client.put(
+        response = self.provider_client.patch(
             reverse("request_price_change"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
@@ -322,7 +322,7 @@ class RequestProductPriceChange(BaseTestCase):
         self.assertEqual(self.provider.token_used, True)
 
     def test_product_price_change_request_should_fail_with_no_access(self) -> None:
-        response = self.service_client.put(
+        response = self.service_client.patch(
             reverse("request_price_change"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
@@ -332,7 +332,7 @@ class RequestProductPriceChange(BaseTestCase):
     def test_product_price_change_request_should_fail_with_invalid_token(
         self,
     ) -> None:
-        response = self.provider_client.put(
+        response = self.provider_client.patch(
             reverse("request_price_change"),
             data=json.dumps(self.invalid_payload),
             content_type="application/json",
