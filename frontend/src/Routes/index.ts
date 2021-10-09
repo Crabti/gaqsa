@@ -50,7 +50,7 @@ export const productRoutes: Routes = {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
     verboseName: 'Modificar producto',
-    hasAccess: ((auth) => auth.isAdmin),
+    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
   listPendingProduct: {
     path: '/productos/pendientes',
@@ -64,7 +64,7 @@ export const productRoutes: Routes = {
     view: ProductsListProducts,
     verboseName: 'Productos Existentes',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin),
+    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
 };
 

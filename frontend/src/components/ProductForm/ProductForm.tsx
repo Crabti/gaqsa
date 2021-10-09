@@ -27,8 +27,9 @@ const ProductForm: React.FC<Props> = ({
   onFinishFailed,
   form,
   isLoading,
-  isUpdate,
   options,
+  isUpdate,
+  disabledFields,
 }) => {
   const [isProductRejected, setIsProductRejected] = useState(false);
 
@@ -57,8 +58,14 @@ const ProductForm: React.FC<Props> = ({
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="price" label="Precio" rules={[{ required: true }]}>
+          <Form.Item
+            name="price"
+            label="Precio"
+            rules={[{ required: true }]}
+            tooltip={disabledFields?.price}
+          >
             <InputNumber
+              disabled={!!disabledFields?.price}
               min={0.01}
               style={{ width: '100%' }}
               formatter={(value) => `$ ${value}`.replace(
