@@ -126,6 +126,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
           price: (
             'Da click en el botón de arriba para solicitar cambio de precio.'
           ),
+          key: 'Solo administradores pueden actualizar este campo.',
         }}
         isUpdate
       />
