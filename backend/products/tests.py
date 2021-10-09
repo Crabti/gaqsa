@@ -322,7 +322,9 @@ class RequestProductPriceChange(BaseTestCase):
         self.provider.refresh_from_db(fields=["token_used"])
         self.assertEqual(self.provider.token_used, True)
 
-    def test_product_price_change_request_should_fail_with_no_access(self) -> None:
+    def test_product_price_change_request_should_fail_with_no_access(
+            self,
+    ) -> None:
         response = self.service_client.patch(
             reverse("request_price_change", kwargs=self.kwargs),
             data=json.dumps(self.valid_payload),
@@ -340,4 +342,3 @@ class RequestProductPriceChange(BaseTestCase):
         )
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-
