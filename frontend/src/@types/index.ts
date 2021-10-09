@@ -16,6 +16,7 @@ import {
   Requisition, CreateRequisitionForm, UpdateRequisitionForm,
 } from './order';
 import User from './user';
+import Provider from './provider';
 
 export type {
   AnimalGroup,
@@ -37,4 +38,5 @@ export type {
   UpdateRequisitionForm,
   UpdateProductForm,
   User,
+  Provider,
 };
