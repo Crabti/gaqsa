@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
-import { Typography } from 'antd';
+import { useHistory } from 'react-router-dom';
 import useNavigation from 'hooks/navigation';
+import { PageHeader } from './Title.styled';
+import { TitleProps } from './Title.type';
 
-interface TitleProps {
-  viewName: string;
-  parentName: string;
-}
-
-const Title: React.FC<TitleProps> = ({ viewName, parentName }) => {
+const Title: React.FC<TitleProps> = ({ viewName, parentName, extra }) => {
   const { setViewName, setParentName } = useNavigation();
+  const history = useHistory();
 
   useEffect(() => {
     document.title = `Gaqsa | ${parentName} | ${viewName}`;
@@ -17,11 +15,11 @@ const Title: React.FC<TitleProps> = ({ viewName, parentName }) => {
   }, [setViewName, setParentName, viewName, parentName]);
 
   return (
-    <Typography style={{ marginBottom: 50 }}>
-      <Typography.Title level={4}>
-        { viewName }
-      </Typography.Title>
-    </Typography>
+    <PageHeader
+      onBack={() => history.goBack()}
+      title={viewName}
+      extra={extra}
+    />
   );
 };
 

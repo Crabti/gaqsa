@@ -1,7 +1,7 @@
-¿Qué hace este PR?
+## ¿Qué hace este PR?
 
-¿Cuáles son los tickets relevantes de JIRA?
+## ¿Cuáles son los tickets relevantes de JIRA?
 
-Screenshots (Si aplica)
+## Screenshots (Si aplica)
 
-Preguntas
+## Preguntas

@@ -12,16 +12,23 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined } from '@ant-design/icons';
+import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
-import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
+import {
+  SHOW_ADD_TO_CART_BTN,
+  SHOW_EDIT_PRODUCT,
+} from 'constants/featureFlags';
+import { Actions } from './Products.ListProducts.styled';
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const [isLoading, setLoading] = useState(true);
+  const { isClient } = useAuth();
+  const [isLoading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
   const { addProducts } = useShoppingCart();
+  const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -83,32 +90,35 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'price',
     },
     {
-      title: 'IVA',
-      dataIndex: 'iva',
-      key: 'iva',
-    },
-    {
-      title: 'IEPS',
-      dataIndex: 'ieps',
-      key: 'ieps',
-    },
-    {
       title: 'Acciones',
       dataIndex: 'action',
       key: 'action',
-      render: (id: number, product: Product) => (
-        <Tooltip title="Añadir al carrito">
-          { SHOW_ADD_TO_CART_BTN && (
-          <Button
-            shape="circle"
-            icon={<PlusOutlined />}
-            onClick={() => addProducts({
-              product: { ...product },
-              amount: 1,
-            })}
-          />
+      render: (_: number, product: Product) => (
+        <Actions>
+          {shouldShowAddToCard && (
+            <Tooltip title="Añadir al carrito">
+              <Button
+                shape="circle"
+                icon={<PlusOutlined />}
+                onClick={() => addProducts({
+                  product: { ...product },
+                  amount: 1,
+                })}
+              />
+            </Tooltip>
           )}
-        </Tooltip>
+          {SHOW_EDIT_PRODUCT && (
+            <Tooltip title="Editar producto">
+              <Button
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() => (
+                  history.push(`/productos/${product.id}/modificar`)
+                )}
+              />
+            </Tooltip>
+          )}
+        </Actions>
       ),
     },
   ];

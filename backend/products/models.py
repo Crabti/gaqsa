@@ -8,7 +8,7 @@ KEY_LEN = 8
 
 def generate_unique_key():
     while True:
-        key = ''.join(sample(ascii_uppercase, KEY_LEN))
+        key = "".join(sample(ascii_uppercase, KEY_LEN))
         if not Product.objects.filter(key=key).exists():
             return key
 
@@ -20,7 +20,7 @@ class Category(models.Model):
         max_length=150, verbose_name="Nombre de la categoría")
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
 
 class Laboratory(models.Model):
@@ -30,7 +30,7 @@ class Laboratory(models.Model):
         max_length=300, verbose_name="Nombre del laboratorio")
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
 
 class AnimalGroup(models.Model):
@@ -40,14 +40,14 @@ class AnimalGroup(models.Model):
         max_length=300, verbose_name="Nombre de especie")
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
 
 
 class Product(models.Model):
-    ACCEPTED = 'Aceptado'
-    PENDING = 'Pendiente'
-    REJECTED = 'Rechazado'
-    INACTIVE = 'Inactivo'
+    ACCEPTED = "Aceptado"
+    PENDING = "Pendiente"
+    REJECTED = "Rechazado"
+    INACTIVE = "Inactivo"
     STATUSES = [
         (ACCEPTED, ACCEPTED),
         (PENDING, PENDING),
@@ -96,5 +96,34 @@ class Product(models.Model):
     laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f"{self.key} - {self.provider.name} \
-         - {self.name} - {self.presentation} - {self.status}"
+        return (
+            f"{self.key} - {self.provider.name}"
+            f" - {self.name} - {self.presentation} - {self.status}"
+        )
+
+
+class ChangePriceRequest(models.Model):
+    ACCEPTED = "Aceptado"
+    PENDING = "Pendiente"
+    REJECTED = "Rechazado"
+    STATUSES = [
+        (ACCEPTED, ACCEPTED),
+        (PENDING, PENDING),
+        (REJECTED, REJECTED),
+    ]
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    new_price = models.DecimalField(
+        decimal_places=2, max_digits=10, verbose_name="Nuevo Precio",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        default=PENDING,
+        verbose_name="Estado de la solucitud",
+    )
+
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)

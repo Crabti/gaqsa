@@ -4,6 +4,7 @@ import {
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
+import OrderCreateOrder from 'views/Order.CreateOrder';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
@@ -47,13 +48,13 @@ export const productRoutes: Routes = {
     view: ProductsCreateForm,
     verboseName: 'Alta de Producto',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+    hasAccess: ((auth) => auth.isProvider),
   },
   updateProduct: {
     path: '/productos/:id/modificar',
     view: ProductsUpdateForm,
     verboseName: 'Modificar producto',
-    hasAccess: ((auth) => auth.isAdmin),
+    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
   listPendingProduct: {
     path: '/productos/pendientes',
@@ -67,7 +68,7 @@ export const productRoutes: Routes = {
     view: ProductsListProducts,
     verboseName: 'Productos Existentes',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin),
+    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
 };
 
@@ -85,6 +86,13 @@ const ordersRoutes: Routes = {
     verboseName: 'Pedidos Realizados',
     showInMenu: LIST_REQUISITIONS,
     hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+  },
+  createOrder: {
+    path: '/pedidos/create',
+    view: OrderCreateOrder,
+    verboseName: 'Realizar pedido',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
   },
 };
 

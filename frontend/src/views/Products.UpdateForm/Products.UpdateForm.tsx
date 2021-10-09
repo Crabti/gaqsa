@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
+  Button,
   Form,
   notification,
 } from 'antd';
@@ -14,12 +15,16 @@ import ProductForm from 'components/ProductForm';
 import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { PRODUCTS_OPTIONS_ROOT } from 'settings';
+import RequestPriceUpdateModal from 'components/Modals/RequestPriceUpdateModal';
+import useAuth from 'hooks/useAuth';
 
 const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
+  const { isProvider } = useAuth();
   const [isLoading, setLoading] = useState(false);
+  const [visible, setIsVisible] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | undefined>(undefined);
   const [options, setOptions] = useState<ProductOptions | undefined>(undefined);
@@ -75,7 +80,6 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async (values: UpdateProductForm) : Promise<void> => {
     setLoading(true);
-    // TODO: Get provider id from user
     const [, error] = await backend.products.updateOne(id, {
       ...values,
     });
@@ -92,13 +96,25 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
     setLoading(false);
   };
 
+  const onCloseModal = (): void => {
+    setIsVisible(false);
+  };
+
   if (isLoading || !options) {
     return <LoadingIndicator />;
   }
 
   return (
     <Content>
-      <Title viewName={verboseName} parentName={parentName} />
+      <Title
+        viewName={verboseName}
+        parentName={parentName}
+        extra={isProvider && [
+          <Button type="primary" onClick={() => setIsVisible(true)}>
+            Solicitar cambio de precio
+          </Button>,
+        ]}
+      />
       <ProductForm
         form={form}
         onFinish={onFinish}
@@ -106,7 +122,20 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
         onFinishFailed={onFinishFailed}
         initialState={product as UpdateProductForm}
         options={options}
+        disabledFields={form.getFieldValue('token') ? undefined : {
+          price: (
+            'Da click en el botón de arriba para solicitar cambio de precio.'
+          ),
+          key: 'Solo administradores pueden actualizar este campo.',
+        }}
         isUpdate
+      />
+      <RequestPriceUpdateModal
+        visible={visible}
+        onClose={onCloseModal}
+        currentPrice={product ? product.price : 0}
+        productId={product ? product.id : 0}
+        productName={product ? product.name : ''}
       />
     </Content>
   );

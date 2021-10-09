@@ -2,12 +2,6 @@ from .models import Order, Requisition
 from rest_framework import serializers
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = '__all__'
-
-
 class RequisitionSerializer(serializers.ModelSerializer):
     provider = serializers.SlugRelatedField(
         read_only=True,
@@ -21,6 +15,18 @@ class RequisitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Requisition
+        fields = '__all__'
+
+
+class CreateRequisitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requisition
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
         fields = '__all__'
 
 
