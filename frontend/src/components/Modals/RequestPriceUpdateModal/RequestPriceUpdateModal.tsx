@@ -36,7 +36,7 @@ const RequestPriceUpdateModal: React.FC<Props> = ({
     notification.success({
       message: (
         '¡Solicitud de cambio de precio enviada exitosamente!'
-        + 'Le notificaremos cuando la pretición sea revisada.'
+        + ' Le notificaremos cuando la pretición sea revisada.'
       ),
     });
 
