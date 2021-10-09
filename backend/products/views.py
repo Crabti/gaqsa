@@ -71,7 +71,7 @@ class ListProductSelectOptions(ObjectMultipleModelAPIView):
 class RequestPriceChange(APIView):
     permission_classes = [IsProvider]
 
-    def patch(self, request: Request) -> Response:
+    def patch(self, request: Request, pk: int) -> Response:
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()
@@ -82,7 +82,7 @@ class RequestPriceChange(APIView):
         data = {
             "new_price": request.data["price"],
             "provider": provider.pk,
-            "product": request.data["product"],
+            "product": pk,
         }
 
         serializer = CreateChangePriceRequest(data=data)

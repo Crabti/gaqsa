@@ -305,10 +305,11 @@ class RequestProductPriceChange(BaseTestCase):
             "product": self.product.pk,
             "token": "12345678",
         }
+        self.kwargs = {"pk": self.product.pk}
 
     def test_product_price_change_request_should_be_successful(self) -> None:
         response = self.provider_client.patch(
-            reverse("request_price_change"),
+            reverse("request_price_change", kwargs=self.kwargs),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
@@ -323,7 +324,7 @@ class RequestProductPriceChange(BaseTestCase):
 
     def test_product_price_change_request_should_fail_with_no_access(self) -> None:
         response = self.service_client.patch(
-            reverse("request_price_change"),
+            reverse("request_price_change", kwargs=self.kwargs),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
@@ -333,7 +334,7 @@ class RequestProductPriceChange(BaseTestCase):
         self,
     ) -> None:
         response = self.provider_client.patch(
-            reverse("request_price_change"),
+            reverse("request_price_change", kwargs=self.kwargs),
             data=json.dumps(self.invalid_payload),
             content_type="application/json",
         )
