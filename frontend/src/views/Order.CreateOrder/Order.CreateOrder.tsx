@@ -11,7 +11,9 @@ import {
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
-import { FontSizeOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  MinusOutlined, PlusOutlined,
+} from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
 import { Product } from '@types';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
