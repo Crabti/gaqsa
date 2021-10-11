@@ -8,6 +8,9 @@ export interface ShoppingCartProductType {
 
 export interface ShoppingCartType {
     products: ShoppingCartProductType[];
+    subtotal: number;
+    subieps: number;
+    subiva: number;
     total: number;
     addProducts: (newProduct: ShoppingCartProductType) => void;
     removeProducts: (newProduct: ShoppingCartProductType) => void;
@@ -24,21 +27,37 @@ export const ShoppingCartContext = (
 export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   const [products, setProducts] = useState<ShoppingCartProductType[]>([]);
   const [total, setTotal] = useState<ShoppingCartType['total']>(0);
+  const [subtotal, setSubtotal] = useState<ShoppingCartType['subtotal']>(0);
+  const [subieps, setSubieps] = useState<ShoppingCartType['subieps']>(0);
+  const [subiva, setSubiva] = useState<ShoppingCartType['subiva']>(0);
 
   const persistProducts = (newProducts: ShoppingCartProductType[]): void => {
     setProducts(newProducts);
 
+    let newSubtotal = 0;
+    let newIeps = 0;
+    let newIVA = 0;
     let newTotal = 0;
 
     newProducts.forEach((e) => {
-      newTotal += e.amount * e.product.price;
+      newSubtotal += e.amount * e.product.price;
+      newIeps += e.amount * e.product.ieps * e.product.price;
+      newIVA += e.amount * e.product.iva * e.product.price;
     });
 
+    newTotal = newSubtotal + newIVA + newIeps;
+
+    setSubtotal(newSubtotal);
+    setSubieps(newIeps);
+    setSubiva(newIVA);
     setTotal(newTotal);
 
     localStorage.setItem('shoppingCart', JSON.stringify({
       products: newProducts,
       total: newTotal,
+      subtotal: newSubtotal,
+      subieps: newIeps,
+      subiva: newIVA,
     }));
   };
 
@@ -78,6 +97,9 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
       const parsedStored = JSON.parse(stored);
       setProducts(parsedStored.products);
       setTotal(parsedStored.total);
+      setSubieps(parsedStored.subieps);
+      setSubiva(parsedStored.subiva);
+      setSubtotal(parsedStored.subtotal);
     }
   };
 
@@ -93,7 +115,8 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
 
   return (
     <ShoppingCartContext.Provider value={{
-      products, total, addProducts, removeProducts, clear,
+      // eslint-disable-next-line max-len
+      products, total, addProducts, removeProducts, clear, subieps, subiva, subtotal,
     }}
     >
       {children}

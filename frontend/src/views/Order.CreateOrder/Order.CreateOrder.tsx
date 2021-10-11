@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
+  Descriptions,
   Form,
   notification,
   Tooltip,
@@ -10,7 +11,7 @@ import {
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { FontSizeOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
 import { Product } from '@types';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
@@ -27,7 +28,8 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const { user } = useAuth();
 
   const {
-    products, addProducts, removeProducts, clear,
+    // eslint-disable-next-line max-len
+    products, addProducts, removeProducts, clear, total, subieps, subiva, subtotal,
   } = useShoppingCart();
 
   const onFinishFailed = () : void => {
@@ -151,22 +153,35 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
         onFinishFailed={onFinishFailed}
       >
         {isLoading || !products ? <LoadingIndicator /> : (
-          <Table
-            data={products.map((product) => ({
-              id: product.product.id,
-              name: product.product.name,
-              provider: product.product.provider,
-              presentation: product.product.presentation,
-              laboratory: product.product.laboratory,
-              category: product.product.category,
-              price: product.product.price,
-              iva: product.product.iva,
-              ieps: product.product.ieps,
-              amount: product.amount,
-            }))}
-            columns={columns}
-            rowKey=""
-          />
+          <>
+            <Descriptions title="Resumen de Orden">
+              <Descriptions.Item label="SubTotal">
+                {' '}
+                {subtotal}
+              </Descriptions.Item>
+              <Descriptions.Item label="IEPS">{subieps}</Descriptions.Item>
+              <Descriptions.Item label="IVA">{subiva}</Descriptions.Item>
+              <Descriptions.Item label="Total" span={2}>
+                {total}
+              </Descriptions.Item>
+            </Descriptions>
+            <Table
+              data={products.map((product) => ({
+                id: product.product.id,
+                name: product.product.name,
+                provider: product.product.provider,
+                presentation: product.product.presentation,
+                laboratory: product.product.laboratory,
+                category: product.product.category,
+                price: product.product.price,
+                iva: product.product.iva,
+                ieps: product.product.ieps,
+                amount: product.amount,
+              }))}
+              columns={columns}
+              rowKey=""
+            />
+          </>
         )}
         <FormButton
           loading={isLoading}
