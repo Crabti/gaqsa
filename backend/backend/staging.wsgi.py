@@ -18,5 +18,9 @@ def application(environ, start_response):
     os.environ['STAGING_DB_USER'] = environ['STAGING_DB_USER']
     os.environ['STAGING_DB_PASSWORD'] = environ['STAGING_DB_PASSWORD']
     os.environ['SECRET_KEY'] = environ['SECRET_KEY']
+    os.environ['EMAIL_HOST'] = environ['STAGING_EMAIL_HOST']
+    os.environ['EMAIL_HOST_USER'] = environ['STAGING_EMAIL_HOST_USER']
+    os.environ['EMAIL_HOST_PASSWORD'] = environ['STAGING_EMAIL_HOST_PASSWORD']
+    os.environ['EMAIL_PORT'] = environ['STAGING_EMAIL_PORT']
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
     return get_wsgi_application()(environ, start_response)
