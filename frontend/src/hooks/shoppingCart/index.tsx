@@ -74,21 +74,9 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const removeProducts = (newProduct: ShoppingCartProductType): void => {
-    const productExist = products.find(
-      (e) => newProduct.product.id === e.product.id,
+    persistProducts(
+      products.filter((e) => newProduct.product.id !== e.product.id),
     );
-
-    if (productExist?.amount === 1) {
-      persistProducts(
-        products.filter((e) => newProduct.product.id !== e.product.id),
-      );
-    } else {
-      persistProducts(
-        products.map((e) => (e.product.id === newProduct.product.id
-          ? { ...e, amount: e.amount + newProduct.amount }
-          : e)),
-      );
-    }
   };
 
   const retrieveState = (): void => {

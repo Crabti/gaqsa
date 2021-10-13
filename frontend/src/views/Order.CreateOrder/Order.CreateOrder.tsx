@@ -5,6 +5,7 @@ import {
   Button,
   Descriptions,
   Form,
+  InputNumber,
   notification,
   Tooltip,
 } from 'antd';
@@ -14,7 +15,7 @@ import { useBackend } from 'integrations';
 import {
   MinusOutlined, PlusOutlined,
 } from '@ant-design/icons';
-import useShoppingCart from 'hooks/shoppingCart';
+import useShoppingCart, { ShoppingCartProductType, ShoppingCartType } from 'hooks/shoppingCart';
 import { Product } from '@types';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 import LoadingIndicator from 'components/LoadingIndicator';
@@ -110,6 +111,18 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'Cantidad',
       dataIndex: 'amount',
       key: 'amount',
+      render: (id: number, product: Product & {amount: string}) => (
+        <InputNumber<string>
+          defaultValue={product.amount}
+          min="1"
+          step="1"
+          // eslint-disable-next-line max-len
+          onChange={(event) => addProducts({
+            product: { ...product },
+            amount: (Number(event) - Number(product.amount)),
+          })}
+        />
+      ),
     },
     {
       title: 'Acciones',
@@ -117,19 +130,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       key: 'action',
       render: (id: number, product: Product) => (
         <>
-          <Tooltip title="Añadir al carrito">
-            {SHOW_ADD_TO_CART_BTN && (
-            <Button
-              shape="circle"
-              icon={<PlusOutlined />}
-              onClick={() => addProducts({
-                product: { ...product },
-                amount: 1,
-              })}
-            />
-            )}
-          </Tooltip>
-          <Tooltip title="Reducir al carrito">
+          <Tooltip title="Eliminar del carrito">
             {SHOW_ADD_TO_CART_BTN && (
             <Button
               shape="circle"
