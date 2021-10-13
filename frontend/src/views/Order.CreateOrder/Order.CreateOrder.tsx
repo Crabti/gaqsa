@@ -13,9 +13,9 @@ import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
-  MinusOutlined, PlusOutlined,
+  MinusOutlined,
 } from '@ant-design/icons';
-import useShoppingCart, { ShoppingCartProductType, ShoppingCartType } from 'hooks/shoppingCart';
+import useShoppingCart from 'hooks/shoppingCart';
 import { Product } from '@types';
 import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 import LoadingIndicator from 'components/LoadingIndicator';
