@@ -155,16 +155,16 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
           <>
             <Descriptions title="Resumen de Orden">
               <Descriptions.Item label="SubTotal">
-                {subtotal.toFixed(2)}
+                {`$${subtotal.toFixed(2)}`}
               </Descriptions.Item>
               <Descriptions.Item label="IEPS">
-                {subieps.toFixed(2)}
+                {`$${subieps.toFixed(2)}`}
               </Descriptions.Item>
               <Descriptions.Item label="IVA">
-                {subiva.toFixed(2)}
+                {`$${subiva.toFixed(2)}`}
               </Descriptions.Item>
               <Descriptions.Item label="Total" span={2}>
-                {total.toFixed(2)}
+                {`$${total.toFixed(2)}`}
               </Descriptions.Item>
             </Descriptions>
             <Table
