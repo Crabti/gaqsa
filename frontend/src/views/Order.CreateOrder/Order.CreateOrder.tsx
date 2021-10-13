@@ -17,7 +17,6 @@ import {
 } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
 import { Product } from '@types';
-import { SHOW_ADD_TO_CART_BTN } from 'constants/featureFlags';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
@@ -31,8 +30,8 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const { user } = useAuth();
 
   const {
-    // eslint-disable-next-line max-len
-    products, addProducts, removeProducts, clear, total, subieps, subiva, subtotal,
+    products, addProducts, removeProducts, clear, total, subieps, subiva,
+    subtotal,
   } = useShoppingCart();
 
   const onFinishFailed = () : void => {
@@ -116,7 +115,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
           defaultValue={product.amount}
           min="1"
           step="1"
-          // eslint-disable-next-line max-len
           onChange={(event) => addProducts({
             product: { ...product },
             amount: (Number(event) - Number(product.amount)),
@@ -131,7 +129,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       render: (id: number, product: Product) => (
         <>
           <Tooltip title="Eliminar del carrito">
-            {SHOW_ADD_TO_CART_BTN && (
             <Button
               shape="circle"
               icon={<MinusOutlined />}
@@ -140,7 +137,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 amount: -1,
               })}
             />
-            )}
           </Tooltip>
         </>
       ),
@@ -159,13 +155,16 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
           <>
             <Descriptions title="Resumen de Orden">
               <Descriptions.Item label="SubTotal">
-                {' '}
-                {subtotal}
+                {subtotal.toFixed(2)}
               </Descriptions.Item>
-              <Descriptions.Item label="IEPS">{subieps}</Descriptions.Item>
-              <Descriptions.Item label="IVA">{subiva}</Descriptions.Item>
+              <Descriptions.Item label="IEPS">
+                {subieps.toFixed(2)}
+              </Descriptions.Item>
+              <Descriptions.Item label="IVA">
+                {subiva.toFixed(2)}
+              </Descriptions.Item>
               <Descriptions.Item label="Total" span={2}>
-                {total}
+                {total.toFixed(2)}
               </Descriptions.Item>
             </Descriptions>
             <Table

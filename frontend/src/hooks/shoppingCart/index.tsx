@@ -40,7 +40,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     let newTotal = 0;
 
     newProducts.forEach((e) => {
-      newSubtotal += e.amount * e.product.price;
+      newSubtotal += (e.amount * e.product.price);
       newIeps += e.amount * e.product.ieps * e.product.price;
       newIVA += e.amount * e.product.iva * e.product.price;
     });
