@@ -20,7 +20,8 @@ def application(environ, start_response):
     os.environ['SECRET_KEY'] = environ['SECRET_KEY']
     os.environ['EMAIL_HOST'] = environ['PRODUCTION_EMAIL_HOST']
     os.environ['EMAIL_HOST_USER'] = environ['PRODUCTION_EMAIL_HOST_USER']
-    os.environ['EMAIL_HOST_PASSWORD'] = environ['PRODUCTION_EMAIL_HOST_PASSWORD']
+    os.environ['EMAIL_HOST_PASSWORD'] = \
+        environ['PRODUCTION_EMAIL_HOST_PASSWORD']
     os.environ['EMAIL_PORT'] = environ['PRODUCTION_EMAIL_PORT']
     os.environ['EMAIL_USE_SSL'] = True
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
