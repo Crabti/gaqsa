@@ -59,7 +59,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
             + 'El proveedor le informará lo mas pronto posible '
             + 'el estatus de su solicitud.',
       });
-      history.replace('/');
+      history.replace('/pedidos/historial');
 
       setLoading(false);
     }
