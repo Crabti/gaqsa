@@ -2,7 +2,7 @@ import json
 from http import HTTPStatus
 
 from django.urls import reverse
-# from django.core import mail
+from django.core import mail
 from offers.serializers.offer import CreateOfferSerializer
 
 from providers.factories.provider import ProviderFactory
@@ -58,10 +58,20 @@ class CreateOffer(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
+    def test_request_to_create_offer_with_invalid_role_should_fail(
+        self
+    ) -> None:
+        response = self.service_client.post(
+            reverse("create_offer"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
     def test_request_to_create_offer_with_valid_data_should_succeed(
         self,
     ) -> None:
-        # mail.outbox = []
+        mail.outbox = []
         response = self.provider_client.post(
             reverse("create_offer"),
             data=json.dumps(self.valid_payload),
@@ -69,4 +79,4 @@ class CreateOffer(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
-        # self.assertGreater(len(mail.outbox), 0)
+        self.assertGreater(len(mail.outbox), 0)
