@@ -88,6 +88,8 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
       setSubieps(parsedStored.subieps);
       setSubiva(parsedStored.subiva);
       setSubtotal(parsedStored.subtotal);
+    } else {
+      setProducts([]);
     }
   };
 
@@ -96,7 +98,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   useEffect(() => {
-    if (products.length === 0) {
+    if (products === undefined) {
       retrieveState();
     }
   }, [products, total]);
