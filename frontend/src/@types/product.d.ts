@@ -1,4 +1,4 @@
-import { AnimalGroup } from '@types';
+import { AnimalGroup, Offer } from '@types';
 import CommonType from './common';
 import Laboratory from './laboratory';
 import Category from './category';
@@ -18,6 +18,7 @@ export interface Product extends CommonType {
   laboratory: number | string;
   category: number | string;
   active_substance: string;
+  offer?: Offer;
 }
 
 export interface CreateProductForm {

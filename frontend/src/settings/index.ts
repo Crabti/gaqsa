@@ -6,3 +6,4 @@ export const PRODUCTS_OPTIONS_ROOT = '/options';
 export const ORDERS_ROOT = '/orders';
 export const REQUISITIONS_ROOT = `${ORDERS_ROOT}/requisitions`;
 export const PROVIDERS_ROOT = '/providers';
+export const OFFERS_ROOT = '/offers';

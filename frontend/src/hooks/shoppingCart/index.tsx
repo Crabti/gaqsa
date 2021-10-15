@@ -1,8 +1,9 @@
-import { Product } from '@types';
+import { Offer, Product } from '@types';
 import React, { useEffect, useState } from 'react';
 
 export interface ShoppingCartProductType {
   product: Product;
+  offer?: Offer;
   amount: number;
 }
 
@@ -25,6 +26,7 @@ export const ShoppingCartContext = (
 );
 
 export const ShoppingCartContextProvider: React.FC = ({ children }) => {
+  const [loaded, setLoaded] = useState<boolean>(false);
   const [products, setProducts] = useState<ShoppingCartProductType[]>([]);
   const [total, setTotal] = useState<ShoppingCartType['total']>(0);
   const [subtotal, setSubtotal] = useState<ShoppingCartType['subtotal']>(0);
@@ -40,16 +42,18 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     let newTotal = 0;
 
     newProducts.forEach((e) => {
-      newSubtotal += (e.amount * e.product.price);
-      newIeps += e.amount * e.product.ieps * e.product.price;
-      newIVA += e.amount * e.product.iva * e.product.price;
+      const { price } = e.product;
+
+      newSubtotal += (e.amount * price);
+
+      newIeps += e.amount * ((e.product.ieps / 100) * price);
+      newIVA += e.amount * ((e.product.iva / 100) * price);
     });
-
     newTotal = newSubtotal + newIVA + newIeps;
-
     setSubtotal(newSubtotal);
     setSubieps(newIeps);
     setSubiva(newIVA);
+
     setTotal(newTotal);
 
     localStorage.setItem('shoppingCart', JSON.stringify({
@@ -88,9 +92,8 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
       setSubieps(parsedStored.subieps);
       setSubiva(parsedStored.subiva);
       setSubtotal(parsedStored.subtotal);
-    } else {
-      setProducts([]);
     }
+    setLoaded(true);
   };
 
   const clear = (): void => {
@@ -98,10 +101,10 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   useEffect(() => {
-    if (products === undefined) {
+    if (!loaded) {
       retrieveState();
     }
-  }, [products, total]);
+  }, [loaded]);
 
   return (
     <ShoppingCartContext.Provider value={{

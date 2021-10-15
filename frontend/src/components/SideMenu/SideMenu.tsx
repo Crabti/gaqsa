@@ -26,7 +26,7 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
       >
         {Object.values(groups).map(
           (group) => {
-            if (!group.showInMenu) return null;
+            if (!group.showInMenu) { return null; }
 
             const Icon = group.icon || FileDoneOutlined;
 

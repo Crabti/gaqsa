@@ -17,6 +17,7 @@ import {
 } from './order';
 import User from './user';
 import Provider from './provider';
+import { Offer, CreateOfferForm } from './offer';
 
 export type {
   AnimalGroup,
@@ -39,4 +40,6 @@ export type {
   UpdateProductForm,
   User,
   Provider,
+  Offer,
+  CreateOfferForm,
 };
