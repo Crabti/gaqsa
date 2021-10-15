@@ -1,126 +1,121 @@
-import { User } from '@types';
-import React, { useState } from 'react';
+import { Product } from '@types';
+import React, { useEffect, useState } from 'react';
 
-export enum UserGroups {
-  ADMIN = 'Administrador',
-  CLIENT = 'Cliente',
-  PROVIDER = 'Proveedor',
+export interface ShoppingCartProductType {
+  product: Product;
+  amount: number;
 }
 
-export interface AuthType {
-  user?: User;
-  access?: string;
-  refresh?: string;
-  expires?: number;
-  isAdmin: boolean;
-  isClient: boolean;
-  isProvider: boolean;
+export interface ShoppingCartType {
+    products: ShoppingCartProductType[];
+    subtotal: number;
+    subieps: number;
+    subiva: number;
+    total: number;
+    addProducts: (newProduct: ShoppingCartProductType) => void;
+    removeProducts: (newProduct: ShoppingCartProductType) => void;
+    clear: () => void;
 }
 
-export const INITIAL_AUTH_STATE: AuthType = {
-  user: undefined,
-  access: undefined,
-  refresh: undefined,
-  expires: undefined,
-  isAdmin: false,
-  isClient: false,
-  isProvider: false,
-};
+export const LOCAL_STORAGE_KEY = 'shoppingCart';
 
-export interface BooleanGroups {
-  isAdmin: boolean;
-  isClient: boolean;
-  isProvider: boolean;
-}
-
-export const LOCAL_STORAGE_KEY = 'auth';
-
-export type SetTokensFunc = (access: string, refresh: string) => void;
-export type LogoutFunc = () => void;
-export type GetGroups = (groups: string[]) => BooleanGroups;
-
-export interface AuthContextType extends AuthType {
-  setTokens: SetTokensFunc;
-  logout: LogoutFunc;
-}
-
-export const AuthContext = React.createContext<AuthContextType>(
+export const ShoppingCartContext = (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  undefined!,
+  React.createContext<ShoppingCartType>(undefined!)
 );
 
-export const AuthContextProvider: React.FC = ({ children }) => {
-  const retrieveState = (): AuthType => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+export const ShoppingCartContextProvider: React.FC = ({ children }) => {
+  const [products, setProducts] = useState<ShoppingCartProductType[]>([]);
+  const [total, setTotal] = useState<ShoppingCartType['total']>(0);
+  const [subtotal, setSubtotal] = useState<ShoppingCartType['subtotal']>(0);
+  const [subieps, setSubieps] = useState<ShoppingCartType['subieps']>(0);
+  const [subiva, setSubiva] = useState<ShoppingCartType['subiva']>(0);
 
+  const persistProducts = (newProducts: ShoppingCartProductType[]): void => {
+    setProducts(newProducts);
+
+    let newSubtotal = 0;
+    let newIeps = 0;
+    let newIVA = 0;
+    let newTotal = 0;
+
+    newProducts.forEach((e) => {
+      newSubtotal += (e.amount * e.product.price);
+      newIeps += e.amount * e.product.ieps * e.product.price;
+      newIVA += e.amount * e.product.iva * e.product.price;
+    });
+
+    newTotal = newSubtotal + newIVA + newIeps;
+
+    setSubtotal(newSubtotal);
+    setSubieps(newIeps);
+    setSubiva(newIVA);
+    setTotal(newTotal);
+
+    localStorage.setItem('shoppingCart', JSON.stringify({
+      products: newProducts,
+      total: newTotal,
+      subtotal: newSubtotal,
+      subieps: newIeps,
+      subiva: newIVA,
+    }));
+  };
+
+  const addProducts = (newProduct: ShoppingCartProductType): void => {
+    if (products.some((e) => e.product.id === newProduct.product.id)) {
+      persistProducts(
+        products.map((e) => (e.product.id === newProduct.product.id
+          ? { ...e, amount: e.amount + newProduct.amount }
+          : e)),
+      );
+      return;
+    }
+    persistProducts([...products, newProduct]);
+  };
+
+  const removeProducts = (newProduct: ShoppingCartProductType): void => {
+    persistProducts(
+      products.filter((e) => newProduct.product.id !== e.product.id),
+    );
+  };
+
+  const retrieveState = (): void => {
+    const stored = localStorage.getItem('shoppingCart');
     if (stored) {
       const parsedStored = JSON.parse(stored);
-      return parsedStored;
+      setProducts(parsedStored.products);
+      setTotal(parsedStored.total);
+      setSubieps(parsedStored.subieps);
+      setSubiva(parsedStored.subiva);
+      setSubtotal(parsedStored.subtotal);
+    } else {
+      setProducts([]);
     }
-    return INITIAL_AUTH_STATE;
   };
 
-  const [authState, setAuthState] = useState<AuthType>(retrieveState);
-
-  const parseJwt = (token: string): any => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64).split('').map(
-        (c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`,
-      ).join(''),
-    );
-
-    return JSON.parse(jsonPayload);
+  const clear = (): void => {
+    persistProducts([]);
   };
 
-  const getGroups: GetGroups = (groups) => ({
-    isAdmin: groups.includes(UserGroups.ADMIN),
-    isClient: groups.includes(UserGroups.CLIENT),
-    isProvider: groups.includes(UserGroups.PROVIDER),
-  });
-
-  const persistState = (newState: AuthType): void => {
-    setAuthState(newState);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
-  };
-
-  const setTokens: SetTokensFunc = (access, refresh) => {
-    const parsedToken = parseJwt(access);
-    const groups = getGroups(parsedToken.groups);
-    const newState: AuthType = {
-      ...groups,
-      access,
-      refresh,
-      expires: parsedToken.experies,
-      user: {
-        id: parsedToken.id,
-        created_at: '',
-        updated_at: '',
-        email: '',
-        firstName: parsedToken.first_name,
-        lastName: parsedToken.last_name,
-        groups: parsedToken.groups,
-      },
-    };
-    persistState(newState);
-  };
-
-  const logout: LogoutFunc = () => {
-    setAuthState(INITIAL_AUTH_STATE);
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-  };
+  useEffect(() => {
+    if (products === undefined) {
+      retrieveState();
+    }
+  }, [products, total]);
 
   return (
-    <AuthContext.Provider value={{
-      ...authState, setTokens, logout,
+    <ShoppingCartContext.Provider value={{
+      // eslint-disable-next-line max-len
+      products, total, addProducts, removeProducts, clear, subieps, subiva, subtotal,
     }}
     >
       {children}
-    </AuthContext.Provider>
+    </ShoppingCartContext.Provider>
   );
 };
 
-const useAuth = (): AuthContextType => React.useContext(AuthContext);
+const useShoppingCart = (): ShoppingCartType => React.useContext(
+  ShoppingCartContext,
+);
 
-export default useAuth;
+export default useShoppingCart;
