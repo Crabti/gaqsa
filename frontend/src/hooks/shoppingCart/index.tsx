@@ -92,6 +92,8 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
       setSubieps(parsedStored.subieps);
       setSubiva(parsedStored.subiva);
       setSubtotal(parsedStored.subtotal);
+    } else {
+      setProducts([]);
     }
     setLoaded(true);
   };
