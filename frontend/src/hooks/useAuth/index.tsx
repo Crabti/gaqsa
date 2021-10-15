@@ -52,3 +52,75 @@ export const AuthContext = React.createContext<AuthContextType>(
 export const AuthContextProvider: React.FC = ({ children }) => {
   const retrieveState = (): AuthType => {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    if (stored) {
+      const parsedStored = JSON.parse(stored);
+      return parsedStored;
+    }
+    return INITIAL_AUTH_STATE;
+  };
+
+  const [authState, setAuthState] = useState<AuthType>(retrieveState);
+
+  const parseJwt = (token: string): any => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64).split('').map(
+        (c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`,
+      ).join(''),
+    );
+
+    return JSON.parse(jsonPayload);
+  };
+
+  const getGroups: GetGroups = (groups) => ({
+    isAdmin: groups.includes(UserGroups.ADMIN),
+    isClient: groups.includes(UserGroups.CLIENT),
+    isProvider: groups.includes(UserGroups.PROVIDER),
+  });
+
+  const persistState = (newState: AuthType): void => {
+    setAuthState(newState);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
+  };
+
+  const setTokens: SetTokensFunc = (access, refresh) => {
+    const parsedToken = parseJwt(access);
+    const groups = getGroups(parsedToken.groups);
+    const newState: AuthType = {
+      ...groups,
+      access,
+      refresh,
+      expires: parsedToken.experies,
+      user: {
+        id: parsedToken.id,
+        created_at: '',
+        updated_at: '',
+        email: '',
+        firstName: parsedToken.first_name,
+        lastName: parsedToken.last_name,
+        groups: parsedToken.groups,
+      },
+    };
+    persistState(newState);
+  };
+
+  const logout: LogoutFunc = () => {
+    setAuthState(INITIAL_AUTH_STATE);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+  };
+
+  return (
+    <AuthContext.Provider value={{
+      ...authState, setTokens, logout,
+    }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+const useAuth = (): AuthContextType => React.useContext(AuthContext);
+
+export default useAuth;
