@@ -1,0 +1,32 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h4>Se ha creado una nueva oferta del producto:</h4>
+  <h5>{{ offer.product.name }}</h5>
+  <h4>Con las siguientes propiedades:</h4>
+  <table style="width:100%">
+    <tr>
+      <th>
+        Atributo
+      </th>
+      <th>
+        Valor
+      </th>
+    </tr>
+    <tr>
+      <td>Porcentaje de descuento</td>
+      <td>{{ percentage }} %</td>
+    </tr>
+    <tr>
+      <td>Fecha de creación</td>
+      <td>{{ offer.created_at }}</td>
+    </tr>
+    <tr>    
+      <td>Fecha limite</td>
+      <td>{{ offer.ending_at }}</td>
+    </tr>
+  </table>
+{% endblock %}
+
