@@ -1,4 +1,5 @@
 from typing import Optional
+from order.models import Requisition
 
 from products.models import Product, ChangePriceRequest
 from django.dispatch import receiver

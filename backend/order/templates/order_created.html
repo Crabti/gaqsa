@@ -1,0 +1,33 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h4>EL SOCIO: {{ order }}</h4>
+    <h4>RFC: {{ order }} </h4>
+  </div>
+  <h4>Ha generado el siguiente pedido a su nombre:</h4>
+  <table style="width:100%">
+    <tr>
+      <th>
+        Producto
+      </th>
+      <th>
+        Cantidad Requerida
+      </th>
+    </tr>
+    {% for product in products %}
+    <tr>
+      {% if product.product.provider == provider %}
+      <th>
+        {{ product.product.name}}
+      </th>
+      <th>
+        {{ product.amount }}
+      </th>
+      {% endif %}
+    </tr>
+    {% endfor%}
+  </table>
+{% endblock %}
