@@ -77,9 +77,9 @@ class Product(models.Model):
     )
     ieps = models.DecimalField(
         decimal_places=2, max_digits=5, verbose_name="IEPS", default=0.0,
-            validators=[
-            MinValueValidator(0.00),
-            MaxValueValidator(100),
+        validators=[
+                MinValueValidator(0.00),
+                MaxValueValidator(100),
         ]
     )
     more_info = models.CharField(

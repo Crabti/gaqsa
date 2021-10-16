@@ -23,7 +23,8 @@ class Offer(models.Model):
 
     @property
     def active(self):
-        return not self.cancelled and datetime.today().timestamp() < self.ending_at.timestamp()
+        return not self.cancelled and \
+                datetime.today().timestamp() < self.ending_at.timestamp()
 
     def __str__(self):
         return f"{self.product.name} - ({self.created_at} - {self.ending_at}) \

@@ -22,6 +22,7 @@ import {
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
+import routes from 'Routes';
 import { Actions } from './Products.ListProducts.styled';
 
 interface OfferModal {
@@ -118,19 +119,35 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               <Button
                 shape="circle"
                 icon={<PlusOutlined />}
-                onClick={() => addProducts({
-                  product: {
-                    ...product,
-                    price: product.offer
-                      ? (
-                        product.price - product.price
+                onClick={() => {
+                  notification.success({
+                    message: 'Se ha agregado el producto al carrito.',
+                    description: 'Puede acceder a detalle de su pedido para'
+                    + ' confirmar su pedido',
+                    btn: (
+                      <Button
+                        type="primary"
+                        onClick={() => history.push(
+                          routes.order.routes.createOrder.path,
+                        )}
+                      >
+                        Ir a detalle
+                      </Button>),
+                  });
+                  addProducts({
+                    product: {
+                      ...product,
+                      price: product.offer
+                        ? (
+                          product.price - product.price
                         * product.offer.discount_percentage
-                      )
-                      : product.price,
-                  },
-                  amount: 1,
-                  offer: product.offer,
-                })}
+                        )
+                        : product.price,
+                    },
+                    amount: 1,
+                    offer: product.offer,
+                  });
+                }}
               />
             </Tooltip>
           )}
