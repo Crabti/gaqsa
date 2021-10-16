@@ -83,7 +83,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'presentation',
     },
     {
-      title: 'Susbtancia activa',
+      title: 'Substancia activa',
       dataIndex: 'active_substance',
       key: 'active_substance',
     },
@@ -163,10 +163,18 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
             </Tooltip>
           )}
           {shouldShowAddOffer && (
-            <Tooltip title="Crear nueva oferta para producto">
+            <Tooltip title={
+              product.offer !== null
+                ? 'Este producto ya cuenta con una oferta activa. '
+                   + 'Debe cancelar la oferta o esperar a que termine '
+                   + 'para poder crear una nueva.'
+                : 'Crear nueva oferta para producto'
+            }
+            >
               <Button
                 shape="circle"
                 icon={<TagOutlined />}
+                disabled={product.offer !== null}
                 onClick={() => (
                   setOfferModal({
                     visible: true,
