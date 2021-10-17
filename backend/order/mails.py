@@ -1,17 +1,8 @@
-from itertools import product
-from typing import Optional
-import order
-
-from order.models import Order, Requisition
-from django.dispatch import receiver
 from django.core import mail
-from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from order.serializers import RequisitionSerializer
 from providers.models import Provider
-
 
 
 def send_mail_on_create_order(order, providers, user, products):
@@ -26,10 +17,10 @@ def send_mail_on_create_order(order, providers, user, products):
             "products": products
         }
         get_email = Provider.objects.filter(name=provider).values('email').last()
-        email = get_email['email']
+        to_email = get_email['email']
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
-        to_emails = [email, "carlos.sanchez@crabti.com"]
+        to_emails = [to_email, "carlos.sanchez@crabti.com"]
         html_message = render_to_string(
             "order_created.html",
             context
