@@ -69,7 +69,7 @@ class CreateOrder(APIView):
             new_order, providers, request.user, request.data['products']
             )
         send_mail_on_create_order_user(
-            new_order,request.user, request.data['products']
+            new_order, request.user, request.data['products']
             )
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
