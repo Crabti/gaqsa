@@ -1,4 +1,5 @@
-from order.mails import send_mail_on_create_order
+from django.http import request
+from order.mails import send_mail_on_create_order, send_mail_on_create_order_user
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
@@ -11,6 +12,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from products.models import Product
+from users.models import User
 
 
 class ListOrders(generics.ListAPIView):
@@ -64,6 +66,7 @@ class CreateOrder(APIView):
 
         requisition_serializer.save()
         send_mail_on_create_order(new_order, providers, request.user, request.data['products'])
+        send_mail_on_create_order_user(new_order,request.user, request.data['products'])
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
 

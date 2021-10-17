@@ -4,9 +4,9 @@
 
 {% block content %}
   <div>
-    <h4>EL SOCIO: {{ user }}</h4>
+    <h4>Estimado: {{ user }}</h4>
   </div>
-  <h4>Ha generado el siguiente pedido a su nombre {{ provider }}:</h4>
+  <h4>Has generado el siguiente pedido:</h4>
   <table style="width:100%">
     <tr>
       <th>
@@ -18,14 +18,12 @@
     </tr>
     {% for product in products %}
     <tr>
-      {% if product.product.provider == provider %}
       <th>
         {{ product.product.name}}
       </th>
       <th>
         {{ product.amount }}
       </th>
-      {% endif %}
     </tr>
     {% endfor%}
   </table>

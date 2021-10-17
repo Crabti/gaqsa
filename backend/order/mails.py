@@ -10,13 +10,13 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from order.serializers import RequisitionSerializer
+from providers.models import Provider
 
 
 
 def send_mail_on_create_order(order, providers, user, products):
-    print(user)
     for provider  in providers:
-        title = f"Orden de compra - {order.pk} - Socio  "
+        title = f"Orden de compra - {order.pk} - Socio { user } "
         subject = f"GAQSA - {title}"
         context = {
             "pk": order.pk,
@@ -25,9 +25,11 @@ def send_mail_on_create_order(order, providers, user, products):
             "provider": provider,
             "products": products
         }
+        get_email = Provider.objects.filter(name=provider).values('email').last()
+        email = get_email['email']
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
-        to_emails = ["car_alf_98@icloud.com", "carlos.sanchez@crabti.com"]
+        to_emails = [email, "carlos.sanchez@crabti.com"]
         html_message = render_to_string(
             "order_created.html",
             context
@@ -41,3 +43,29 @@ def send_mail_on_create_order(order, providers, user, products):
             html_message=html_message,
             fail_silently=False,
         )
+
+def send_mail_on_create_order_user(order, user, products):
+    title = f"Orden de compra - {order.pk} - Socio { user } "
+    subject = f"GAQSA - {title}"
+    context = {
+        "pk": order.pk,
+        "user": user,
+        "title": title,
+        "products": products
+    }
+    from_email = "noreply@gaqsa.com"
+    # TODO: Cambiar correo de admin
+    to_emails = ["car_alf_98@icloud.com", "carlos.sanchez@crabti.com"]
+    html_message = render_to_string(
+        "order_create_user.html",
+        context
+    )
+    plain_message = strip_tags(html_message)
+    mail.send_mail(
+        subject,
+        plain_message,
+        from_email,
+        to_emails,
+        html_message=html_message,
+        fail_silently=False,
+    )
