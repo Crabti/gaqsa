@@ -6,7 +6,7 @@ from providers.models import Provider
 
 
 def send_mail_on_create_order(order, providers, user, products):
-    for provider  in providers:
+    for provider in providers:
         title = f"Orden de compra - {order.pk} - Socio { user } "
         subject = f"GAQSA - {title}"
         context = {
@@ -16,7 +16,9 @@ def send_mail_on_create_order(order, providers, user, products):
             "provider": provider,
             "products": products
         }
-        get_email = Provider.objects.filter(name=provider).values('email').last()
+        get_email = Provider.objects.filter(name=provider).values(
+            'email'
+            ).last()
         to_email = get_email['email']
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
@@ -34,6 +36,7 @@ def send_mail_on_create_order(order, providers, user, products):
             html_message=html_message,
             fail_silently=False,
         )
+
 
 def send_mail_on_create_order_user(order, user, products):
     title = f"Orden de compra - {order.pk} - Socio { user } "
