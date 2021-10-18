@@ -11,6 +11,7 @@ from products.factories.animal_groups import AnimalGroupFactory
 
 from products.models import Product
 from products.serializers.product import (
+    CreateProductAsAdminSerializer,
     CreateProductSerializer,
     ProductSerializer
 )
@@ -58,6 +59,50 @@ class RegisterRequestToCreateProduct(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
+        self.assertGreater(len(mail.outbox), 0)
+
+
+class RegisterRequestToCreateProductAsAdmin(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        user = UserFactory.create()
+        provider = ProviderFactory.create(user=user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        animal_groups = AnimalGroupFactory.create_batch(5)
+        product = ProductFactory.build(
+            category=category, laboratory=laboratory,
+            provider=provider
+        )
+        self.valid_payload = CreateProductAsAdminSerializer(
+            product,
+        ).data
+
+        # Override serializer field to add m2m objects
+        self.valid_payload["animal_groups"] = [
+            group.id for group in animal_groups]
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("create_product"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_request_to_create_product_with_valid_data_should_succeed(
+        self,
+    ) -> None:
+        mail.outbox = []
+        response = self.admin_client.post(
+            reverse("create_product"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        # As admin, product should have initial state as accepted
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(result['status'], Product.ACCEPTED)
         self.assertGreater(len(mail.outbox), 0)
 
 
