@@ -1,3 +1,6 @@
+# from django.http import request
+from order.mails import (
+    send_mail_on_create_order, send_mail_on_create_order_user)
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
@@ -34,8 +37,11 @@ class CreateOrder(APIView):
         new_order = order_serializer.save()
 
         data = []
+        providers = []
+        products = request.data['products']
 
-        for product in request.data['products']:
+        for product in products:
+            id_provider = product['product']['provider']
             data.append({
                 'order': new_order.pk,
                 'provider': Product.objects.get(
@@ -45,6 +51,8 @@ class CreateOrder(APIView):
                 'quantity_requested': product['amount'],
                 'price': float(product['product']['price'])
             })
+            if id_provider not in providers:
+                providers.append(id_provider)
 
         requisition_serializer = CreateRequisitionSerializer(
             data=data, many=True
@@ -56,7 +64,12 @@ class CreateOrder(APIView):
                 )
 
         requisition_serializer.save()
-
+        send_mail_on_create_order(
+            new_order, providers, products
+            )
+        send_mail_on_create_order_user(
+            new_order, products
+            )
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
 
