@@ -38,9 +38,9 @@ class CreateOrder(APIView):
 
         data = []
         providers = []
-        products = []
+        products = request.data['products']
 
-        for product in request.data['products']:
+        for product in products:
             id_provider = product['product']['provider']
             data.append({
                 'order': new_order.pk,
@@ -51,7 +51,6 @@ class CreateOrder(APIView):
                 'quantity_requested': product['amount'],
                 'price': float(product['product']['price'])
             })
-            products.append(product)
             if id_provider not in providers:
                 providers.append(id_provider)
 
@@ -66,10 +65,10 @@ class CreateOrder(APIView):
 
         requisition_serializer.save()
         send_mail_on_create_order(
-            new_order, providers, request.user, request.data['products']
+            new_order, providers, products
             )
         send_mail_on_create_order_user(
-            new_order, request.user, request.data['products']
+            new_order, products
             )
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
