@@ -3,7 +3,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from providers.models import Provider
-from users.models import User
 
 
 def send_mail_on_create_order(order, providers, products):
@@ -54,7 +53,7 @@ def send_mail_on_create_order_user(order, products):
         "products": products
     }
     from_email = "noreply@gaqsa.com"
-    
+
     # TODO: Cambiar correo de admin
     to_emails = [order.user.email, "temp@temp.com"]
     html_message = render_to_string(
