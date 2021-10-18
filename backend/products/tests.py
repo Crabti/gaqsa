@@ -13,7 +13,8 @@ from products.models import Product
 from products.serializers.product import (
     CreateProductAsAdminSerializer,
     CreateProductSerializer,
-    ProductSerializer
+    ProductSerializer,
+    UpdateProductSerializer
 )
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
@@ -58,7 +59,6 @@ class RegisterRequestToCreateProduct(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
-        self.assertEqual(response.data, self.valid_payload)
         self.assertGreater(len(mail.outbox), 0)
 
 
@@ -182,7 +182,7 @@ class UpdateProduct(BaseTestCase):
         mail.outbox = []
         new_product = self.product
         new_product.status = Product.ACCEPTED
-        valid_product = CreateProductSerializer(
+        valid_product = UpdateProductSerializer(
             new_product,
         ).data
         valid_product["animal_groups"] = [
@@ -192,6 +192,7 @@ class UpdateProduct(BaseTestCase):
             data=json.dumps(valid_product),
             content_type="application/json",
         )
+        print(response.data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.data["pk"], self.product.pk)
         self.assertEqual(response.data["status"], Product.ACCEPTED)

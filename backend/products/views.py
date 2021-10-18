@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from backend.utils.groups import is_admin, is_provider
 from backend.utils.permissions import IsAdmin, IsProvider
+from backend.utils.product_key import create_product_key
 
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -38,11 +39,15 @@ class CreateProductView(generics.CreateAPIView):
 
     # Get product provider from request user if user is provider.
     def perform_create(self, serializer):
+        # Create key from data
+        key = create_product_key(
+            self.request.data['category'], self.request.data['name']
+        )
         if is_provider(self.request.user):
             provider = Provider.objects.get(user=self.request.user)
-            serializer.save(provider=provider)
+            serializer.save(provider=provider, key=key)
         elif is_admin(self.request.user):
-            serializer.save(status=Product.ACCEPTED)
+            serializer.save(status=Product.ACCEPTED, key=key)
 
     def get_serializer_class(self):
         if is_provider(self.request.user):

@@ -38,7 +38,7 @@ class CreateProductAsAdminSerializer(serializers.ModelSerializer):
             "status",
             "animal_groups",
             "active_substance",
-            "provider"
+            "provider",
         )
 
 
