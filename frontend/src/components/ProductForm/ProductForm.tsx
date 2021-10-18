@@ -87,7 +87,7 @@ const ProductForm: React.FC<Props> = ({
           <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
             <Select>
               <Option value="0.00" key="0.00"> 0.00 %</Option>
-              <Option value="0.16" key="0.16"> 0.16 %</Option>
+              <Option value="16.00" key="16.00"> 16.00 %</Option>
             </Select>
           </Form.Item>
         </Col>
@@ -102,6 +102,8 @@ const ProductForm: React.FC<Props> = ({
         <Col span={12}>
           <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
             <InputNumber
+              min={0.00}
+              max={100}
               style={{ width: '100%' }}
               formatter={(value) => `${value}%`}
             />

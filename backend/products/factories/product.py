@@ -15,9 +15,9 @@ class ProductFactory(django.DjangoModelFactory):
     name = LazyAttribute(lambda _: sfaker.product_name())
     presentation = LazyAttribute(lambda _: sfaker.product_presentation())
     price = LazyAttribute(
-        lambda _: sfaker.random_int(min=0, max=100000) / 100.0
+        lambda _: sfaker.random_int(min=0, max=100)
     )
-    iva = LazyAttribute(lambda _: sfaker.random_int(min=0, max=16000) / 100.0)
+    iva = LazyAttribute(lambda _: sfaker.random_int(min=0, max=100))
     more_info = LazyAttribute(lambda _: sfaker.text(max_nb_chars=70))
     active_substance = LazyAttribute(
         lambda _: sfaker.product_active_substance())

@@ -21,6 +21,8 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
 import useAuth from 'hooks/useAuth';
+import DiscountText from 'components/DiscountText';
+import Text from 'antd/lib/typography/Text';
 
 const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -64,7 +66,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       setLoading(false);
     }
   };
-
   const columns = [
     {
       title: 'Nombre',
@@ -95,16 +96,43 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'Precio',
       dataIndex: 'price',
       key: 'price',
+      render: (_: number, data: any) => (data.offer ? (
+        <DiscountText
+          originalPrice={(data.price
+            + data.price * data.offer.discount_percentage).toFixed(2)}
+          discount={data.offer.discount_percentage}
+        />
+      ) : (
+        <Text>
+          {`$${data.price}`}
+        </Text>
+      )),
     },
     {
       title: 'IVA',
       dataIndex: 'iva',
       key: 'iva',
+      render: (_: number, product: Product) => {
+        const { price } = product;
+        return (
+          <Text>
+            {`$${((product.iva / 100) * price).toFixed(2)}`}
+          </Text>
+        );
+      },
     },
     {
       title: 'IEPS',
       dataIndex: 'ieps',
       key: 'ieps',
+      render: (_: number, product: Product) => {
+        const { price } = product;
+        return (
+          <Text>
+            {`$${((product.ieps / 100) * price).toFixed(2)}`}
+          </Text>
+        );
+      },
     },
     {
       title: 'Cantidad',
@@ -179,9 +207,10 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 iva: product.product.iva,
                 ieps: product.product.ieps,
                 amount: product.amount,
+                offer: product.offer,
               }))}
               columns={columns}
-              rowKey=""
+              rowKey={(row) => `${row.id}`}
             />
           </>
         )}
