@@ -192,7 +192,6 @@ class UpdateProduct(BaseTestCase):
             data=json.dumps(valid_product),
             content_type="application/json",
         )
-        print(response.data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.data["pk"], self.product.pk)
         self.assertEqual(response.data["status"], Product.ACCEPTED)
