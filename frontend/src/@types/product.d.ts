@@ -48,6 +48,7 @@ export interface UpdateProductForm {
   laboratory: number;
   animal_groups: number[];
   active_substance: string;
+  presentation: string;
 }
 
 export interface ProductOptions {

@@ -17,6 +17,7 @@ import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { PRODUCTS_OPTIONS_ROOT } from 'settings';
 import RequestPriceUpdateModal from 'components/Modals/RequestPriceUpdateModal';
 import useAuth from 'hooks/useAuth';
+import { DEFAULT_DISABLED_MESSAGE } from 'constants/strings';
 
 const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
@@ -126,7 +127,19 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
           price: (
             'Da click en el botón de arriba para solicitar cambio de precio.'
           ),
-          key: 'Solo administradores pueden actualizar este campo.',
+          key: DEFAULT_DISABLED_MESSAGE,
+          active_substance: DEFAULT_DISABLED_MESSAGE,
+          animal_groups: DEFAULT_DISABLED_MESSAGE,
+          category: DEFAULT_DISABLED_MESSAGE,
+          ieps: DEFAULT_DISABLED_MESSAGE,
+          iva: DEFAULT_DISABLED_MESSAGE,
+          laboratory: DEFAULT_DISABLED_MESSAGE,
+          more_info: DEFAULT_DISABLED_MESSAGE,
+          name: DEFAULT_DISABLED_MESSAGE,
+          provider: DEFAULT_DISABLED_MESSAGE,
+          reject_reason: DEFAULT_DISABLED_MESSAGE,
+          status: DEFAULT_DISABLED_MESSAGE,
+          presentation: DEFAULT_DISABLED_MESSAGE,
         }}
         isUpdate
       />

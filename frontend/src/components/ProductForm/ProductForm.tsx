@@ -54,7 +54,7 @@ const ProductForm: React.FC<Props> = ({
       <Row justify="space-around">
         <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
-            <Input />
+            <Input disabled={!!disabledFields?.name} />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -80,12 +80,12 @@ const ProductForm: React.FC<Props> = ({
             label="Presentación"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input disabled={!!disabledFields?.presentation} />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
-            <Select>
+            <Select disabled={!!disabledFields?.iva}>
               <Option value="0.00" key="0.00"> 0.00 %</Option>
               <Option value="16.00" key="16.00"> 16.00 %</Option>
             </Select>
@@ -96,7 +96,7 @@ const ProductForm: React.FC<Props> = ({
             name="more_info"
             label="Información"
           >
-            <Input.TextArea />
+            <Input.TextArea disabled={!!disabledFields?.more_info} />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -106,6 +106,7 @@ const ProductForm: React.FC<Props> = ({
               max={100}
               style={{ width: '100%' }}
               formatter={(value) => `${value}%`}
+              disabled={!!disabledFields?.ieps}
             />
           </Form.Item>
         </Col>
@@ -115,7 +116,7 @@ const ProductForm: React.FC<Props> = ({
             label="Laboratorio"
             rules={[{ required: true }]}
           >
-            <Select>
+            <Select disabled={!!disabledFields?.laboratory}>
               { Object.values(options.laboratories).map(
                 (lab) => (
                   <Option value={lab.id} key={lab.id}>
@@ -132,7 +133,7 @@ const ProductForm: React.FC<Props> = ({
             label="Categoría"
             rules={[{ required: true }]}
           >
-            <Select>
+            <Select disabled={!!disabledFields?.category}>
               { Object.values(options.categories).map(
                 (category) => (
                   <Option value={category.id} key={category.id}>
@@ -149,7 +150,7 @@ const ProductForm: React.FC<Props> = ({
             label="Especie"
             rules={[{ required: true }]}
           >
-            <Select mode="multiple">
+            <Select mode="multiple" disabled={!!disabledFields?.animal_groups}>
               { Object.values(options.animal_groups).map(
                 (group) => (
                   <Option value={group.id} key={group.id}>
@@ -166,7 +167,7 @@ const ProductForm: React.FC<Props> = ({
             label="Substancia activa"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input disabled={!!disabledFields?.active_substance} />
           </Form.Item>
         </Col>
         {isUpdate && (
@@ -179,6 +180,7 @@ const ProductForm: React.FC<Props> = ({
               >
                 <Select
                   onChange={handleStateDropdown}
+                  disabled={!!disabledFields?.status}
                 >
                   { Object.values(ProductStatus).map(
                     (status) => (
@@ -197,7 +199,11 @@ const ProductForm: React.FC<Props> = ({
                 label="Razon de rechazo"
                 rules={[]}
               >
-                <Input.TextArea disabled={isProductRejected} />
+                <Input.TextArea
+                  disabled={
+                    isProductRejected || !!disabledFields?.reject_reason
+                  }
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -206,7 +212,7 @@ const ProductForm: React.FC<Props> = ({
                 label="Clave"
                 rules={[{ required: true, max: 8 }]}
               >
-                <Input />
+                <Input disabled={!!disabledFields?.key} />
               </Form.Item>
             </Col>
           </>
