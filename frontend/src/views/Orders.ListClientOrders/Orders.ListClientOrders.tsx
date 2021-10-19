@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
+  Button,
   notification,
   Tag,
 } from 'antd';
@@ -111,6 +112,20 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
           </Tag>
         );
       },
+    },
+    {
+      title: 'Acciones',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (status: string) => (
+        <Button
+          disabled={(status === 'Pendiente')}
+          type="primary"
+          danger
+        >
+          Cancelar
+        </Button>
+      ),
     },
   ];
 
