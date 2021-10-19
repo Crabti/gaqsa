@@ -21,7 +21,6 @@ interface Props {
     columns: Column[],
     expandedRowRender?: any,
     rowKey: string | ((record: any) => string),
-    pagination?: false | TablePaginationConfig | undefined,
     actions?: TableAction[],
 }
 
