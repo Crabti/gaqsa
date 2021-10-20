@@ -39,6 +39,7 @@ workflows:
                 environment_type: production
       - deploy-staging:
           requires:
+            - backend-lint-and-test
             - frontend-build-production
             - frontend-build-staging
           filters:
@@ -113,6 +114,7 @@ jobs:
   frontend-lint-and-test:
     docker:
     - image: cimg/base:stable
+    resource_class: large
     steps:
       - checkout
       - node/install:
@@ -137,6 +139,7 @@ jobs:
   frontend-build-staging:
     docker:
     - image: cimg/base:stable
+    resource_class: large
     steps:
       - checkout
       - node/install:
@@ -157,6 +160,7 @@ jobs:
   frontend-build-production:
     docker:
     - image: cimg/base:stable
+    resource_class: large
     steps:
       - checkout
       - node/install:
