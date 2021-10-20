@@ -1,10 +1,14 @@
+from __future__ import annotations
+
 from datetime import datetime
+from backend.utils.groups import is_admin, is_provider
+from backend.utils.permissions import IsAdmin, IsProvider
+from backend.utils.product_key import create_product_key
 
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from backend.utils.permissions import IsProvider
 from products.serializers.animal_group import ListAnimalGroupSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from products.serializers.laboratory import ListLaboratorySerializer
@@ -13,7 +17,8 @@ from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
 
 from products.serializers.product import (
-    CreateProductSerializer, ListProductSerializer, ProductSerializer,
+    CreateProductAsAdminSerializer, CreateProductSerializer,
+    ListProductSerializer, ProductSerializer,
     UpdateProductSerializer, CreateChangePriceRequest
 )
 
@@ -30,12 +35,25 @@ class ListProductView(generics.ListAPIView):
 
 class CreateProductView(generics.CreateAPIView):
     queryset = Product.objects.all()
-    serializer_class = CreateProductSerializer
+    permission_classes = (IsProvider | IsAdmin, )  # type: ignore
 
-    # Get product provider from request user
+    # Get product provider from request user if user is provider.
     def perform_create(self, serializer):
-        provider = Provider.objects.get(user=self.request.user)
-        serializer.save(provider=provider)
+        # Create key from data
+        key = create_product_key(
+            self.request.data['category'], self.request.data['name']
+        )
+        if is_provider(self.request.user):
+            provider = Provider.objects.get(user=self.request.user)
+            serializer.save(provider=provider, key=key)
+        elif is_admin(self.request.user):
+            serializer.save(status=Product.ACCEPTED, key=key)
+
+    def get_serializer_class(self):
+        if is_provider(self.request.user):
+            return CreateProductSerializer
+        else:
+            return CreateProductAsAdminSerializer
 
 
 class UpdateProductView(generics.UpdateAPIView):

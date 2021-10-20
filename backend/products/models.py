@@ -4,7 +4,7 @@ from providers.models import Provider
 from random import sample
 from string import ascii_uppercase
 
-KEY_LEN = 8
+KEY_LEN = 20
 
 
 def generate_unique_key():
@@ -60,7 +60,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     key = models.CharField(
             max_length=KEY_LEN, verbose_name="Clave",
-            unique=True, default=generate_unique_key)
+            unique=True)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
     presentation = models.CharField(
         max_length=20, verbose_name="Presenta", blank=True,

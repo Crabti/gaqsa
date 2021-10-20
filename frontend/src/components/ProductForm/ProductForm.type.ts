@@ -1,5 +1,7 @@
 import { FormInstance } from 'antd';
-import { CreateProductForm, ProductOptions, UpdateProductForm } from '@types';
+import {
+  CreateProductForm, ProductOptions, Provider, UpdateProductForm,
+} from '@types';
 
 type DisabledFields = {
   /**
@@ -15,8 +17,10 @@ interface Props {
   form: FormInstance<any>;
   isLoading: boolean;
   options: ProductOptions;
+  providers?: Provider[];
   isUpdate?: boolean;
   disabledFields?: DisabledFields;
+  isAdmin?: boolean;
 }
 
 export default Props;
