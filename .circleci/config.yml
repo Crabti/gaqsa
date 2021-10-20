@@ -122,7 +122,6 @@ jobs:
           install-yarn: true
           install-npm: false
       - node/install-packages:
-          node-version: '16.11.0'
           app-dir: ./frontend
           pkg-manager: yarn
           cache-version: v2
