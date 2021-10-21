@@ -12,12 +12,14 @@ import ProductsUpdateForm from 'views/Products.UpdateForm';
 import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
 import ListProviders from 'views/Providers.ListProviders';
+import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
   SHOW_ORDERS_MENU,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
+import ListLaboratory from 'views/Laboratory.ListLaboratory/Laboratory.ListLaboratory';
 
 export interface RoutesType {
   path: string;
@@ -120,6 +122,23 @@ export const otherRoutes: Routes = {
   },
 };
 
+const laboratoryRoutes: Routes = {
+  createLaboratory: {
+    path: '/laboratorios/nuevo',
+    view: LaboratoryCreateForm,
+    verboseName: 'Registrar Laboratorio',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listLaboratory: {
+    path: '/laboratorios',
+    view: ListLaboratory,
+    verboseName: 'Laboratorios',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
+  },
+};
+
 const routes: RegisteredGroup = {
   otherRoutes: {
     routes: otherRoutes,
@@ -141,6 +160,11 @@ const routes: RegisteredGroup = {
     showInMenu: true,
     verboseName: 'Proveedores',
     icon: TeamOutlined,
+  },
+  laboratory: {
+    routes: laboratoryRoutes,
+    showInMenu: true,
+    verboseName: 'Laboratorios',
   },
 };
 
