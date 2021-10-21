@@ -1,6 +1,5 @@
 from django.urls import path
 
-from products.models import Laboratory
 from . import views
 
 urlpatterns = [
@@ -26,6 +25,14 @@ urlpatterns = [
         views.RequestPriceChange.as_view(),
         name="request_price_change",
     ),
-    path("laboratory/create", views.CreateLaboratoryView.as_view(), name="create_laboratory"),
-    path("laboratory/", views.ListLaboratoryView.as_view(), name="list_laboratories")
+    path(
+        "laboratory/create",
+        views.CreateLaboratoryView.as_view(),
+        name="create_laboratory"
+    ),
+    path(
+        "laboratory/",
+        views.ListLaboratoryView.as_view(),
+        name="list_laboratories"
+        )
 ]
