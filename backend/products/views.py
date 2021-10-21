@@ -12,7 +12,10 @@ from rest_framework.views import APIView
 
 from products.serializers.animal_group import ListAnimalGroupSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from products.serializers.laboratory import LaboratorySerializer, ListLaboratorySerializer
+from products.serializers.laboratory import (
+    LaboratorySerializer,
+    ListLaboratorySerializer
+)
 from products.serializers.category import ListCategorySerializer
 from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
