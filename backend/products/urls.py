@@ -23,5 +23,6 @@ urlpatterns = [
         "price_change/<int:pk>",
         views.RequestPriceChange.as_view(),
         name="request_price_change",
-    )
+    ),
+    path("laboratory/create", views.CreateLaboratoryView.as_view(), name="create_laboratory")
 ]
