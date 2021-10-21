@@ -16,6 +16,5 @@ class LaboratorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Laboratory
         fields = (
-            "id",
             "name",
         )

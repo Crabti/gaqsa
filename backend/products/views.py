@@ -120,7 +120,11 @@ class RequestPriceChange(APIView):
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
 
-class CreateProductView(generics.CreateAPIView):
-    permission_classes = (IsAdmin)
+class CreateLaboratoryView(generics.CreateAPIView):
     queryset = Laboratory.objects.all()
     serializer_class = LaboratorySerializer
+
+
+class ListLaboratoryView(generics.ListAPIView):
+    queryset = Laboratory.objects.all()
+    serializer_class = ListLaboratorySerializer
