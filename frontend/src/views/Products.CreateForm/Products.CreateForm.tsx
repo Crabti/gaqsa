@@ -10,15 +10,17 @@ import { useBackend } from 'integrations';
 import {
   ProductOptions,
   CreateProductForm,
+  Provider,
 } from '@types';
 import ProductForm from 'components/ProductForm';
 import { PRODUCTS_OPTIONS_ROOT } from 'settings';
 import LoadingIndicator from 'components/LoadingIndicator';
+import useAuth from 'hooks/useAuth';
 
 const INITIAL_STATE : CreateProductForm = {
   name: '',
   price: 0.01,
-  iva: 0.16,
+  iva: 16.00,
   ieps: 0.00,
   more_info: '',
   category: 1,
@@ -31,8 +33,10 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
+  const { isAdmin } = useAuth();
   const [isLoading, setLoading] = useState(false);
   const [options, setOptions] = useState<ProductOptions | undefined>(undefined);
+  const [providers, setProviders] = useState<Provider[] | undefined>(undefined);
 
   const onFinishFailed = () : void => {
     notification.error({
@@ -40,6 +44,23 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
       description: 'Intentalo después.',
     });
   };
+
+  const fetchProviders = useCallback(async () => {
+    setLoading(true);
+
+    const [result, error] = await backend.providers.getAll();
+
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al cargar al listado de proveedores!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    setProviders(result.data);
+  }, [backend.providers]);
 
   const fetchOptions = useCallback(async () => {
     setLoading(true);
@@ -62,7 +83,10 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
 
   useEffect(() => {
     fetchOptions();
-  }, [history, fetchOptions]);
+    if (isAdmin) {
+      fetchProviders();
+    }
+  }, [history, fetchOptions, fetchProviders, isAdmin]);
 
   const onFinish = async (values: CreateProductForm) : Promise<void> => {
     setLoading(true);
@@ -97,8 +121,10 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
         options={options}
         onFinish={onFinish}
         isLoading={isLoading}
+        providers={providers}
         onFinishFailed={onFinishFailed}
         initialState={INITIAL_STATE}
+        isAdmin={isAdmin}
       />
     </Content>
   );

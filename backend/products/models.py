@@ -1,9 +1,10 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from providers.models import Provider
 from random import sample
 from string import ascii_uppercase
 
-KEY_LEN = 8
+KEY_LEN = 20
 
 
 def generate_unique_key():
@@ -59,7 +60,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     key = models.CharField(
             max_length=KEY_LEN, verbose_name="Clave",
-            unique=True, default=generate_unique_key)
+            unique=True)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
     presentation = models.CharField(
         max_length=20, verbose_name="Presenta", blank=True,
@@ -69,9 +70,17 @@ class Product(models.Model):
     )
     iva = models.DecimalField(
         decimal_places=2, max_digits=5, verbose_name="IVA", default=0.0,
+        validators=[
+            MinValueValidator(0.00),
+            MaxValueValidator(100),
+        ]
     )
     ieps = models.DecimalField(
         decimal_places=2, max_digits=5, verbose_name="IEPS", default=0.0,
+        validators=[
+                MinValueValidator(0.00),
+                MaxValueValidator(100),
+        ]
     )
     more_info = models.CharField(
         max_length=200, blank=True, verbose_name="Información",

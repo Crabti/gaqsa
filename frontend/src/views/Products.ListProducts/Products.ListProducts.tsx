@@ -12,23 +12,37 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
+  SHOW_ADD_OFFER_BTN,
   SHOW_ADD_TO_CART_BTN,
   SHOW_EDIT_PRODUCT,
 } from 'constants/featureFlags';
+import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
+import DiscountText from 'components/DiscountText';
+import routes from 'Routes';
 import { Actions } from './Products.ListProducts.styled';
+
+interface OfferModal {
+  visible: boolean,
+  product: Product | undefined
+}
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const { isClient } = useAuth();
+  const { isClient, isProvider, isAdmin } = useAuth();
+  const [offerModal, setOfferModal] = useState<OfferModal>(
+    { visible: false, product: undefined },
+  );
   const [isLoading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
   const { addProducts } = useShoppingCart();
   const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
+  const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
+  const shouldShowEditProduct = SHOW_EDIT_PRODUCT && (isProvider || isAdmin);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -70,7 +84,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'presentation',
     },
     {
-      title: 'Susbtancia activa',
+      title: 'Substancia activa',
       dataIndex: 'active_substance',
       key: 'active_substance',
     },
@@ -88,6 +102,12 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       title: 'Precio',
       dataIndex: 'price',
       key: 'price',
+      render: (_: number, product: Product) => (
+        <DiscountText
+          originalPrice={product.price}
+          discount={product.offer?.discount_percentage}
+        />
+      ),
     },
     {
       title: 'Acciones',
@@ -100,14 +120,39 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               <Button
                 shape="circle"
                 icon={<PlusOutlined />}
-                onClick={() => addProducts({
-                  product: { ...product },
-                  amount: 1,
-                })}
+                onClick={() => {
+                  notification.success({
+                    message: 'Se ha agregado el producto al carrito.',
+                    description: 'Puede acceder a detalle de su pedido para'
+                    + ' confirmar su pedido',
+                    btn: (
+                      <Button
+                        type="primary"
+                        onClick={() => history.push(
+                          routes.order.routes.createOrder.path,
+                        )}
+                      >
+                        Ir a detalle
+                      </Button>),
+                  });
+                  addProducts({
+                    product: {
+                      ...product,
+                      price: product.offer
+                        ? (
+                          product.price - product.price
+                        * product.offer.discount_percentage
+                        )
+                        : product.price,
+                    },
+                    amount: 1,
+                    offer: product.offer,
+                  });
+                }}
               />
             </Tooltip>
           )}
-          {SHOW_EDIT_PRODUCT && (
+          {shouldShowEditProduct && (
             <Tooltip title="Editar producto">
               <Button
                 shape="circle"
@@ -118,19 +163,45 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               />
             </Tooltip>
           )}
+          {shouldShowAddOffer && (
+            <Tooltip title={
+              product.offer !== null
+                ? 'Este producto ya cuenta con una oferta activa. '
+                   + 'Debe cancelar la oferta o esperar a que termine '
+                   + 'para poder crear una nueva.'
+                : 'Crear nueva oferta para producto'
+            }
+            >
+              <Button
+                shape="circle"
+                icon={<TagOutlined />}
+                disabled={product.offer !== null}
+                onClick={() => (
+                  setOfferModal({
+                    visible: true,
+                    product,
+                  })
+                )}
+              />
+            </Tooltip>
+          )}
         </Actions>
       ),
     },
   ];
 
+  const onCloseModal = (): void => {
+    setOfferModal({ ...offerModal, visible: false });
+  };
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
-        <Table
-          rowKey={(row) => `${row.id}`}
-          data={
-            products.map((product) => ({
+        <>
+          <Table
+            rowKey={(row) => `${row.id}`}
+            data={products.map((product) => ({
               id: product.id,
               name: product.name,
               provider: product.provider,
@@ -141,10 +212,20 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               price: product.price,
               iva: product.iva,
               ieps: product.ieps,
-            }))
-        }
-          columns={columns}
-        />
+              offer: product.offer,
+            }))}
+            columns={columns}
+          />
+          { offerModal.product
+            ? (
+              <CreateProductOfferModal
+                visible={offerModal.visible}
+                onClose={onCloseModal}
+                product={offerModal.product}
+              />
+            ) : null}
+
+        </>
       )}
     </Content>
   );

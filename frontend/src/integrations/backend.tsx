@@ -12,11 +12,14 @@ import {
   CreateRequisitionForm,
   UpdateRequisitionForm,
   Provider,
+  Offer,
+  CreateOfferForm,
 } from '@types';
 
 import {
   BACKEND_MAIN_EP,
-  PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT, REQUISITIONS_ROOT, PROVIDERS_ROOT,
+  PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT,
+  REQUISITIONS_ROOT, PROVIDERS_ROOT, OFFERS_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
@@ -34,6 +37,8 @@ export class Backend {
   users: CRUD<any, any, any>;
 
   providers: CRUD<Provider, any, any>;
+
+  offers: CRUD<Offer, CreateOfferForm, any>;
 
   config?: AxiosRequestConfig;
 
@@ -56,6 +61,9 @@ export class Backend {
     );
     this.providers = new CRUD(
       `${this.rootEndpoint}${PROVIDERS_ROOT}`, config,
+    );
+    this.offers = new CRUD(
+      `${this.rootEndpoint}${OFFERS_ROOT}`, config,
     );
   }
 }

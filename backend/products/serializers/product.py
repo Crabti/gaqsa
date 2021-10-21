@@ -1,3 +1,5 @@
+from offers.models import Offer
+from offers.serializers.offer import OfferSerializer
 from rest_framework import serializers
 
 from products.models import Product, ChangePriceRequest
@@ -18,6 +20,25 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "status",
             "animal_groups",
             "active_substance",
+        )
+
+
+class CreateProductAsAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "name",
+            "presentation",
+            "category",
+            "laboratory",
+            "price",
+            "iva",
+            "ieps",
+            "more_info",
+            "status",
+            "animal_groups",
+            "active_substance",
+            "provider",
         )
 
 
@@ -86,6 +107,16 @@ class ListProductSerializer(serializers.ModelSerializer):
         many=True
     )
 
+    offer = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_offer(instance):
+        latest_offer = Offer.objects.filter(product=instance.pk).last()
+
+        if latest_offer and latest_offer.active:
+            return OfferSerializer(latest_offer).data
+        return None
+
     class Meta:
         model = Product
         fields = (
@@ -106,6 +137,7 @@ class ListProductSerializer(serializers.ModelSerializer):
             "updated_at",
             "animal_groups",
             "active_substance",
+            "offer"
         )
 
 

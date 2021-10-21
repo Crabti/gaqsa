@@ -9,24 +9,39 @@ orbs:
 workflows:
   gaqsa-pipeline:
     jobs:
-      - backend-build-and-test:
+      - backend-lint-and-test:
+          post-steps:
+            - ms-teams-notifier/report:
+                only_on_fail: true
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+      - frontend-lint-and-test:
+          post-steps:
+            - ms-teams-notifier/report:
+                only_on_fail: true
+                webhook_url: $MS_TEAMS_WEBHOOK_URL
+      - frontend-build-staging:
+          requires:
+            - frontend-lint-and-test
           post-steps:
             - ms-teams-notifier/report:
                 only_on_fail: true
                 webhook_url: $MS_TEAMS_WEBHOOK_URL
             - jira/notify:
-                environment_type: development
-      - frontend-build-and-test:
+                environment_type: staging
+      - frontend-build-production:
+          requires:
+            - frontend-lint-and-test
           post-steps:
             - ms-teams-notifier/report:
                 only_on_fail: true
                 webhook_url: $MS_TEAMS_WEBHOOK_URL
             - jira/notify:
-                environment_type: development
+                environment_type: production
       - deploy-staging:
           requires:
-            - frontend-build-and-test
-            - backend-build-and-test
+            - backend-lint-and-test
+            - frontend-build-production
+            - frontend-build-staging
           filters:
             branches:
               only:
@@ -57,7 +72,7 @@ workflows:
                 environment_type: production
                 job_type: deployment
 jobs:
-  backend-build-and-test:
+  backend-lint-and-test:
     docker:
       - image: cimg/python:3.8.1
     steps:
@@ -96,12 +111,14 @@ jobs:
           path: /tmp/artifacts
       - store_test_results:
           path: /tmp/test-results
-  frontend-build-and-test:
+  frontend-lint-and-test:
     docker:
     - image: cimg/base:stable
+    resource_class: large
     steps:
       - checkout
       - node/install:
+          node-version: '16.11.0'
           install-yarn: true
           install-npm: false
       - node/install-packages:
@@ -117,35 +134,53 @@ jobs:
           working_directory: ./frontend
           command: yarn typecheck
       - run:
-          name: test
+          name: Test
           working_directory: ./frontend
           command: yarn test
-      - when:
-          condition:
-            not:
-              equal: [ main, << pipeline.git.branch >>]
-          steps:
-          - run:
-              name: build
-              working_directory: ./frontend
-              command: yarn build
-      - when:
-          condition:
-            equal: [ main, << pipeline.git.branch >>]
-          steps:
-            - run:
-                name: build staging
-                working_directory: ./frontend
-                command: yarn build-staging
-            - run:
-                name: build production
-                working_directory: ./frontend
-                command: yarn build-production
-            - persist_to_workspace:
-                root: frontend
-                paths:
-                  - staging_build
-                  - production_build
+  frontend-build-staging:
+    docker:
+    - image: cimg/base:stable
+    resource_class: large
+    steps:
+      - checkout
+      - node/install:
+          node-version: '16.11.0'
+          install-yarn: true
+          install-npm: false
+      - node/install-packages:
+          app-dir: ./frontend
+          pkg-manager: yarn
+          cache-version: v2
+      - run:
+          name: build staging
+          working_directory: ./frontend
+          command: yarn build-staging
+      - persist_to_workspace:
+          root: frontend
+          paths:
+            - staging_build
+  frontend-build-production:
+    docker:
+    - image: cimg/base:stable
+    resource_class: large
+    steps:
+      - checkout
+      - node/install:
+          node-version: '16.11.0'
+          install-yarn: true
+          install-npm: false
+      - node/install-packages:
+          app-dir: ./frontend
+          pkg-manager: yarn
+          cache-version: v2
+      - run:
+          name: build production
+          working_directory: ./frontend
+          command: yarn build-production
+      - persist_to_workspace:
+          root: frontend
+          paths:
+            - production_build
   deploy-staging:
     docker:
       - image: cibuilds/hugo:0.42.1
