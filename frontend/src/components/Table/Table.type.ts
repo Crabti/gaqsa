@@ -1,4 +1,3 @@
-import { TablePaginationConfig } from 'antd';
 import React from 'react';
 
 type Column = {

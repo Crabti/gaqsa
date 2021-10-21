@@ -1,8 +1,14 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {
+  useState, useCallback, useEffect, useRef,
+} from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
-  notification, Tooltip,
+  Form,
+  Input,
+  notification,
+  Tooltip,
+  Select,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -22,6 +28,7 @@ import {
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
+import TableFilter from 'components/TableFilter';
 import routes from 'Routes';
 import { Actions } from './Products.ListProducts.styled';
 
@@ -39,7 +46,11 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   );
   const [isLoading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
+  const [filtered, setFiltered] = useState<Product[]>([]);
   const { addProducts } = useShoppingCart();
+  const resetFiltered = useCallback(
+    () => setFiltered(products || []), [products],
+  );
   const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
 
@@ -193,26 +204,19 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     setOfferModal({ ...offerModal, visible: false });
   };
 
+  useEffect(() => {
+    resetFiltered();
+  }, [products, resetFiltered]);
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <>
+          <TableFilter />
           <Table
             rowKey={(row) => `${row.id}`}
-            data={products.map((product) => ({
-              id: product.id,
-              name: product.name,
-              provider: product.provider,
-              presentation: product.presentation,
-              active_substance: product.active_substance,
-              laboratory: product.laboratory,
-              category: product.category,
-              price: product.price,
-              iva: product.iva,
-              ieps: product.ieps,
-              offer: product.offer,
-            }))}
+            data={filtered}
             columns={columns}
           />
           { offerModal.product

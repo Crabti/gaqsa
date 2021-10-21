@@ -17,7 +17,7 @@ const GenericTable: React.FC<Props> = ({
         marginRight: 10,
       }}
     >
-      { actions?.map((button) => (
+      {actions?.map((button) => (
         <Col className="gutter-row" span={3}>
           <Button
             onClick={button.action}
