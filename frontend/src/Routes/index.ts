@@ -19,6 +19,7 @@ import {
   SHOW_ORDERS_MENU,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
+// eslint-disable-next-line max-len
 import ListLaboratory from 'views/Laboratory.ListLaboratory/Laboratory.ListLaboratory';
 
 export interface RoutesType {

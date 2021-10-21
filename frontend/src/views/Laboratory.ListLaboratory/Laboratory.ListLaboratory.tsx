@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   notification,
-  Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -13,7 +11,6 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { MailOutlined } from '@ant-design/icons';
 
 const ListLaboratory: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
