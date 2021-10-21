@@ -118,7 +118,6 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
-      active: SHOW_BUTTON_CANCEL_ORDER,
       render: (status: string) => (
         SHOW_BUTTON_CANCEL_ORDER && (
         <Button
