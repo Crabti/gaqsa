@@ -14,6 +14,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
+import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
 
 const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -117,7 +118,9 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
+      active: SHOW_BUTTON_CANCEL_ORDER,
       render: (status: string) => (
+        SHOW_BUTTON_CANCEL_ORDER && (
         <Button
           disabled={(status === 'Pendiente')}
           type="primary"
@@ -125,6 +128,7 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
         >
           Cancelar
         </Button>
+        )
       ),
     },
   ];
