@@ -15,12 +15,17 @@ import {
 import Table from 'components/Table';
 import moment from 'moment';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import TableFilter from 'components/TableFilter';
 
 const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
+  const [filtered, setFiltered] = useState<Product[]>([]);
+  const resetFiltered = useCallback(
+    () => setFiltered(products || []), [products],
+  );
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -43,7 +48,8 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
 
   useEffect(() => {
     fetchProducts();
-  }, [history, fetchProducts]);
+    resetFiltered();
+  }, [history, fetchProducts, resetFiltered]);
 
   const columns = [
     {
@@ -87,25 +93,46 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
+  const onFilterAny = (
+    data: Product[], value: string,
+  ): Product[] => data.filter((product) => (
+    product.name.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.provider?.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+  ));
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
-        <Table
-          rowKey={(row) => `${row.name}-${row.created_at}`}
-          data={
-            products.map((product) => ({
+        <>
+          <TableFilter
+            useAny
+            fieldsToFilter={[
+              { key: 'name', value: 'Nombre' },
+              { key: 'provider', value: 'Proveedor' },
+            ]}
+            onFilter={setFiltered}
+            filterAny={onFilterAny}
+            data={products}
+          />
+          <Table
+            rowKey={(row) => `${row.name}-${row.created_at}`}
+            data={filtered.map((product) => ({
               name: product.name,
               created_at: moment(
                 new Date(product.created_at),
               ).format('DD/MM/YYYY HH:mm'),
               provider: product.provider,
               action: product.id,
+            }))}
+            columns={columns}
+          />
 
-            }))
-        }
-          columns={columns}
-        />
+        </>
       )}
     </Content>
   );

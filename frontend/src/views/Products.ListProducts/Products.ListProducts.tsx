@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {
+  useState, useCallback, useEffect,
+} from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
-  notification, Tooltip,
+  Button, notification, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -22,6 +23,7 @@ import {
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
+import TableFilter from 'components/TableFilter';
 import routes from 'Routes';
 import { Actions } from './Products.ListProducts.styled';
 
@@ -39,7 +41,11 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   );
   const [isLoading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[] | undefined>(undefined);
+  const [filtered, setFiltered] = useState<Product[]>([]);
   const { addProducts } = useShoppingCart();
+  const resetFiltered = useCallback(
+    () => setFiltered(products || []), [products],
+  );
   const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
   const shouldShowEditProduct = SHOW_EDIT_PRODUCT && (isProvider || isAdmin);
@@ -194,26 +200,61 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     setOfferModal({ ...offerModal, visible: false });
   };
 
+  const onFilterAny = (
+    data: Product[], value: string,
+  ): Product[] => data.filter((product) => (
+    product.name.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.provider?.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.presentation.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.active_substance.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || (
+      typeof product.category === 'string'
+      && product.category.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+    || (
+      typeof product.laboratory === 'string'
+      && product.laboratory.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+  ));
+
+  useEffect(() => {
+    resetFiltered();
+  }, [products, resetFiltered]);
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <>
+          <TableFilter
+            useAny
+            fieldsToFilter={[
+              { key: 'name', value: 'Nombre' },
+              { key: 'provider', value: 'Proveedor' },
+              { key: 'presentation', value: 'Presentación' },
+              { key: 'active_substance', value: 'Substancia activa' },
+              { key: 'laboratory', value: 'Laboratorio' },
+              { key: 'category', value: 'Categoria' },
+            ]}
+            onFilter={setFiltered}
+            filterAny={onFilterAny}
+            data={products}
+          />
           <Table
             rowKey={(row) => `${row.id}`}
-            data={products.map((product) => ({
-              id: product.id,
-              name: product.name,
-              provider: product.provider,
-              presentation: product.presentation,
-              active_substance: product.active_substance,
-              laboratory: product.laboratory,
-              category: product.category,
-              price: product.price,
-              iva: product.iva,
-              ieps: product.ieps,
-              offer: product.offer,
-            }))}
+            data={filtered}
             columns={columns}
           />
           { offerModal.product

@@ -4,11 +4,9 @@ import {
 } from 'antd';
 import Props from './Table.type';
 
-const GenericTable: React.FC<Props> = (
-  {
-    data, columns, expandedRowRender, pagination, rowKey, actions,
-  },
-) => (
+const GenericTable: React.FC<Props> = ({
+  data, columns, expandedRowRender, rowKey, actions,
+}) => (
   <Layout>
     <Row
       gutter={16}
@@ -19,7 +17,7 @@ const GenericTable: React.FC<Props> = (
         marginRight: 10,
       }}
     >
-      { actions?.map((button) => (
+      {actions?.map((button) => (
         <Col className="gutter-row" span={3}>
           <Button
             onClick={button.action}
@@ -38,7 +36,7 @@ const GenericTable: React.FC<Props> = (
       columns={columns}
       bordered
       expandedRowRender={expandedRowRender}
-      pagination={pagination}
+      pagination={false}
     />
   </Layout>
 

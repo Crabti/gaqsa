@@ -1,4 +1,3 @@
-import { TablePaginationConfig } from 'antd';
 import React from 'react';
 
 type Column = {
@@ -21,7 +20,6 @@ interface Props {
     columns: Column[],
     expandedRowRender?: any,
     rowKey: string | ((record: any) => string),
-    pagination?: false | TablePaginationConfig | undefined,
     actions?: TableAction[],
 }
 

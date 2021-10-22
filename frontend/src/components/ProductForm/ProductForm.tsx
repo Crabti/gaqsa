@@ -56,7 +56,7 @@ const ProductForm: React.FC<Props> = ({
       <Row justify="space-around">
         <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
-            <Input />
+            <Input disabled={!!disabledFields?.name} />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -82,12 +82,12 @@ const ProductForm: React.FC<Props> = ({
             label="Presentación"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input disabled={!!disabledFields?.presentation} />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
-            <Select>
+            <Select disabled={!!disabledFields?.iva}>
               <Option value="0.00" key="0.00"> 0.00 %</Option>
               <Option value="16.00" key="16.00"> 16.00 %</Option>
             </Select>
@@ -98,7 +98,7 @@ const ProductForm: React.FC<Props> = ({
             name="more_info"
             label="Información"
           >
-            <Input.TextArea />
+            <Input.TextArea disabled={!!disabledFields?.more_info} />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -108,6 +108,7 @@ const ProductForm: React.FC<Props> = ({
               max={100}
               style={{ width: '100%' }}
               formatter={(value) => `${value}%`}
+              disabled={!!disabledFields?.ieps}
             />
           </Form.Item>
         </Col>
@@ -119,6 +120,7 @@ const ProductForm: React.FC<Props> = ({
           >
             <Select
               showSearch
+              disabled={!!disabledFields?.laboratory}
               placeholder="Buscar laboratorio"
               filterOption={
                 (input, option) => (option === undefined
@@ -144,6 +146,7 @@ const ProductForm: React.FC<Props> = ({
           >
             <Select
               showSearch
+              disabled={!!disabledFields?.category}
               placeholder="Buscar categoría"
               filterOption={
                 (input, option) => (option === undefined
@@ -176,6 +179,7 @@ const ProductForm: React.FC<Props> = ({
                     .toLowerCase().indexOf(input.toLowerCase()) >= 0)
               }
               mode="multiple"
+              disabled={!!disabledFields?.animal_groups}
             >
               { Object.values(options.animal_groups).map(
                 (group) => (
@@ -193,7 +197,7 @@ const ProductForm: React.FC<Props> = ({
             label="Substancia activa"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input disabled={!!disabledFields?.active_substance} />
           </Form.Item>
         </Col>
         { !isUpdate && isAdmin && providers && (
@@ -234,6 +238,7 @@ const ProductForm: React.FC<Props> = ({
               >
                 <Select
                   onChange={handleStateDropdown}
+                  disabled={!!disabledFields?.status}
                 >
                   { Object.values(ProductStatus).map(
                     (status) => (
@@ -252,7 +257,11 @@ const ProductForm: React.FC<Props> = ({
                 label="Razon de rechazo"
                 rules={[]}
               >
-                <Input.TextArea disabled={isProductRejected} />
+                <Input.TextArea
+                  disabled={
+                    isProductRejected || !!disabledFields?.reject_reason
+                  }
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -261,7 +270,7 @@ const ProductForm: React.FC<Props> = ({
                 label="Clave"
                 rules={[{ required: true, max: 8 }]}
               >
-                <Input />
+                <Input disabled={!!disabledFields?.key} />
               </Form.Item>
             </Col>
           </>
