@@ -14,12 +14,16 @@ import {
   Provider,
   Offer,
   CreateOfferForm,
+  Laboratory,
+  CreateLaboratoryForm,
+  UpdateLaboratoryForm,
 } from '@types';
 
 import {
   BACKEND_MAIN_EP,
   PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT,
   REQUISITIONS_ROOT, PROVIDERS_ROOT, OFFERS_ROOT,
+  LABORATORY_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
@@ -39,6 +43,8 @@ export class Backend {
   providers: CRUD<Provider, any, any>;
 
   offers: CRUD<Offer, CreateOfferForm, any>;
+
+  laboratory: CRUD<Laboratory, CreateLaboratoryForm, UpdateLaboratoryForm>;
 
   config?: AxiosRequestConfig;
 
@@ -64,6 +70,9 @@ export class Backend {
     );
     this.offers = new CRUD(
       `${this.rootEndpoint}${OFFERS_ROOT}`, config,
+    );
+    this.laboratory = new CRUD(
+      `${this.rootEndpoint}${LABORATORY_ROOT}`, config,
     );
   }
 }

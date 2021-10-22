@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+
 from backend.utils.groups import is_admin, is_provider
 from backend.utils.permissions import IsAdmin, IsProvider
 from backend.utils.product_key import create_product_key
@@ -11,7 +12,10 @@ from rest_framework.views import APIView
 
 from products.serializers.animal_group import ListAnimalGroupSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
-from products.serializers.laboratory import ListLaboratorySerializer
+from products.serializers.laboratory import (
+    LaboratorySerializer,
+    ListLaboratorySerializer
+)
 from products.serializers.category import ListCategorySerializer
 from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
@@ -116,3 +120,13 @@ class RequestPriceChange(APIView):
         provider.save()
 
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CreateLaboratoryView(generics.CreateAPIView):
+    queryset = Laboratory.objects.all()
+    serializer_class = LaboratorySerializer
+
+
+class ListLaboratoryView(generics.ListAPIView):
+    queryset = Laboratory.objects.all()
+    serializer_class = ListLaboratorySerializer

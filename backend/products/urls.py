@@ -1,4 +1,5 @@
 from django.urls import path
+
 from . import views
 
 urlpatterns = [
@@ -23,5 +24,15 @@ urlpatterns = [
         "price_change/<int:pk>",
         views.RequestPriceChange.as_view(),
         name="request_price_change",
-    )
+    ),
+    path(
+        "laboratory/create",
+        views.CreateLaboratoryView.as_view(),
+        name="create_laboratory"
+    ),
+    path(
+        "laboratory/",
+        views.ListLaboratoryView.as_view(),
+        name="list_laboratories"
+        )
 ]

@@ -10,3 +10,11 @@ class ListLaboratorySerializer(serializers.ModelSerializer):
             "id",
             "name",
         )
+
+
+class LaboratorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Laboratory
+        fields = (
+            "name",
+        )
