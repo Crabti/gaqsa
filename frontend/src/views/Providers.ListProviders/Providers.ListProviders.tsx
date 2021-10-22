@@ -133,11 +133,6 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
       key: 'rfc',
     },
     {
-      title: 'Dirección',
-      dataIndex: 'address',
-      key: 'address',
-    },
-    {
       title: 'Correo Electrónico',
       dataIndex: 'email',
       key: 'email',
