@@ -12,7 +12,9 @@ class OfferFactory(django.DjangoModelFactory):
 
     created_at = LazyAttribute(lambda _: datetime.now())
     updated_at = LazyAttribute(lambda _: datetime.now())
-    discount_percentage = LazyAttribute(lambda _: round(random.random(), 2))
+    discount_percentage = LazyAttribute(
+        lambda _: round(random.uniform(0.01, 0.99), 2)
+    )
     # By default end in one week
     ending_at = LazyAttribute(
         lambda _: datetime.now() + timedelta(days=7)
