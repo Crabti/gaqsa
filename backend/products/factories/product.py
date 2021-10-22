@@ -1,8 +1,10 @@
 from datetime import datetime
-from factory import django, LazyAttribute
+from factory import django, LazyAttribute, SubFactory
 
 import products.models
 from backend.faker import sfaker
+from products.factories.category import CategoryFactory
+from products.factories.laboratory import LaboratoryFactory
 
 
 class ProductFactory(django.DjangoModelFactory):
@@ -21,3 +23,7 @@ class ProductFactory(django.DjangoModelFactory):
     more_info = LazyAttribute(lambda _: sfaker.text(max_nb_chars=70))
     active_substance = LazyAttribute(
         lambda _: sfaker.product_active_substance())
+    status = LazyAttribute(lambda _: products.models.Product.PENDING)
+
+    category = SubFactory(CategoryFactory)
+    laboratory = SubFactory(LaboratoryFactory)

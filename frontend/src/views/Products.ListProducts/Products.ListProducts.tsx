@@ -1,14 +1,9 @@
 import React, {
-  useState, useCallback, useEffect, useRef,
+  useState, useCallback, useEffect,
 } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
-  Form,
-  Input,
-  notification,
-  Tooltip,
-  Select,
+  Button, notification, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -204,6 +199,35 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     setOfferModal({ ...offerModal, visible: false });
   };
 
+  const onFilterAny = (
+    data: Product[], value: string,
+  ): Product[] => data.filter((product) => (
+    product.name.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.provider?.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.presentation.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || product.active_substance.toLowerCase().includes(
+      value.toLowerCase(),
+    )
+    || (
+      typeof product.category === 'string'
+      && product.category.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+    || (
+      typeof product.laboratory === 'string'
+      && product.laboratory.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+  ));
+
   useEffect(() => {
     resetFiltered();
   }, [products, resetFiltered]);
@@ -213,7 +237,20 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !products ? <LoadingIndicator /> : (
         <>
-          <TableFilter />
+          <TableFilter
+            useAny
+            fieldsToFilter={[
+              { key: 'name', value: 'Nombre' },
+              { key: 'provider', value: 'Proveedor' },
+              { key: 'presentation', value: 'Presentación' },
+              { key: 'active_substance', value: 'Substancia activa' },
+              { key: 'laboratory', value: 'Laboratorio' },
+              { key: 'category', value: 'Categoria' },
+            ]}
+            onFilter={setFiltered}
+            filterAny={onFilterAny}
+            data={products}
+          />
           <Table
             rowKey={(row) => `${row.id}`}
             data={filtered}
