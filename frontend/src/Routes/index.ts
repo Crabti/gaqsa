@@ -95,7 +95,7 @@ const ordersRoutes: Routes = {
     view: OrderCreateOrder,
     verboseName: 'Realizar pedido',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin),
+    hasAccess: ((auth) => auth.isClient),
   },
 };
 
@@ -136,7 +136,7 @@ const laboratoryRoutes: Routes = {
     view: ListLaboratory,
     verboseName: 'Laboratorios',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient),
+    hasAccess: ((auth) => auth.isAdmin),
   },
 };
 
