@@ -1,17 +1,13 @@
-from datetime import datetime
-from factory import django, LazyAttribute
+from users.factories.business import BusinessFactory
+from factory import LazyAttribute
 
 from providers.models import Provider
 from backend.faker import sfaker
 
 
-class ProviderFactory(django.DjangoModelFactory):
+class ProviderFactory(BusinessFactory):
     class Meta:
         model = Provider
 
-    created_at = LazyAttribute(lambda _: datetime.now())
-    updated_at = LazyAttribute(lambda _: datetime.now())
-    name = LazyAttribute(lambda _: sfaker.unique.company())
-    rfc = LazyAttribute(lambda _: sfaker.unique.rfc())
-    address = LazyAttribute(lambda _: sfaker.address())
+    nav_key = LazyAttribute(lambda _: f"{sfaker.unique.bothify(text='??-##')}")
     email = LazyAttribute(lambda _: sfaker.email())
