@@ -26,6 +26,7 @@ class ListOrders(generics.ListAPIView):
 
 
 class CreateOrder(APIView):
+
     def post(self, request):
         order_serializer = OrderSerializer(
             data={"user": request.user.pk}

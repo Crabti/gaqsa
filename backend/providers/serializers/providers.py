@@ -29,3 +29,9 @@ class CreateCodeSerializer(serializers.ModelSerializer):
             "token",
             "token_used"
         )
+
+
+class CreateProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        exclude = ('id', 'user')
