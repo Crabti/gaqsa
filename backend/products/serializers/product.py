@@ -23,6 +23,25 @@ class CreateProductSerializer(serializers.ModelSerializer):
         )
 
 
+class CreateProductAsAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "name",
+            "presentation",
+            "category",
+            "laboratory",
+            "price",
+            "iva",
+            "ieps",
+            "more_info",
+            "status",
+            "animal_groups",
+            "active_substance",
+            "provider",
+        )
+
+
 class UpdateProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

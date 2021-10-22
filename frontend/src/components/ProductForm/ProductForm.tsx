@@ -30,6 +30,8 @@ const ProductForm: React.FC<Props> = ({
   options,
   isUpdate,
   disabledFields,
+  providers,
+  isAdmin,
 }) => {
   const [isProductRejected, setIsProductRejected] = useState(false);
 
@@ -116,7 +118,16 @@ const ProductForm: React.FC<Props> = ({
             label="Laboratorio"
             rules={[{ required: true }]}
           >
-            <Select disabled={!!disabledFields?.laboratory}>
+            <Select
+              showSearch
+              disabled={!!disabledFields?.laboratory}
+              placeholder="Buscar laboratorio"
+              filterOption={
+                (input, option) => (option === undefined
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              }
+            >
               { Object.values(options.laboratories).map(
                 (lab) => (
                   <Option value={lab.id} key={lab.id}>
@@ -133,7 +144,16 @@ const ProductForm: React.FC<Props> = ({
             label="Categoría"
             rules={[{ required: true }]}
           >
-            <Select disabled={!!disabledFields?.category}>
+            <Select
+              showSearch
+              disabled={!!disabledFields?.category}
+              placeholder="Buscar categoría"
+              filterOption={
+                (input, option) => (option === undefined
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              }
+            >
               { Object.values(options.categories).map(
                 (category) => (
                   <Option value={category.id} key={category.id}>
@@ -150,7 +170,17 @@ const ProductForm: React.FC<Props> = ({
             label="Especie"
             rules={[{ required: true }]}
           >
-            <Select mode="multiple" disabled={!!disabledFields?.animal_groups}>
+            <Select
+              showSearch
+              placeholder="Buscar especie"
+              filterOption={
+                (input, option) => (option === undefined
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              }
+              mode="multiple"
+              disabled={!!disabledFields?.animal_groups}
+            >
               { Object.values(options.animal_groups).map(
                 (group) => (
                   <Option value={group.id} key={group.id}>
@@ -170,6 +200,34 @@ const ProductForm: React.FC<Props> = ({
             <Input disabled={!!disabledFields?.active_substance} />
           </Form.Item>
         </Col>
+        { !isUpdate && isAdmin && providers && (
+          <Col span={12}>
+            <Form.Item
+              name="provider"
+              label="Proveedor"
+              rules={[{ required: true }]}
+            >
+              <Select
+                showSearch
+                placeholder="Buscar proveedor"
+                optionFilterProp="children"
+                filterOption={
+                  (input, option) => (option === undefined
+                    ? false : option.children
+                      .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+                }
+              >
+                { Object.values(providers).map(
+                  (provider) => (
+                    <Option value={provider.id} key={provider.id}>
+                      {provider.name}
+                    </Option>
+                  ),
+                )}
+              </Select>
+            </Form.Item>
+          </Col>
+        )}
         {isUpdate && (
           <>
             <Col span={12}>

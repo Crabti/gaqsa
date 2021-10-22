@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
+  Button,
   notification,
   Tag,
 } from 'antd';
@@ -13,6 +14,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
+import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
 
 const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -112,6 +114,22 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
         );
       },
     },
+    {
+      title: 'Acciones',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (status: string) => (
+        SHOW_BUTTON_CANCEL_ORDER && (
+        <Button
+          disabled={(status === 'Pendiente')}
+          type="primary"
+          danger
+        >
+          Cancelar
+        </Button>
+        )
+      ),
+    },
   ];
 
   if (isLoading || !orders) {
@@ -143,7 +161,7 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       <Table
-        rowKey="order"
+        rowKey={(row) => row.id}
         data={listItems()}
         columns={columns}
       />

@@ -35,7 +35,7 @@ interface OfferModal {
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const { isClient, isProvider } = useAuth();
+  const { isClient, isProvider, isAdmin } = useAuth();
   const [offerModal, setOfferModal] = useState<OfferModal>(
     { visible: false, product: undefined },
   );
@@ -48,6 +48,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   );
   const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
+  const shouldShowEditProduct = SHOW_EDIT_PRODUCT && (isProvider || isAdmin);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -157,7 +158,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               />
             </Tooltip>
           )}
-          {SHOW_EDIT_PRODUCT && (
+          {shouldShowEditProduct && (
             <Tooltip title="Editar producto">
               <Button
                 shape="circle"

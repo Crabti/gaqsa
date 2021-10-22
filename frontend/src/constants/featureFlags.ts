@@ -4,4 +4,5 @@ export const LIST_REQUISITIONS = true;
 export const SHOW_ORDERS_MENU = LIST_CLIENT_ORDERS || LIST_REQUISITIONS;
 export const LIST_PROVIDERS = true;
 export const SHOW_EDIT_PRODUCT = true;
+export const SHOW_BUTTON_CANCEL_ORDER = false;
 export const SHOW_ADD_OFFER_BTN = true;
