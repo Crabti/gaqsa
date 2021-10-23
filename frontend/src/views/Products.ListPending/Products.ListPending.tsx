@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
@@ -47,11 +48,18 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   }, [backend.products]);
 
   useEffect(() => {
-    fetchProducts();
+    if (products === undefined) {
+      fetchProducts();
+    }
     resetFiltered();
   }, [history, fetchProducts, resetFiltered]);
 
   const columns = [
+    {
+      title: 'Clave',
+      dataIndex: 'key',
+      key: 'key',
+    },
     {
       title: 'Nombre',
       dataIndex: 'name',
@@ -120,8 +128,10 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
             data={products}
           />
           <Table
-            rowKey={(row) => `${row.name}-${row.created_at}`}
+            rowKey={(row) => row.id}
             data={filtered.map((product) => ({
+              id: product.id,
+              key: product.key,
               name: product.name,
               created_at: moment(
                 new Date(product.created_at),

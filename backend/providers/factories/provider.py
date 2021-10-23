@@ -10,4 +10,3 @@ class ProviderFactory(BusinessFactory):
         model = Provider
 
     nav_key = LazyAttribute(lambda _: f"{sfaker.unique.bothify(text='??-##')}")
-    email = LazyAttribute(lambda _: sfaker.email())

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from backend.utils.constants import ADMIN_GROUP, PROVIDER_GROUP
 from rest_framework import permissions
 
 
@@ -33,8 +34,8 @@ class CustomBasePermission(permissions.BasePermission):
 
 
 class IsAdmin(CustomBasePermission):
-    required_groups = ["Administrador"]
+    required_groups = [ADMIN_GROUP]
 
 
 class IsProvider(CustomBasePermission):
-    required_groups = ["Proveedor"]
+    required_groups = [PROVIDER_GROUP]

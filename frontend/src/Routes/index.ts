@@ -1,5 +1,5 @@
 import {
-  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined,
+  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
@@ -13,10 +13,14 @@ import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
 import ListProviders from 'views/Providers.ListProviders';
 import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
+import CreateUser from 'views/Users.CreateForm/Users.CreateForm';
+import ListUsers from 'views/Users.ListUsers/Users.ListUsers';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
+  SHOW_CREATE_USER,
   SHOW_ORDERS_MENU,
+  SHOW_USERS_LIST,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
 // eslint-disable-next-line max-len
@@ -134,8 +138,25 @@ const laboratoryRoutes: Routes = {
   listLaboratory: {
     path: '/laboratorios',
     view: ListLaboratory,
-    verboseName: 'Laboratorios',
+    verboseName: 'Lista de laboratorios',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+};
+
+export const usersRoutes: Routes = {
+  createUser: {
+    path: '/usuarios/nuevo',
+    view: CreateUser,
+    verboseName: 'Crear nuevo usuario',
+    showInMenu: SHOW_CREATE_USER,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listUsers: {
+    path: '/usuarios',
+    view: ListUsers,
+    verboseName: 'Lista de usuarios',
+    showInMenu: SHOW_USERS_LIST,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };
@@ -166,6 +187,12 @@ const routes: RegisteredGroup = {
     routes: laboratoryRoutes,
     showInMenu: true,
     verboseName: 'Laboratorios',
+  },
+  user: {
+    routes: usersRoutes,
+    showInMenu: true,
+    verboseName: 'Usuarios',
+    icon: UserOutlined,
   },
 };
 

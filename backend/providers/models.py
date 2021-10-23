@@ -15,7 +15,6 @@ def generate_unique_token():
 
 
 class Provider(Business):
-    email = models.EmailField(verbose_name='Correo Electrónico')
     token = models.CharField(
             null=True,
             max_length=TOKEN_LEN, unique=True,

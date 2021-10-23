@@ -1,8 +1,9 @@
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
 from providers.models import Provider
+
+from users.models import UserEmail
 
 
 def send_mail_on_create_order(order, providers, products):
@@ -19,13 +20,14 @@ def send_mail_on_create_order(order, providers, products):
             "provider": provider,
             "products": products
         }
-        get_email = Provider.objects.filter(name=provider).values(
-            'email'
-            ).last()
-        to_email = get_email['email']
+        user = Provider.objects.get(name=provider).user
+
+        provider_emails = list(UserEmail.objects.filter(
+            user=user, category=UserEmail.ORDERS
+        ).values_list('email', flat=True))
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
-        to_emails = [to_email, "temp@temp.com"]
+        to_emails = provider_emails + ["temp@temp.com"]
         html_message = render_to_string(
             "order_created.html",
             context

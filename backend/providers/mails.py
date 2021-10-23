@@ -2,6 +2,8 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from users.models import UserEmail
+
 
 def send_mail_on_new_code(providers):
     connection = mail.get_connection()
@@ -16,8 +18,10 @@ def send_mail_on_new_code(providers):
             'title': title
         }
         from_email = 'noreply@gaqsa.com'
-        # TODO: Cambiar correo de admin
-        to_emails = [provider.email, 'admin@temp.com']
+        provider_emails = list(UserEmail.objects.filter(
+            user=provider.user, category=UserEmail.PRICE_CHANGE
+        ).values_list('email', flat=True))
+        to_emails = provider_emails
         html_message = render_to_string(
             'new_code.html',
             context
