@@ -26,7 +26,16 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
       >
         {Object.values(groups).map(
           (group) => {
-            if (!group.showInMenu) { return null; }
+            const groupRoutes = Object.values(group.routes);
+
+            const visibibleRoutes = groupRoutes.filter(
+              (route) => (route.showInMenu
+                 && (route.hasAccess ? route.hasAccess(auth) : true)),
+            );
+
+            if (!group.showInMenu || visibibleRoutes.length <= 0) {
+              return null;
+            }
 
             const Icon = group.icon || FileDoneOutlined;
 
@@ -36,7 +45,7 @@ const SideMenu: React.FC<{groups: RegisteredGroup}> = ({ groups }) => {
                 icon={<Icon />}
                 title={group.verboseName}
               >
-                {Object.values(group.routes).map(
+                {visibibleRoutes.map(
                   (route) => {
                     if (!route.showInMenu || (
                       route.hasAccess && !route.hasAccess(auth))) {
