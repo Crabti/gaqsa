@@ -6,3 +6,5 @@ export const LIST_PROVIDERS = true;
 export const SHOW_EDIT_PRODUCT = true;
 export const SHOW_BUTTON_CANCEL_ORDER = false;
 export const SHOW_ADD_OFFER_BTN = true;
+export const SHOW_CREATE_USER = true;
+export const SHOW_USERS_LIST = true;

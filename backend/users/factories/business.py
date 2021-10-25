@@ -17,3 +17,6 @@ class BusinessFactory(django.DjangoModelFactory):
     internal_key = LazyAttribute(
         lambda _: f"{sfaker.unique.bothify(text='??-##')}")
     dimension = LazyAttribute(lambda _: f"{random.randint(0,1000)}")
+    invoice_telephone = LazyAttribute(
+        lambda _: f"{sfaker.bothify(text='???-#######')}"
+    )

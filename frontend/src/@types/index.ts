@@ -15,8 +15,10 @@ import {
   Order, CreateOrderForm, UpdateOrderForm,
   Requisition, CreateRequisitionForm, UpdateRequisitionForm,
 } from './order';
-import User from './user';
-import Provider from './provider';
+import {
+  User, CreateUserForm, BusinessForm, UserEmail,
+} from './user';
+import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
 
 export type {
@@ -42,4 +44,7 @@ export type {
   Provider,
   Offer,
   CreateOfferForm,
+  CreateUserForm,
+  BusinessForm,
+  UserEmail,
 };

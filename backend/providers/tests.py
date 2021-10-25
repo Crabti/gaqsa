@@ -20,6 +20,7 @@ class CreateCodeOneProvider(BaseTestCase):
             ProviderFactory.create(user=user),
             ProviderFactory.create(user=user),
         ]
+
         self.valid_payload = ProviderPkSerializer(
             self.providers, many=True
         ).data

@@ -2,14 +2,16 @@
 
 from django.db import migrations
 
+from backend.utils.constants import ADMIN_GROUP, CLIENT_GROUP, PROVIDER_GROUP
+
 
 # Create initial user roles / groups
 def create_group(apps, schema_editor):
     Group = apps.get_model("auth", "Group")
     Group.objects.bulk_create([
-        Group(name='Administrador'),
-        Group(name='Proveedor'),
-        Group(name='Cliente')
+        Group(name=ADMIN_GROUP),
+        Group(name=PROVIDER_GROUP),
+        Group(name=CLIENT_GROUP)
     ])
 
 

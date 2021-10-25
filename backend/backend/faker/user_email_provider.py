@@ -6,7 +6,8 @@ class UserEmailProvider(BaseProvider):
     MAIL_CATEGORIES = (
         UserEmail.ORDERS,
         UserEmail.PRICE_CHANGE,
-        UserEmail.INVOICE
+        UserEmail.INVOICE,
+        UserEmail.PAYMENTS
     )
 
     def user_email_category(self) -> str:

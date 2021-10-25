@@ -3,6 +3,7 @@ import json
 
 from django.test import TestCase
 from django.urls import reverse
+from backend.utils.constants import ADMIN_GROUP, CLIENT_GROUP, PROVIDER_GROUP
 from providers.models import Provider
 from clients.models import Client, Ranch
 from users.models import Profile, UserEmail
@@ -91,10 +92,10 @@ class UserLogin(TestCase):
 class RegisterUser(BaseTestCase):
     def setUp(self) -> None:
         self.user_client = UserFactory.build(
-            password=make_password('password')
+            password="plain_password"
         )
         self.user_provider = UserFactory.build(
-            password=make_password('password')
+            password="plain_password"
         )
         self.ranchs = RanchFactory.build_batch(10)
         self.profile = ProfileFactory.build()
@@ -120,7 +121,7 @@ class RegisterUser(BaseTestCase):
                 "profile": self.profile_payload.data,
                 "ranchs": self.ranchs_payload.data,
                 "emails": self.emails_payload.data,
-                "group": "Cliente"
+                "group": CLIENT_GROUP
             })
         response = self.anonymous.post(
             reverse("create-user"),
@@ -138,7 +139,7 @@ class RegisterUser(BaseTestCase):
                 "profile": self.profile_payload.data,
                 "ranchs": self.ranchs_payload.data,
                 "emails": self.emails_payload.data,
-                "group": "Cliente"
+                "group": CLIENT_GROUP
             })
         response = self.provider_client.post(
             reverse("create-user"),
@@ -156,7 +157,7 @@ class RegisterUser(BaseTestCase):
                 "profile": self.profile_payload.data,
                 "ranchs": self.ranchs_payload.data,
                 "emails": self.emails_payload.data,
-                "group": "Cliente"
+                "group": CLIENT_GROUP
             })
         response = self.admin_client.post(
             reverse("create-user"),
@@ -178,7 +179,7 @@ class RegisterUser(BaseTestCase):
                 "profile": self.profile_payload.data,
                 "ranchs": self.ranchs_payload.data,
                 "emails": self.emails_payload.data,
-                "group": "Cliente"
+                "group": CLIENT_GROUP
             })
         response = self.admin_client.post(
             reverse("create-user"),
@@ -188,7 +189,8 @@ class RegisterUser(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         user = User.objects.get(username=self.user_client.username)
         self.assertNotEqual(user, None)
-        self.assertNotEqual(user.groups.get(name='Cliente'), None)
+        self.assertNotEqual(user.password, "plain_password")
+        self.assertNotEqual(user.groups.get(name=CLIENT_GROUP), None)
         client = Client.objects.get(user=user.pk)
         self.assertNotEqual(client, None)
         self.assertNotEqual(Profile.objects.get(user=user.pk), None)
@@ -203,7 +205,7 @@ class RegisterUser(BaseTestCase):
                 "provider": self.provider_payload.data,
                 "profile": self.profile_payload.data,
                 "emails": self.emails_payload.data,
-                "group": "Proveedor"
+                "group": PROVIDER_GROUP
             })
         response = self.admin_client.post(
             reverse("create-user"),
@@ -213,8 +215,69 @@ class RegisterUser(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         user = User.objects.get(username=self.user_provider.username)
         self.assertNotEqual(user, None)
-        self.assertNotEqual(user.groups.get(name='Proveedor'), None)
+        self.assertNotEqual(user.password, "plain_password")
+        self.assertNotEqual(user.groups.get(name=PROVIDER_GROUP), None)
         provider = Provider.objects.get(user=user.pk)
         self.assertNotEqual(provider, None)
         self.assertNotEqual(Profile.objects.get(user=user.pk), None)
         self.assertEqual(UserEmail.objects.filter(user=user.pk).count(), 10)
+
+    def test_create_admin_user_with_valid_data_should_succeed(
+        self,
+    ) -> None:
+        payload = json.dumps({
+                "user": self.user_provider_payload.data,
+                "profile": self.profile_payload.data,
+                "group": ADMIN_GROUP
+            })
+        response = self.admin_client.post(
+            reverse("create-user"),
+            data=payload,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        user = User.objects.get(username=self.user_provider.username)
+        self.assertNotEqual(user, None)
+        self.assertNotEqual(user.password, "plain_password")
+        self.assertNotEqual(user.groups.get(name=ADMIN_GROUP), None)
+        self.assertNotEqual(Profile.objects.get(user=user.pk), None)
+
+
+class ListAllUsers(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.users_quantity = 20
+        self.users = UserFactory.create_batch(
+            self.users_quantity,
+        )
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_users"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin_role(self) -> None:
+        response = self.service_client.get(
+            reverse("list_users"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        response = self.provider_client.get(
+            reverse("list_users"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_list_all_users(
+        self,
+    ) -> None:
+        response = self.admin_client.get(
+            reverse("list_users"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), self.users_quantity + 3)

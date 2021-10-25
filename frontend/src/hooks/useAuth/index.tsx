@@ -98,8 +98,8 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         created_at: '',
         updated_at: '',
         email: '',
-        firstName: parsedToken.first_name,
-        lastName: parsedToken.last_name,
+        first_name: parsedToken.first_name,
+        last_name: parsedToken.last_name,
         groups: parsedToken.groups,
       },
     };

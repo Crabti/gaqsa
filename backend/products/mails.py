@@ -7,6 +7,8 @@ from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from users.models import UserEmail
+
 
 @receiver(post_save, sender=Product)
 def send_mail_on_create(sender, instance=None, created=False, **kwargs):
@@ -20,7 +22,7 @@ def send_mail_on_create(sender, instance=None, created=False, **kwargs):
         }
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
-        to_emails = [instance.provider.email, "admin@temp.com"]
+        to_emails = [instance.provider.user.email, "admin@temp.com"]
         html_message = render_to_string(
             "product_created.html",
             context
@@ -44,7 +46,7 @@ def send_mail_on_create(sender, instance=None, created=False, **kwargs):
         }
         from_email = "noreply@gaqsa.com"
         # TODO: Cambiar correo de admin
-        to_emails = [instance.provider.email, "admin@temp.com"]
+        to_emails = [instance.provider.user.email, "admin@temp.com"]
         html_message = render_to_string(
             "product_updated.html",
             context
@@ -79,8 +81,11 @@ def send_mail_on_request_price_change(
         "title": title,
     }
     from_email = "noreply@gaqsa.com"
+    provider_emails = list(UserEmail.objects.filter(
+        user=instance.provider.user, category=UserEmail.PRICE_CHANGE
+    ).values_list('email', flat=True))
     # TODO: Cambiar correo de admin
-    to_emails = [instance.provider.email, "admin@temp.com"]
+    to_emails = provider_emails + ["admin@temp.com"]
     html_message = render_to_string(
         "change_price_request.html",
         context

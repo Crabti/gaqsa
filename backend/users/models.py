@@ -14,10 +14,12 @@ class UserEmail(models.Model):
     ORDERS = "Pedidos"
     INVOICE = "Facturas"
     PRICE_CHANGE = "Cambio de precios"
+    PAYMENTS = "Saldos"
     MAIL_CATEGORY = [
         (ORDERS, ORDERS),
         (INVOICE, INVOICE),
         (PRICE_CHANGE, PRICE_CHANGE),
+        (PAYMENTS, PAYMENTS),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -27,6 +29,9 @@ class UserEmail(models.Model):
         choices=MAIL_CATEGORY,
         verbose_name="Categoría de correo electrónico",
     )
+
+    def __str__(self):
+        return f"{self.user.username} - {self.email} - {self.category}"
 
 
 class Business(models.Model):
@@ -47,6 +52,7 @@ class Business(models.Model):
     # TODO: Remove default after applying migration to production
     dimension = models.IntegerField(default=1)
     internal_key = models.CharField(default="", max_length=100)
+    invoice_telephone = models.CharField(default="", max_length=20)
 
     class Meta:
         abstract = True

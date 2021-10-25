@@ -230,3 +230,7 @@ if (EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SIMPLE_JWT = {
+    'UPDATE_LAST_LOGIN': True
+}
