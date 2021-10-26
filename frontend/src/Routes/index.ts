@@ -153,7 +153,7 @@ const categoryRoutes: Routes = {
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
   },
-  listLaboratory: {
+  listCategory: {
     path: '/categorias',
     view: ListCategory,
     verboseName: 'Lista de categorías',
