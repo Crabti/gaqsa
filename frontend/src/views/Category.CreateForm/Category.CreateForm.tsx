@@ -10,7 +10,6 @@ import { useBackend } from 'integrations';
 import {
   CreateLaboratoryForm,
 } from '@types';
-import LaboratoryForm from 'components/LaboratoryForm';
 import LoadingIndicator from 'components/LoadingIndicator';
 import CategoryForm from 'components/CategoryForm';
 
@@ -57,7 +56,7 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
-      <LaboratoryForm
+      <CategoryForm
         form={form}
         onFinish={onFinish}
         isLoading={isLoading}

@@ -15,6 +15,9 @@ import ListProviders from 'views/Providers.ListProviders';
 import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
 import CreateUser from 'views/Users.CreateForm/Users.CreateForm';
 import ListUsers from 'views/Users.ListUsers/Users.ListUsers';
+import ListLaboratory from 'views/Laboratory.ListLaboratory';
+import ListCategory from 'views/Category.ListCategory';
+import CategoryCreateForm from 'views/Category.CreateForm';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
@@ -23,8 +26,6 @@ import {
   SHOW_USERS_LIST,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
-// eslint-disable-next-line max-len
-import ListLaboratory from 'views/Laboratory.ListLaboratory/Laboratory.ListLaboratory';
 
 export interface RoutesType {
   path: string;
@@ -147,14 +148,14 @@ const laboratoryRoutes: Routes = {
 const categoryRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
-    view: LaboratoryCreateForm,
+    view: CategoryCreateForm,
     verboseName: 'Registrar Categoría',
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listLaboratory: {
     path: '/categorias',
-    view: ListLaboratory,
+    view: ListCategory,
     verboseName: 'Lista de categorías',
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
