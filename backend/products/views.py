@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from django.db.models import query
+
 from backend.utils.groups import is_admin, is_provider
 from backend.utils.permissions import IsAdmin, IsProvider
 from backend.utils.product_key import create_product_key
@@ -16,7 +18,7 @@ from products.serializers.laboratory import (
     LaboratorySerializer,
     ListLaboratorySerializer
 )
-from products.serializers.category import ListCategorySerializer
+from products.serializers.category import CategorySerializer, ListCategorySerializer
 from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
 
@@ -130,3 +132,13 @@ class CreateLaboratoryView(generics.CreateAPIView):
 class ListLaboratoryView(generics.ListAPIView):
     queryset = Laboratory.objects.all()
     serializer_class = ListLaboratorySerializer
+
+
+class CreateCategoryView(generics.CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ListCategoryView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ListCategorySerializer

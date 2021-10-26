@@ -34,5 +34,15 @@ urlpatterns = [
         "laboratory/",
         views.ListLaboratoryView.as_view(),
         name="list_laboratories"
-        )
+        ),
+    path(
+        "category/",
+        views.ListCategoryView.as_view(),
+        name="list_categories"
+    ),
+    path(
+        "category/create",
+        views.CreateCategoryView.as_view(),
+        name="create_category"
+    )
 ]
