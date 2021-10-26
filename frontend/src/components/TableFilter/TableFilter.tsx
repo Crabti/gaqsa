@@ -68,7 +68,7 @@ const TableFilter = <T extends {[x: string]: any}>({
         form={form}
         layout="vertical"
         name="filter"
-        onFinish={filter}
+        onFinish={(values) => filter({ ...values.filter })}
         autoComplete="off"
         initialValues={useAny ? {
           filter: {
