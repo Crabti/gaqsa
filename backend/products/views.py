@@ -16,7 +16,10 @@ from products.serializers.laboratory import (
     LaboratorySerializer,
     ListLaboratorySerializer
 )
-from products.serializers.category import ListCategorySerializer
+from products.serializers.category import (
+    CategorySerializer,
+    ListCategorySerializer
+)
 from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
 
@@ -130,3 +133,13 @@ class CreateLaboratoryView(generics.CreateAPIView):
 class ListLaboratoryView(generics.ListAPIView):
     queryset = Laboratory.objects.all()
     serializer_class = ListLaboratorySerializer
+
+
+class CreateCategoryView(generics.CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class ListCategoryView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = ListCategorySerializer

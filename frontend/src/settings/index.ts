@@ -8,3 +8,4 @@ export const REQUISITIONS_ROOT = `${ORDERS_ROOT}/requisitions`;
 export const PROVIDERS_ROOT = '/providers';
 export const OFFERS_ROOT = '/offers';
 export const LABORATORY_ROOT = `${PRODUCTS_ROOT}/laboratory`;
+export const CATEGORY_ROOT = `${PRODUCTS_ROOT}/category`;
