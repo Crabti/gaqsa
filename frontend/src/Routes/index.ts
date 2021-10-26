@@ -144,6 +144,23 @@ const laboratoryRoutes: Routes = {
   },
 };
 
+const categoryRoutes: Routes = {
+  createCategory: {
+    path: '/categorias/nuevo',
+    view: LaboratoryCreateForm,
+    verboseName: 'Registrar Categoría',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listLaboratory: {
+    path: '/categorias',
+    view: ListLaboratory,
+    verboseName: 'Lista de categorías',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+};
+
 export const usersRoutes: Routes = {
   createUser: {
     path: '/usuarios/nuevo',
@@ -193,6 +210,11 @@ const routes: RegisteredGroup = {
     showInMenu: true,
     verboseName: 'Usuarios',
     icon: UserOutlined,
+  },
+  Category: {
+    routes: categoryRoutes,
+    showInMenu: true,
+    verboseName: 'Categorías',
   },
 };
 
