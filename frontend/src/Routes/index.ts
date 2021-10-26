@@ -206,16 +206,16 @@ const routes: RegisteredGroup = {
     showInMenu: true,
     verboseName: 'Laboratorios',
   },
+  Category: {
+    routes: categoryRoutes,
+    showInMenu: true,
+    verboseName: 'Categorías',
+  },
   user: {
     routes: usersRoutes,
     showInMenu: true,
     verboseName: 'Usuarios',
     icon: UserOutlined,
-  },
-  Category: {
-    routes: categoryRoutes,
-    showInMenu: true,
-    verboseName: 'Categorías',
   },
 };
 

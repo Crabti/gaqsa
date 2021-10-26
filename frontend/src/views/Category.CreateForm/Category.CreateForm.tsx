@@ -8,6 +8,7 @@ import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
+  CreateCategoryForm,
   CreateLaboratoryForm,
 } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
@@ -30,9 +31,9 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
     });
   };
 
-  const onFinish = async (values: CreateLaboratoryForm) : Promise<void> => {
+  const onFinish = async (values: CreateCategoryForm) : Promise<void> => {
     setLoading(true);
-    const [, error] = await backend.laboratory.createOne({
+    const [, error] = await backend.category.createOne({
       ...values,
     });
 
@@ -44,7 +45,7 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
         description: 'La categoría está disponible a partir de este momento.',
       });
       form.resetFields();
-      history.replace('/laboratorios');
+      history.replace('/categorias');
     }
     setLoading(false);
   };
