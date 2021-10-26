@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from django.db.models import query
-
 from backend.utils.groups import is_admin, is_provider
 from backend.utils.permissions import IsAdmin, IsProvider
 from backend.utils.product_key import create_product_key
@@ -18,7 +16,10 @@ from products.serializers.laboratory import (
     LaboratorySerializer,
     ListLaboratorySerializer
 )
-from products.serializers.category import CategorySerializer, ListCategorySerializer
+from products.serializers.category import (
+    CategorySerializer,
+    ListCategorySerializer
+)
 from products.models import AnimalGroup, Category, Laboratory, Product
 from providers.models import Provider
 
