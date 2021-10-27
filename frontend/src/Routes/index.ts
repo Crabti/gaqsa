@@ -128,24 +128,7 @@ export const otherRoutes: Routes = {
   },
 };
 
-const laboratoryRoutes: Routes = {
-  createLaboratory: {
-    path: '/laboratorios/nuevo',
-    view: LaboratoryCreateForm,
-    verboseName: 'Registrar Laboratorio',
-    showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin),
-  },
-  listLaboratory: {
-    path: '/laboratorios',
-    view: ListLaboratory,
-    verboseName: 'Lista de laboratorios',
-    showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin),
-  },
-};
-
-const categoryRoutes: Routes = {
+const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
@@ -157,6 +140,20 @@ const categoryRoutes: Routes = {
     path: '/categorias',
     view: ListCategory,
     verboseName: 'Lista de categorías',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  createLaboratory: {
+    path: '/laboratorios/nuevo',
+    view: LaboratoryCreateForm,
+    verboseName: 'Registrar Laboratorio',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listLaboratory: {
+    path: '/laboratorios',
+    view: ListLaboratory,
+    verboseName: 'Lista de laboratorios',
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
   },
@@ -201,15 +198,10 @@ const routes: RegisteredGroup = {
     verboseName: 'Proveedores',
     icon: TeamOutlined,
   },
-  laboratory: {
-    routes: laboratoryRoutes,
+  catalogs: {
+    routes: catalogsRoutes,
     showInMenu: true,
-    verboseName: 'Laboratorios',
-  },
-  Category: {
-    routes: categoryRoutes,
-    showInMenu: true,
-    verboseName: 'Categorías',
+    verboseName: 'Catalogos',
   },
   user: {
     routes: usersRoutes,
