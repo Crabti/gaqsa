@@ -1,5 +1,5 @@
 import { Maybe, Product } from '@types';
-import { Layout, message, Spin } from 'antd';
+import { message, Spin } from 'antd';
 import { useBackend } from 'integrations';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
