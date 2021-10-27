@@ -12,6 +12,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
+import { UserGroups } from 'hooks/useAuth';
 
 const ListUsers: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -41,6 +42,11 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
   }, [history, fetchUsers]);
 
   const columns = [
+    {
+      title: 'Razón social',
+      dataIndex: 'businessName',
+      key: 'businessName',
+    },
     {
       title: 'Nombre completo',
       dataIndex: 'name',
@@ -79,6 +85,16 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
   ];
 
   const NO_DATA = 'Sin datos';
+  const NOT_APPLICABLE = 'N/A';
+
+  const getBusinessName = (user: User) : string => {
+    if (UserGroups.CLIENT === user.groups[0] && user.client) {
+      return user.client.name;
+    } if (UserGroups.PROVIDER === user.groups[0] && user.provider) {
+      return user.provider.name;
+    }
+    return NOT_APPLICABLE;
+  };
 
   return (
     <Content>
@@ -88,6 +104,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
           rowKey={(row) => `${row.id}`}
           data={
             users.map((user) => ({
+              id: user.id,
               name: (user.first_name && user.last_name)
                 ? `${user.first_name} ${user.last_name}` : NO_DATA,
               email: user.email ? user.email : NO_DATA,
@@ -99,6 +116,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
                 ) : NO_DATA,
               active: user.is_active ? 'Activo' : 'No activo',
               date_joined: moment(user.date_joined).format('YYYY-MM-DD HH:mm'),
+              businessName: getBusinessName(user),
             }))
         }
           columns={columns}
