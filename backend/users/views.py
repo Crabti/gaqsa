@@ -126,7 +126,7 @@ class CreateUser(APIView):
             with transaction.atomic():
                 payload = self.request.data
 
-                existing_user = User.objects.get(
+                existing_user = User.objects.first(
                     username=payload["user"]["username"]
                 )
 
