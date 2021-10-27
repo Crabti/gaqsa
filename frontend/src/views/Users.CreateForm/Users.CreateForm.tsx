@@ -47,11 +47,26 @@ const CreateUser: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(false);
 
-  const onFinishFailed = () : void => {
-    notification.error({
-      message: '¡Ocurrió un error al intentar guardar!',
-      description: 'Intentalo después.',
-    });
+  const onFinishFailed = (code: string) : void => {
+    switch (code) {
+      case 'USER_ALREADY_EXISTS':
+        notification.error({
+          message: 'El nombre de usuario ya existe.',
+          description: 'Prueba con otro nombre de usuario.',
+        });
+        form.setFields([{
+          name: ['user', 'username'],
+          errors: ['El nombre de usuario ya existe.'],
+        }]);
+        form.scrollToField(['user', 'username']);
+        break;
+      default:
+        notification.error({
+          message: '¡Ocurrió un error al intentar guardar!',
+          description: 'Intentalo después.',
+        });
+        break;
+    }
   };
 
   const onFinish = async (values: CreateUserForm) : Promise<void> => {
@@ -103,7 +118,7 @@ const CreateUser: React.VC = ({ verboseName, parentName }) => {
       ...payload,
     });
     if (error) {
-      onFinishFailed();
+      onFinishFailed(error.response?.data.code);
     } else {
       notification.success({
         message: '¡Nuevo usuario creado exitosamente!',
