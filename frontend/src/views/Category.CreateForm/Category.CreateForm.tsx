@@ -9,12 +9,12 @@ import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
   CreateCategoryForm,
-  CreateLaboratoryForm,
 } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
 import CategoryForm from 'components/CategoryForm';
 
-const INITIAL_STATE : CreateLaboratoryForm = {
+const INITIAL_STATE : CreateCategoryForm = {
+  code: '',
   name: '',
 };
 

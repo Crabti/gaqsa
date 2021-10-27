@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
+  Button,
+  Col,
   notification,
 } from 'antd';
 import { useHistory } from 'react-router';
@@ -18,6 +20,10 @@ const ListCategory: React.VC = ({ verboseName, parentName }) => {
   const [isLoading, setLoading] = useState(true);
   // eslint-disable-next-line max-len
   const [category, setCategory] = useState<Category[] | undefined>(undefined);
+
+  const buttonHandler = () :void => {
+    history.replace('/categorias/nuevo');
+  };
 
   const fetchCategory = useCallback(async () => {
     setLoading(true);
@@ -42,7 +48,7 @@ const ListCategory: React.VC = ({ verboseName, parentName }) => {
 
   const columns = [
     {
-      title: 'Clave',
+      title: 'Código',
       dataIndex: 'key',
       key: 'key',
     },
@@ -57,16 +63,20 @@ const ListCategory: React.VC = ({ verboseName, parentName }) => {
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !category ? <LoadingIndicator /> : (
-        <Table
-          rowKey={(row) => `${row.id}`}
-          data={
-              category.map((cat) => ({
-                key: (cat.name).substr(0, 2).toUpperCase(),
-                name: cat.name,
-              }))
-          }
-          columns={columns}
-        />
+        <>
+          <Col span={3} push={20}>
+            <Button type="primary" onClick={buttonHandler}> + Agregar</Button>
+          </Col>
+          <Table
+            rowKey={(row) => `${row.id}`}
+            data={category.map((cat) => ({
+              key: cat.code.toUpperCase(),
+              name: cat.name,
+            }))}
+            columns={columns}
+          />
+
+        </>
       )}
     </Content>
   );

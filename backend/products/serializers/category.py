@@ -8,6 +8,7 @@ class ListCategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = (
             "id",
+            "code",
             "name",
         )
 
@@ -16,5 +17,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = (
+            "code",
             "name",
         )

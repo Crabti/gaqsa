@@ -34,6 +34,18 @@ const CategoryForm: React.FC<Props> = ({
       <Row justify="space-around">
         <Col span={12}>
           <Form.Item
+            name="code"
+            label="Codigo"
+            rules={[{ required: true }]}
+          >
+            <Input
+              maxLength={2}
+              minLength={2}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
             name="name"
             label="Categoria"
             rules={[{ required: true }]}
