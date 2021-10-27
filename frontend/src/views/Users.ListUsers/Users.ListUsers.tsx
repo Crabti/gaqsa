@@ -46,41 +46,58 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
       title: 'Razón social',
       dataIndex: 'businessName',
       key: 'businessName',
+      sorter: (a: any, b: any) => a.businessName.localeCompare(b.businessName),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Nombre completo',
       dataIndex: 'name',
       key: 'name',
+      sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Rol',
       dataIndex: 'group',
       key: 'group',
+      sorter: (a: any, b: any) => a.group.localeCompare(b.group),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Correo',
       dataIndex: 'email',
       key: 'email',
+      sorter: (a: any, b: any) => a.email.localeCompare(b.email),
     },
     {
       title: 'Nombre de usuario',
       dataIndex: 'username',
       key: 'username',
+      sorter: (a: any, b: any) => a.username.localeCompare(b.username),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Ultimo inicio de sesion',
       dataIndex: 'last_login',
       key: 'last_login',
+      sorter: (a: any, b: any) => moment(
+        a.last_login,
+      ).unix() - moment(b.last_login).unix(),
     },
     {
       title: 'Fecha de registro',
       dataIndex: 'date_joined',
       key: 'date_joined',
+      sorter: (a: any, b: any) => moment(
+        a.date_joined,
+      ).unix() - moment(b.date_joined).unix(),
     },
     {
       title: 'Activo',
       dataIndex: 'active',
       key: 'active',
+      sorter: (a: any, b: any) => a.businessName.localeCompare(b.businessName),
+      defaultSortOrder: 'ascend',
     },
   ];
 
