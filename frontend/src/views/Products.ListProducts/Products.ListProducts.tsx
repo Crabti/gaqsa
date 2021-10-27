@@ -13,7 +13,9 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+import {
+  EditOutlined, PlusOutlined, SearchOutlined, TagOutlined,
+} from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
@@ -48,7 +50,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   );
   const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
-  const shouldShowEditProduct = SHOW_EDIT_PRODUCT && (isProvider || isAdmin);
+  const shouldShowEditProduct = SHOW_EDIT_PRODUCT && isAdmin;
+  const shouldShowDetailProduct = isProvider;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -154,6 +157,17 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                     amount: 1,
                     offer: product.offer,
                   });
+                }}
+              />
+            </Tooltip>
+          )}
+          {shouldShowDetailProduct && (
+            <Tooltip title="Ver detalles">
+              <Button
+                shape="circle"
+                icon={<SearchOutlined />}
+                onClick={() => {
+                  history.push(`/productos/${product.id}/detalle`);
                 }}
               />
             </Tooltip>

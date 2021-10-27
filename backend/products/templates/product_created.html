@@ -21,21 +21,41 @@
       <td>Nombre</td>
       <td>{{ product.name }}</td>
     </tr>
+    <tr>
+      <td>Precio</td>
+      <td>{{ product.price }}</td>
+    </tr>
+    <tr>
+      <td>IVA (%)</td>
+      <td>{{ product.iva }} %</td>
+    </tr>
     <tr>    
       <td>Presentación</td>
       <td>{{ product.presentation }}</td>
     </tr>
+    <tr>
+      <td>Información</td>
+      <td>{{ product.more_info }}</td>
+    </tr>
     <tr>    
+      <td>IEPS</td>
+      <td>{{ product.ieps }}</td>
+    </tr>
+    <tr>
       <td>Laboratorio</td>
       <td>{{ product.laboratory }}</td>
     </tr>
-    <tr>    
+    <tr>
       <td>Categoría</td>
       <td>{{ product.category }}</td>
     </tr>
-    <tr>    
-      <td>Precio</td>
-      <td>{{ product.price }}</td>
+    <tr>
+      <td>Substancia Activa</td>
+      <td>{{ product.active_substance }}</td>
+    </tr>
+    <tr>
+      <td>Clave</td>
+      <td>{{ product.key }}</td>
     </tr>
   </table>
 {% endblock %}
