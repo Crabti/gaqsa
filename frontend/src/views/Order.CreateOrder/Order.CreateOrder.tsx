@@ -52,17 +52,16 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
 
       if (error) {
         onFinishFailed();
-        return;
-      }
-      clear();
-      notification.success({
-        message: '¡Petición de orden creado exitosamente!',
-        description: 'Su orden de compra ha sido recibida y será procesada'
+      } else {
+        clear();
+        notification.success({
+          message: '¡Petición de orden creado exitosamente!',
+          description: 'Su orden de compra ha sido recibida y será procesada. '
             + 'El proveedor le informará lo mas pronto posible '
             + 'el estatus de su solicitud.',
-      });
-      history.replace('/pedidos/historial');
-
+        });
+        history.replace('/pedidos/historial');
+      }
       setLoading(false);
     }
   };
