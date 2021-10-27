@@ -23,7 +23,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
-  const { isProvider } = useAuth();
+  const { isProvider, isAdmin } = useAuth();
   const [isLoading, setLoading] = useState(false);
   const [visible, setIsVisible] = useState(false);
   const { id } = useParams<{ id: string }>();
@@ -123,7 +123,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
         onFinishFailed={onFinishFailed}
         initialState={product as UpdateProductForm}
         options={options}
-        disabledFields={form.getFieldValue('token') ? undefined : {
+        disabledFields={isAdmin ? undefined : {
           price: (
             'Da click en el botón de arriba para solicitar cambio de precio.'
           ),
