@@ -30,7 +30,7 @@ class ListUserSerializer(serializers.ModelSerializer):
     )
 
     provider = ProviderSerializer(read_only=True, allow_null=True)
-    provider = ClientSerializer(read_only=True, allow_null=True)
+    client = ClientSerializer(read_only=True, allow_null=True)
 
     class Meta:
         model = User
