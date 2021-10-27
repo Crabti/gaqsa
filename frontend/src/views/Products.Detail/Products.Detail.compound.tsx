@@ -3,8 +3,9 @@ import { Layout, message, Spin } from 'antd';
 import { useBackend } from 'integrations';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import ProductDetail from './Products.Detail';
 
-const ProductDetail: React.FC = () => {
+const ProductDetailCompound: React.FC = () => {
   const [product, setProduct] = useState<Maybe<Product>>(undefined);
   const [loading, setLoading] = useState(false);
   const backend = useBackend();
@@ -32,10 +33,8 @@ const ProductDetail: React.FC = () => {
   if (loading) return <Spin />;
 
   return (
-    <Layout.Content>
-      {product.name}
-    </Layout.Content>
+    <ProductDetail product={product} />
   );
 };
 
-export default ProductDetail;
+export default ProductDetailCompound;
