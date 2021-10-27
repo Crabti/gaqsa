@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  Button, Col, Layout, Row, Table,
+  Button, Col, Layout, Row,
 } from 'antd';
 import Props from './Table.type';
+import { Table } from './Table.styled';
 
 const GenericTable: React.FC<Props> = ({
   data, columns, expandedRowRender, rowKey, actions,
@@ -35,6 +36,7 @@ const GenericTable: React.FC<Props> = ({
       dataSource={data}
       columns={columns}
       bordered
+      size="small"
       expandedRowRender={expandedRowRender}
       pagination={false}
     />
