@@ -18,6 +18,7 @@ import ListUsers from 'views/Users.ListUsers/Users.ListUsers';
 import ListLaboratory from 'views/Laboratory.ListLaboratory';
 import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
+import ProductsDetail from 'views/Products.Detail';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
@@ -77,6 +78,13 @@ export const productRoutes: Routes = {
     verboseName: 'Productos Existentes',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
+  },
+  detailProduct: {
+    path: '/productos/:id/detalle',
+    view: ProductsDetail,
+    verboseName: 'Modificar producto',
+    showInMenu: false,
+    hasAccess: (auth) => auth.isAdmin || auth.isProvider,
   },
 };
 
