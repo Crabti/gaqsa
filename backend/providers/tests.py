@@ -14,11 +14,10 @@ from http import HTTPStatus
 class CreateCodeOneProvider(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
         self.providers = [
-            ProviderFactory.create(user=user),
-            ProviderFactory.create(user=user),
-            ProviderFactory.create(user=user),
+            ProviderFactory.create(user=UserFactory.create()),
+            ProviderFactory.create(user=UserFactory.create()),
+            ProviderFactory.create(user=UserFactory.create()),
         ]
 
         self.valid_payload = ProviderPkSerializer(
@@ -50,11 +49,9 @@ class CreateCodeOneProvider(BaseTestCase):
 class ListAllProviders(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
         self.providers_quantity = 20
         self.providers = ProviderFactory.create_batch(
             self.providers_quantity,
-            user=user
         )
 
     def test_require_authentication(self) -> None:

@@ -32,7 +32,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**' --fix",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "ci": "eslint 'src/**' --fix && tsc && react-scripts test --watchAll=false"
   },
   "eslintConfig": {
     "extends": [

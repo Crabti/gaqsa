@@ -12,6 +12,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
+import { UserGroups } from 'hooks/useAuth';
 
 const ListUsers: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -42,43 +43,75 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
 
   const columns = [
     {
+      title: 'Razón social',
+      dataIndex: 'businessName',
+      key: 'businessName',
+      sorter: (a: any, b: any) => a.businessName.localeCompare(b.businessName),
+      defaultSortOrder: 'ascend',
+    },
+    {
       title: 'Nombre completo',
       dataIndex: 'name',
       key: 'name',
+      sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Rol',
       dataIndex: 'group',
       key: 'group',
+      sorter: (a: any, b: any) => a.group.localeCompare(b.group),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Correo',
       dataIndex: 'email',
       key: 'email',
+      sorter: (a: any, b: any) => a.email.localeCompare(b.email),
     },
     {
       title: 'Nombre de usuario',
       dataIndex: 'username',
       key: 'username',
+      sorter: (a: any, b: any) => a.username.localeCompare(b.username),
+      defaultSortOrder: 'ascend',
     },
     {
       title: 'Ultimo inicio de sesion',
       dataIndex: 'last_login',
       key: 'last_login',
+      sorter: (a: any, b: any) => moment(
+        a.last_login,
+      ).unix() - moment(b.last_login).unix(),
     },
     {
       title: 'Fecha de registro',
       dataIndex: 'date_joined',
       key: 'date_joined',
+      sorter: (a: any, b: any) => moment(
+        a.date_joined,
+      ).unix() - moment(b.date_joined).unix(),
     },
     {
       title: 'Activo',
       dataIndex: 'active',
       key: 'active',
+      sorter: (a: any, b: any) => a.businessName.localeCompare(b.businessName),
+      defaultSortOrder: 'ascend',
     },
   ];
 
   const NO_DATA = 'Sin datos';
+  const NOT_APPLICABLE = 'N/A';
+
+  const getBusinessName = (user: User) : string => {
+    if (UserGroups.CLIENT === user.groups[0] && user.client) {
+      return user.client.name;
+    } if (UserGroups.PROVIDER === user.groups[0] && user.provider) {
+      return user.provider.name;
+    }
+    return NOT_APPLICABLE;
+  };
 
   return (
     <Content>
@@ -88,6 +121,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
           rowKey={(row) => `${row.id}`}
           data={
             users.map((user) => ({
+              id: user.id,
               name: (user.first_name && user.last_name)
                 ? `${user.first_name} ${user.last_name}` : NO_DATA,
               email: user.email ? user.email : NO_DATA,
@@ -99,6 +133,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
                 ) : NO_DATA,
               active: user.is_active ? 'Activo' : 'No activo',
               date_joined: moment(user.date_joined).format('YYYY-MM-DD HH:mm'),
+              businessName: getBusinessName(user),
             }))
         }
           columns={columns}
