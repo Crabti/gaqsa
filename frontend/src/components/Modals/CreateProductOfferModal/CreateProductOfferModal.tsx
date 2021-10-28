@@ -52,7 +52,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
     });
 
     setLoading(false);
-    onClose();
+    onClose(true);
   };
 
   const handleOk = async (): Promise<void> => {
@@ -93,7 +93,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   return (
     <Modal
       visible={visible}
-      onCancel={onClose}
+      onCancel={() => onClose(false)}
       onOk={handleOk}
       okText="Crear"
       cancelText="Cancelar"
