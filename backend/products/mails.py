@@ -34,7 +34,7 @@ def send_mail_on_create(sender, instance=None, created=False, **kwargs):
             from_email,
             to_emails,
             html_message=html_message,
-            fail_silently=False,
+            fail_silently=True,
         )
     else:
         title = "Actualización de Producto"
@@ -58,7 +58,7 @@ def send_mail_on_create(sender, instance=None, created=False, **kwargs):
             from_email,
             to_emails,
             html_message=html_message,
-            fail_silently=False,
+            fail_silently=True,
         )
 
 
@@ -97,5 +97,5 @@ def send_mail_on_request_price_change(
         from_email,
         to_emails,
         html_message=html_message,
-        fail_silently=False,
+        fail_silently=True,
     )

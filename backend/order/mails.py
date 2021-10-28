@@ -69,5 +69,5 @@ def send_mail_on_create_order_user(order, products):
         from_email,
         to_emails,
         html_message=html_message,
-        fail_silently=False,
+        fail_silently=True,
     )
