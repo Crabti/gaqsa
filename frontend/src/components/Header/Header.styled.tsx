@@ -22,7 +22,6 @@ export const Logo = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   transform: scale(1.2); // this is just to adjust the image size
-  cursor: pointer;
 `;
 
 export const RightContainer = styled.div`
