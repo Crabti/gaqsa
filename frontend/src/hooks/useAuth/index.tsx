@@ -101,6 +101,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
         first_name: parsedToken.first_name,
         last_name: parsedToken.last_name,
         groups: parsedToken.groups,
+        username: parsedToken.username,
       },
     };
     persistState(newState);

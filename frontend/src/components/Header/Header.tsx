@@ -40,10 +40,25 @@ const LoginBtn: React.FC = () => {
   );
 };
 
+const UserName: React.FC = () => {
+  const { user } = useAuth();
+  if (!user || !user.username) {
+    return null;
+  }
+
+  return (
+    <Typography className="username">
+      {user.username}
+    </Typography>
+
+  );
+};
+
 const Header: React.FC = () => (
   <HeaderCont>
     <Logo />
     <RightContainer>
+      <UserName />
       <LoginBtn />
     </RightContainer>
   </HeaderCont>

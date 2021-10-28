@@ -22,6 +22,7 @@ export const Logo = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   transform: scale(1.2); // this is just to adjust the image size
+  cursor: pointer;
 `;
 
 export const RightContainer = styled.div`
@@ -29,6 +30,11 @@ export const RightContainer = styled.div`
 
   a {
     color: ${({ theme }) => theme.colors.bgContent};
+  }
+
+  .username {
+    margin-right: 2em;
+    color: white;
   }
 
   font-size: 1rem;

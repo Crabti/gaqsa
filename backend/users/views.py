@@ -25,6 +25,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         token["id"] = user.pk
         token["first_name"] = user.first_name
+        token["last_name"] = user.last_name
+        token["username"] = user.username
+        print(user.username)
         token["groups"] = list(user.groups.values_list('name', flat=True))
         return token
 
