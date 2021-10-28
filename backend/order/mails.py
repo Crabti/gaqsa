@@ -7,7 +7,7 @@ from users.models import UserEmail
 
 
 def send_mail_on_create_order(order, providers, products):
-    connection = mail.get_connection()
+    connection = mail.get_connection(fail_silently=True)
     connection.open()
     emails = []
 

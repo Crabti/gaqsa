@@ -6,7 +6,7 @@ from users.models import UserEmail
 
 
 def send_mail_on_new_code(providers):
-    connection = mail.get_connection()
+    connection = mail.get_connection(fail_silently=True)
     connection.open()
     emails = []
 
