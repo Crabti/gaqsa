@@ -131,7 +131,7 @@ class ChangePriceRequest(models.Model):
         max_length=20,
         choices=STATUSES,
         default=PENDING,
-        verbose_name="Estado de la solucitud",
+        verbose_name="Estado de la solicitud",
     )
 
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)

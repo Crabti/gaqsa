@@ -243,7 +243,7 @@ class ListAllActiveProductsOfProvider(BaseTestCase):
         user = UserFactory.create()
         other_user = UserFactory.create()
 
-        self.provider = ProviderFactory.create(user=user)
+        self.provider = ProviderFactory.create(user=self.provider_user)
         other_provider = ProviderFactory.create(user=other_user)
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
@@ -277,18 +277,16 @@ class ListAllActiveProductsOfProvider(BaseTestCase):
     def test_list_only_products_of_provider(
         self,
     ) -> None:
-        response = self.admin_client.get(
+        response = self.provider_client.get(
             reverse("list_products"),
-            {
-                "provider": self.provider.id,
-                "status": Product.ACCEPTED
-            },
+            {"status": Product.ACCEPTED},
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), 5)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         for product in result:
-            self.assertEqual(product["provider"], self.provider.name)
+            self.assertEqual(product['provider'], self.provider.name)
 
 
 class ListAllProductSelectOptions(BaseTestCase):

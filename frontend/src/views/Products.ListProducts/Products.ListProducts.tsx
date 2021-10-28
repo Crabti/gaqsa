@@ -13,7 +13,9 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { EditOutlined, PlusOutlined, TagOutlined } from '@ant-design/icons';
+import {
+  EditOutlined, PlusOutlined, TagOutlined,
+} from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
@@ -35,7 +37,11 @@ interface OfferModal {
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const { isClient, isProvider, isAdmin } = useAuth();
+
+  const {
+    isClient, isProvider, isAdmin, user,
+  } = useAuth();
+
   const [offerModal, setOfferModal] = useState<OfferModal>(
     { visible: false, product: undefined },
   );
@@ -56,7 +62,6 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     const [result, error] = await backend.products.getAll(
       'status=Aceptado',
     );
-
     if (error || !result) {
       notification.error({
         message: 'Ocurrió un error al cargar el producto!',
@@ -229,6 +234,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     )
   ));
 
+  const handleButton = () : void => {
+    history.replace('/productos/nuevo');
+  };
+
   useEffect(() => {
     resetFiltered();
   }, [products, resetFiltered]);
@@ -252,11 +261,28 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
             filterAny={onFilterAny}
             data={products}
           />
-          <Table
-            rowKey={(row) => `${row.id}`}
-            data={filtered}
-            columns={columns}
-          />
+          { !isClient
+            ? (
+              <Table
+                rowKey={(row) => `${row.id}`}
+                data={filtered}
+                columns={columns}
+                actions={[
+                  {
+                    action: handleButton,
+                    text: 'Nuevo',
+                    icon: <PlusOutlined />,
+                  },
+                ]}
+              />
+            )
+            : (
+              <Table
+                rowKey={(row) => `${row.id}`}
+                data={filtered}
+                columns={columns}
+              />
+            )}
           { offerModal.product
             ? (
               <CreateProductOfferModal
@@ -265,7 +291,6 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 product={offerModal.product}
               />
             ) : null}
-
         </>
       )}
     </Content>
