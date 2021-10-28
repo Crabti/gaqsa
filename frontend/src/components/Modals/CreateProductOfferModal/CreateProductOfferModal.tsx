@@ -20,6 +20,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<CreateOfferForm>();
   const [discount, setDiscount] = useState(INITIAL_DISCOUNT);
+  const [newPrice, setNewPrice] = useState(product.price);
   const backend = useBackend();
 
   const handleUpdate = async (data: CreateOfferForm): Promise<void> => {
@@ -29,8 +30,9 @@ const CreateProductOfferModal: React.FC<Props> = ({
       ...data,
       ending_at: moment(data.ending_at).format('YYYY-MM-DD HH:mm'),
       product: product.id,
-      discount_percentage: data.discount_percentage / 100,
+      discount_percentage: +(data.discount_percentage / 100).toFixed(2),
     };
+
     const [response, error] = await backend.offers.createOne(
       payload,
     );
@@ -66,6 +68,22 @@ const CreateProductOfferModal: React.FC<Props> = ({
 
   const handleDiscountUpdate = (value: number): void => {
     setDiscount(value);
+    const price = +(
+      product.price - product.price * (value / 100)
+    ).toFixed(2);
+    setNewPrice(price);
+    form.setFieldsValue({
+      newPrice: price,
+    });
+  };
+
+  const handleNewPriceUpdate = (value: number): void => {
+    const newDiscount = +((1 - value / product.price) * 100).toFixed(2);
+    setDiscount(newDiscount);
+    setNewPrice(value);
+    form.setFieldsValue({
+      discount_percentage: newDiscount,
+    });
   };
 
   const disabledDate = (
@@ -102,7 +120,9 @@ const CreateProductOfferModal: React.FC<Props> = ({
       <Form
         form={form}
         initialValues={{
-          product: product.id, discount_percentage: INITIAL_DISCOUNT,
+          product: product.id,
+          discount_percentage: INITIAL_DISCOUNT,
+          newPrice: newPrice * 0.5,
         }}
       >
         <Form.Item
@@ -117,6 +137,23 @@ const CreateProductOfferModal: React.FC<Props> = ({
             max={99.99}
             formatter={(value) => `${value}%`}
             onChange={handleDiscountUpdate}
+          />
+        </Form.Item>
+        <Form.Item
+          style={{ marginTop: '1.75rem' }}
+          name="newPrice"
+          label="Nuevo precio"
+          required
+        >
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0.01}
+            max={product.price - 0.01}
+            onChange={handleNewPriceUpdate}
+            formatter={
+              (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+            precision={2}
           />
         </Form.Item>
         <Form.Item name="ending_at" label="Fecha limite" required>
