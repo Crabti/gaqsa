@@ -12,6 +12,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
+import { PlusOutlined } from '@ant-design/icons';
 import { UserGroups } from 'hooks/useAuth';
 
 const ListUsers: React.VC = ({ verboseName, parentName }) => {
@@ -113,6 +114,10 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
     return NOT_APPLICABLE;
   };
 
+  const handleButton = () : void => {
+    history.replace('/usuarios/nuevo');
+  };
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
@@ -137,6 +142,14 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
             }))
         }
           columns={columns}
+          actions={[
+            {
+              action: handleButton,
+              text: 'Nuevo',
+              icon: <PlusOutlined />,
+            },
+          ]}
+
         />
       )}
     </Content>

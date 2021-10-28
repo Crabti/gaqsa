@@ -34,10 +34,16 @@ from rest_framework import generics, status
 
 
 class ListProductView(generics.ListAPIView):
-    queryset = Product.objects.all()
     serializer_class = ListProductSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['provider', 'status']
+    filterset_fields = ['status']
+
+    def get_queryset(self):
+        if is_provider(self.request.user):
+            provider = Provider.objects.get(user=self.request.user)
+            return Product.objects.filter(provider=provider)
+        else:
+            return Product.objects.all()
 
 
 class CreateProductView(generics.CreateAPIView):

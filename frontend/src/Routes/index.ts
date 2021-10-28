@@ -56,7 +56,6 @@ export const productRoutes: Routes = {
     path: '/productos/nuevo',
     view: ProductsCreateForm,
     verboseName: 'Alta de Producto',
-    showInMenu: true,
     hasAccess: ((auth) => auth.isProvider || auth.isAdmin),
   },
   updateProduct: {
@@ -75,7 +74,7 @@ export const productRoutes: Routes = {
   listProducts: {
     path: '/productos/',
     view: ProductsListProducts,
-    verboseName: 'Productos Existentes',
+    verboseName: 'Lista de Productos',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
@@ -178,7 +177,7 @@ export const usersRoutes: Routes = {
   listUsers: {
     path: '/usuarios',
     view: ListUsers,
-    verboseName: 'Lista de usuarios',
+    verboseName: 'Lista de Usuarios',
     showInMenu: SHOW_USERS_LIST,
     hasAccess: ((auth) => auth.isAdmin),
   },
