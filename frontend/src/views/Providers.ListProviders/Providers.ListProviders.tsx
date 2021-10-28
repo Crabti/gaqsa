@@ -17,7 +17,9 @@ import {
   ExclamationCircleOutlined, MailOutlined,
 } from '@ant-design/icons';
 import confirm from 'antd/lib/modal/confirm';
-import { INVOICES_MAILS_CATEGORY, ORDERS_MAILS_CATEGORY, PRICE_CHANGE_MAILS_CATEGORY } from 'constants/strings';
+import {
+  INVOICES_MAILS_CATEGORY, ORDERS_MAILS_CATEGORY, PRICE_CHANGE_MAILS_CATEGORY,
+} from 'constants/strings';
 
 interface ProviderId {
   pk: number

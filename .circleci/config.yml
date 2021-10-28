@@ -80,6 +80,7 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
           app-dir: ./backend
+          cache-version: v2
       - run:
           name: Lint
           working_directory: ./backend
