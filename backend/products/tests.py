@@ -240,7 +240,6 @@ class DetailProduct(BaseTestCase):
 class ListAllActiveProductsOfProvider(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
         other_user = UserFactory.create()
 
         self.provider = ProviderFactory.create(user=self.provider_user)

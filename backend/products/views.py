@@ -37,7 +37,7 @@ class ListProductView(generics.ListAPIView):
     serializer_class = ListProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['status']
-    
+
     def get_queryset(self):
         if is_provider(self.request.user):
             provider = Provider.objects.get(user=self.request.user)

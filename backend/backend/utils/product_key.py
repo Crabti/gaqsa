@@ -13,6 +13,4 @@ def create_product_key(category_pk, product_name):
         key = f"{category.name[0:3]}" \
           f"-{product_name[0:1]}{(str(products_with_category + 1)).zfill(2)}"
 
-    
-
     return str(key)

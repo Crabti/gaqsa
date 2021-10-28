@@ -39,7 +39,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
 
   const {
-    isClient, isProvider, isAdmin, user,
+    isClient, isProvider, isAdmin,
   } = useAuth();
 
   const [offerModal, setOfferModal] = useState<OfferModal>(
