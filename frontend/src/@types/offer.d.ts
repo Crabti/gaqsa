@@ -13,4 +13,5 @@ export interface CreateOfferForm {
     discount_percentage: number;
     product: number;
     ending_at: string;
+    newPrice?: number;
 }

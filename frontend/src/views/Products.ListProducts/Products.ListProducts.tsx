@@ -31,7 +31,7 @@ import { Actions } from './Products.ListProducts.styled';
 
 interface OfferModal {
   visible: boolean,
-  product: Product | undefined
+  product: Product | undefined,
 }
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
@@ -213,7 +213,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
-  const onCloseModal = (): void => {
+  const onCloseModal = (success: boolean): void => {
+    if (success) {
+      fetchProducts();
+    }
     setOfferModal({ ...offerModal, visible: false });
   };
 

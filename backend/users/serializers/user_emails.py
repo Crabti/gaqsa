@@ -9,3 +9,9 @@ class CreateUserEmailSerializer(serializers.ModelSerializer):
             "email",
             "category"
         )
+
+
+class UserEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserEmail
+        fields = "__all__"

@@ -2,6 +2,6 @@ import { Product } from '@types';
 
 export interface Props {
     visible: boolean;
-    onClose: () => void;
+    onClose: (success: boolean) => void;
     product: Product;
 }
