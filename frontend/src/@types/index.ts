@@ -21,6 +21,8 @@ import {
 import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
 
+export type Maybe<T> = T | undefined;
+
 export type {
   AnimalGroup,
   Category,

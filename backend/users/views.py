@@ -125,6 +125,17 @@ class CreateUser(APIView):
         try:
             with transaction.atomic():
                 payload = self.request.data
+
+                existing_user = User.objects.filter(
+                    username=payload["user"]["username"],
+                ).first()
+
+                if existing_user:
+                    return Response(
+                        {"code": "USER_ALREADY_EXISTS"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 user = self.save_user(payload)
                 group = self.save_group(user, payload)
                 self.save_profile(user, payload)

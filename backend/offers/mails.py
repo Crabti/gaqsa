@@ -30,5 +30,5 @@ def send_mail_on_offer_create(sender, instance=None, created=False, **kwargs):
             from_email,
             to_emails,
             html_message=html_message,
-            fail_silently=False,
+            fail_silently=True,
         )

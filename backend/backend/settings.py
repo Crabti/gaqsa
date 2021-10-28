@@ -227,7 +227,7 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', False)
 
 # If email settings not set, use console email backend for development
 if (EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT):
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'backend.emails.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

@@ -17,6 +17,9 @@ def generate_unique_key():
 class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    code = models.CharField(
+        max_length=2, verbose_name="Clave", default="NE"
+    )
     name = models.CharField(
         max_length=150, verbose_name="Nombre de la categoría")
 

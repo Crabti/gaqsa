@@ -1,4 +1,4 @@
-import { CommonType } from '@types';
+import { CommonType, Provider } from '@types';
 import { CreateClientForm } from './client';
 import { CreateProviderForm } from './provider';
 
@@ -11,6 +11,8 @@ export interface User extends CommonType {
   date_joined?: string;
   username?: string;
   is_active?: boolean;
+  provider?: Provider,
+  client?: Client,
 }
 
 interface Profile {

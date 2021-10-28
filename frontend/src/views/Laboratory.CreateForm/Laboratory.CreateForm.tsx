@@ -44,7 +44,7 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
         description: 'El laboratorio está disponible a partir de este momento.',
       });
       form.resetFields();
-      history.replace('/');
+      history.replace('/laboratorios');
     }
     setLoading(false);
   };

@@ -1,3 +1,5 @@
+from clients.serializers.client import ClientSerializer
+from providers.serializers.providers import ProviderSerializer
 from rest_framework import serializers
 from django.contrib.auth.models import Group, User
 
@@ -27,9 +29,13 @@ class ListUserSerializer(serializers.ModelSerializer):
         slug_field='name',
     )
 
+    provider = ProviderSerializer(read_only=True, allow_null=True)
+    client = ClientSerializer(read_only=True, allow_null=True)
+
     class Meta:
         model = User
         fields = (
+            "id",
             "username",
             "email",
             "first_name",
@@ -38,4 +44,6 @@ class ListUserSerializer(serializers.ModelSerializer):
             "date_joined",
             "groups",
             "is_active",
+            "provider",
+            "client"
         )

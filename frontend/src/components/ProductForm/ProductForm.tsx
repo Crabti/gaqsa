@@ -53,10 +53,156 @@ const ProductForm: React.FC<Props> = ({
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
     >
+      { !isUpdate && isAdmin && providers && (
+      <>
+        <Col span={12}>
+          <Form.Item
+            name="provider"
+            label="Proveedor"
+            rules={[{ required: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="Buscar proveedor"
+              optionFilterProp="children"
+              filterOption={(input, option) => (option === undefined
+                ? false : option.children
+                  .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+            >
+              {Object.values(providers).map(
+                (provider) => (
+                  <Option value={provider.id} key={provider.id}>
+                    {provider.name}
+                  </Option>
+                ),
+              )}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Row justify="space-around">
+          <Col span={12}>
+            <Form.Item
+              name="category"
+              label="Categoría"
+              rules={[{ required: true }]}
+            >
+              <Select
+                showSearch
+                disabled={!!disabledFields?.category}
+                placeholder="Buscar categoría"
+                filterOption={(input, option) => (option === undefined
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              >
+                {Object.values(options.categories).map(
+                  (category) => (
+                    <Option value={category.id} key={category.id}>
+                      {category.name}
+                    </Option>
+                  ),
+                )}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="animal_groups"
+              label="Especie"
+              rules={[{ required: true }]}
+            >
+              <Select
+                showSearch
+                placeholder="Buscar especie"
+                filterOption={
+                (input, option) => (option === undefined
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+              }
+                mode="multiple"
+                disabled={!!disabledFields?.animal_groups}
+              >
+                { Object.values(options.animal_groups).map(
+                  (group) => (
+                    <Option value={group.id} key={group.id}>
+                      {group.name}
+                    </Option>
+                  ),
+                )}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+      </>
+      )}
+      {isUpdate && (
+      <>
+        <Col span={12}>
+          <Form.Item
+            name="status"
+            label="Estado"
+            rules={[{ required: true }]}
+          >
+            <Select
+              onChange={handleStateDropdown}
+              disabled={!!disabledFields?.status}
+            >
+              { Object.values(ProductStatus).map(
+                (status) => (
+                  <Option value={status} key={status}>
+                    {status}
+                  </Option>
+                ),
+              )}
+            </Select>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            shouldUpdate
+            name="reject_reason"
+            label="Razon de rechazo"
+            rules={[]}
+          >
+            <Input.TextArea
+              disabled={
+                    isProductRejected || !!disabledFields?.reject_reason
+                  }
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="key"
+            label="Clave"
+            rules={[{ required: true, max: 8 }]}
+          >
+            <Input disabled={!!disabledFields?.key} />
+          </Form.Item>
+        </Col>
+      </>
+      )}
       <Row justify="space-around">
         <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
             <Input disabled={!!disabledFields?.name} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="active_substance"
+            label="Sustancia activa"
+            rules={[{ required: true }]}
+          >
+            <Input disabled={!!disabledFields?.active_substance} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="presentation"
+            label="Presentación"
+            rules={[{ required: true }]}
+          >
+            <Input disabled={!!disabledFields?.presentation} />
           </Form.Item>
         </Col>
         <Col span={12}>
@@ -73,42 +219,6 @@ const ProductForm: React.FC<Props> = ({
               formatter={(value) => `$ ${value}`.replace(
                 /\B(?=(\d{3})+(?!\d))/g, ',',
               )}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="presentation"
-            label="Presentación"
-            rules={[{ required: true }]}
-          >
-            <Input disabled={!!disabledFields?.presentation} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
-            <Select disabled={!!disabledFields?.iva}>
-              <Option value="0.00" key="0.00"> 0.00 %</Option>
-              <Option value="16.00" key="16.00"> 16.00 %</Option>
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            name="more_info"
-            label="Información"
-          >
-            <Input.TextArea disabled={!!disabledFields?.more_info} />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
-            <InputNumber
-              min={0.00}
-              max={100}
-              style={{ width: '100%' }}
-              formatter={(value) => `${value}%`}
-              disabled={!!disabledFields?.ieps}
             />
           </Form.Item>
         </Col>
@@ -139,142 +249,32 @@ const ProductForm: React.FC<Props> = ({
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            name="category"
-            label="Categoría"
-            rules={[{ required: true }]}
-          >
-            <Select
-              showSearch
-              disabled={!!disabledFields?.category}
-              placeholder="Buscar categoría"
-              filterOption={
-                (input, option) => (option === undefined
-                  ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
-            >
-              { Object.values(options.categories).map(
-                (category) => (
-                  <Option value={category.id} key={category.id}>
-                    {category.name}
-                  </Option>
-                ),
-              )}
+          <Form.Item name="iva" label="IVA (%)" rules={[{ required: true }]}>
+            <Select disabled={!!disabledFields?.iva}>
+              <Option value="0.00" key="0.00"> 0.00 %</Option>
+              <Option value="16.00" key="16.00"> 16.00 %</Option>
             </Select>
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            name="animal_groups"
-            label="Especie"
-            rules={[{ required: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="Buscar especie"
-              filterOption={
-                (input, option) => (option === undefined
-                  ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
-              mode="multiple"
-              disabled={!!disabledFields?.animal_groups}
-            >
-              { Object.values(options.animal_groups).map(
-                (group) => (
-                  <Option value={group.id} key={group.id}>
-                    {group.name}
-                  </Option>
-                ),
-              )}
-            </Select>
+          <Form.Item name="ieps" label="IEPS" rules={[{ required: true }]}>
+            <InputNumber
+              min={0.00}
+              max={100}
+              style={{ width: '100%' }}
+              formatter={(value) => `${value}%`}
+              disabled={!!disabledFields?.ieps}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
           <Form.Item
-            name="active_substance"
-            label="Substancia activa"
-            rules={[{ required: true }]}
+            name="more_info"
+            label="Información"
           >
-            <Input disabled={!!disabledFields?.active_substance} />
+            <Input.TextArea disabled={!!disabledFields?.more_info} />
           </Form.Item>
         </Col>
-        { !isUpdate && isAdmin && providers && (
-          <Col span={12}>
-            <Form.Item
-              name="provider"
-              label="Proveedor"
-              rules={[{ required: true }]}
-            >
-              <Select
-                showSearch
-                placeholder="Buscar proveedor"
-                optionFilterProp="children"
-                filterOption={
-                  (input, option) => (option === undefined
-                    ? false : option.children
-                      .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-                }
-              >
-                { Object.values(providers).map(
-                  (provider) => (
-                    <Option value={provider.id} key={provider.id}>
-                      {provider.name}
-                    </Option>
-                  ),
-                )}
-              </Select>
-            </Form.Item>
-          </Col>
-        )}
-        {isUpdate && (
-          <>
-            <Col span={12}>
-              <Form.Item
-                name="status"
-                label="Estado"
-                rules={[{ required: true }]}
-              >
-                <Select
-                  onChange={handleStateDropdown}
-                  disabled={!!disabledFields?.status}
-                >
-                  { Object.values(ProductStatus).map(
-                    (status) => (
-                      <Option value={status} key={status}>
-                        {status}
-                      </Option>
-                    ),
-                  )}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                shouldUpdate
-                name="reject_reason"
-                label="Razon de rechazo"
-                rules={[]}
-              >
-                <Input.TextArea
-                  disabled={
-                    isProductRejected || !!disabledFields?.reject_reason
-                  }
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="key"
-                label="Clave"
-                rules={[{ required: true, max: 8 }]}
-              >
-                <Input disabled={!!disabledFields?.key} />
-              </Form.Item>
-            </Col>
-          </>
-        )}
       </Row>
 
       <FormButton
