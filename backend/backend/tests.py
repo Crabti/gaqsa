@@ -19,7 +19,7 @@ class GroupsUtilsTest(BaseTestCase):
 
 class CreateProductKeyTest(TestCase):
     def test_generate_key(self) -> None:
-        KEY_LEN = 7
+        KEY_LEN = 8
         category = CategoryFactory.create()
         product = ProductFactory.build()
         self.assertEqual(
