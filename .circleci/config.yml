@@ -91,6 +91,10 @@ jobs:
             mkdir /tmp/artifacts
             mkdir /tmp/test-results
       - run:
+          name: Check no pending migrations to generate
+          command: |
+            poetry run ./manage.py makemigrations --dry-run --check
+      - run:
           name: Run tests
           working_directory: ./backend
           command: |
