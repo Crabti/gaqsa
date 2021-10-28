@@ -9,7 +9,7 @@ import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
-  Provider,
+  Provider, UserEmail,
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
@@ -17,6 +17,7 @@ import {
   ExclamationCircleOutlined, MailOutlined,
 } from '@ant-design/icons';
 import confirm from 'antd/lib/modal/confirm';
+import { INVOICES_MAILS_CATEGORY, ORDERS_MAILS_CATEGORY, PRICE_CHANGE_MAILS_CATEGORY } from 'constants/strings';
 
 interface ProviderId {
   pk: number
@@ -133,9 +134,19 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
       key: 'rfc',
     },
     {
-      title: 'Correo Electrónico',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'Correos pedidos',
+      dataIndex: 'order_emails',
+      key: 'order_emails',
+    },
+    {
+      title: 'Correos facturas',
+      dataIndex: 'invoice_emails',
+      key: 'invoice_emails',
+    },
+    {
+      title: 'Correos cambio de precios',
+      dataIndex: 'price_change_emails',
+      key: 'price_change_emails',
     },
     {
       title: 'Acciones',
@@ -154,6 +165,12 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
+  const listEmails = (mails: UserEmail[] | undefined) : any => (
+    <ul style={{ listStyleType: 'none', margin: 0, padding: 0 }}>
+      {mails?.map((mail) => <li key={mail.id}>{mail.email}</li>)}
+    </ul>
+  );
+
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
@@ -162,11 +179,20 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
           rowKey={(row) => `${row.id}`}
           data={
             providers.map((provider) => ({
+              id: provider.id,
               action: provider.id,
               name: provider.name,
               rfc: provider.rfc,
               address: provider.address,
-              email: provider.email,
+              order_emails: listEmails(provider.emails?.filter(
+                (email) => email.category === ORDERS_MAILS_CATEGORY,
+              )),
+              invoice_emails: listEmails(provider.emails?.filter(
+                (email) => email.category === INVOICES_MAILS_CATEGORY,
+              )),
+              price_change_emails: listEmails(provider.emails?.filter(
+                (email) => email.category === PRICE_CHANGE_MAILS_CATEGORY,
+              )),
             }))
         }
           columns={columns}

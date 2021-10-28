@@ -25,6 +25,7 @@ interface Ranch {
 }
 
 interface UserEmail {
+  id?: number;
   email: string;
   category: string;
 }
