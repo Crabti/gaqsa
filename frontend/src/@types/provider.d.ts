@@ -1,4 +1,4 @@
-import { CommonType } from '@types';
+import { CommonType, UserEmail } from '@types';
 import { CreateBusinessForm } from './business';
 
 export interface Provider extends CommonType {
@@ -6,7 +6,7 @@ export interface Provider extends CommonType {
   user: number;
   rfc: string;
   address: string;
-  email: string;
+  emails?: UserEmail[];
 }
 
 export interface CreateProviderForm extends CreateBusinessForm {
