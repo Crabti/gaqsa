@@ -31,6 +31,11 @@ export const RightContainer = styled.div`
     color: ${({ theme }) => theme.colors.bgContent};
   }
 
+  .username {
+    margin-right: 2em;
+    color: white;
+  }
+
   font-size: 1rem;
   position: relative;
   height: 100%;

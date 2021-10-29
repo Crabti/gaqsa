@@ -51,6 +51,20 @@ const UserForm: React.FC<Props> = ({
     }
   };
 
+  const validateUsername = (__: any, value: string, callback: any) : void => {
+    if (value && value.includes(' ')) {
+      callback(
+        'El nombre de usuario no puede contener espacios vacíos.',
+      );
+    } else if (value.length < 4) {
+      callback(
+        'El nombre de usuario debe contener por lo menos 4 caracteres.',
+      );
+    } else {
+      callback();
+    }
+  };
+
   const standardFields = (
     <>
       <Col span={12}>
@@ -76,7 +90,8 @@ const UserForm: React.FC<Props> = ({
         <Form.Item
           name={['user', 'username']}
           label="Usuario"
-          rules={[{ required: true, whitespace: false }]}
+          rules={[{ required: true, validator: validateUsername }]}
+          hasFeedback
         >
           <Input />
         </Form.Item>
