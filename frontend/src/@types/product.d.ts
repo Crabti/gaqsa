@@ -56,3 +56,13 @@ export interface ProductOptions {
   laboratories: Laboratory[],
   animal_groups: AnimalGroup[],
 }
+
+export type ProductPriceChange = {
+  product: number;
+  new_price: number;
+}
+
+export interface ChangePriceForm {
+  token: string;
+  products: ProductPriceChange[];
+}

@@ -19,6 +19,7 @@ import ListLaboratory from 'views/Laboratory.ListLaboratory';
 import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
 import ProductsDetail from 'views/Products.Detail';
+import PriceChange from 'views/Products.PriceChange';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
@@ -84,6 +85,12 @@ export const productRoutes: Routes = {
     verboseName: 'Modificar producto',
     showInMenu: false,
     hasAccess: (auth) => auth.isAdmin || auth.isProvider,
+  },
+  changePrice: {
+    path: '/productos/cambio-precio',
+    view: PriceChange,
+    verboseName: 'Cambio de precios',
+    hasAccess: (auth) => auth.isProvider,
   },
 };
 

@@ -106,27 +106,34 @@ class RequestPriceChange(APIView):
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()
-
+        print(token)
+        print(provider.token)
         if not provider or provider.token_used or provider.token != token:
-            return Response(data={}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"code": "INVALID_TOKEN"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         products = request.data["products"]
         for product in products:
             pk = product["product"]
-            data = {
-                "price": product["new_price"],
-            }
+            new_price = product["new_price"]
+            if new_price and pk:
+                data = {
+                    "price": new_price,
+                }
 
-            product = Product.objects.get(pk=pk)
+                product = Product.objects.get(pk=pk)
 
-            serializer = UpdateProductPrice(instance=product, data=data)
+                serializer = UpdateProductPrice(instance=product, data=data)
 
-            if not serializer.is_valid():
-                return Response(
-                    data=serializer.errors, status=status.HTTP_400_BAD_REQUEST,
-                )
+                if not serializer.is_valid():
+                    return Response(
+                        data=serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
 
-            serializer.save()
+                serializer.save()
 
         provider.token_used = True
         provider.updated_at = datetime.utcnow()
