@@ -25,8 +25,8 @@ from providers.models import Provider
 
 from products.serializers.product import (
     CreateProductAsAdminSerializer, CreateProductSerializer,
-    ListProductSerializer, ProductSerializer,
-    UpdateProductSerializer, CreateChangePriceRequest
+    ListProductSerializer, ProductSerializer, UpdateProductPrice,
+    UpdateProductSerializer
 )
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -102,7 +102,7 @@ class ListProductSelectOptions(ObjectMultipleModelAPIView):
 class RequestPriceChange(APIView):
     permission_classes = [IsProvider]
 
-    def patch(self, request: Request, pk: int) -> Response:
+    def post(self, request: Request) -> Response:
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()
@@ -110,25 +110,29 @@ class RequestPriceChange(APIView):
         if not provider or provider.token_used or provider.token != token:
             return Response(data={}, status=status.HTTP_400_BAD_REQUEST)
 
-        data = {
-            "new_price": request.data["price"],
-            "provider": provider.pk,
-            "product": pk,
-        }
+        products = request.data["products"]
+        for product in products:
+            pk = product["product"]
+            data = {
+                "price": product["new_price"],
+            }
 
-        serializer = CreateChangePriceRequest(data=data)
+            product = Product.objects.get(pk=pk)
 
-        if not serializer.is_valid():
-            return Response(
-                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST,
-            )
+            serializer = UpdateProductPrice(instance=product, data=data)
 
-        serializer.save()
+            if not serializer.is_valid():
+                return Response(
+                    data=serializer.errors, status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            serializer.save()
+
         provider.token_used = True
         provider.updated_at = datetime.utcnow()
         provider.save()
 
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data={}, status=status.HTTP_200_OK)
 
 
 class CreateLaboratoryView(generics.CreateAPIView):
