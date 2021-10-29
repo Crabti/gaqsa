@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Button, Col, Layout, Row,
 } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
 import Props from './Table.type';
 import { Table } from './Table.styled';
 
@@ -19,7 +20,7 @@ const GenericTable: React.FC<Props> = ({
       }}
     >
       {actions?.map((button) => (
-        <Col className="gutter-row" span={3}>
+        <Col className="gutter-row" span={3} key={uuidv4()}>
           <Button
             onClick={button.action}
             type="primary"
@@ -32,7 +33,7 @@ const GenericTable: React.FC<Props> = ({
       ))}
     </Row>
     <Table
-      rowKey={rowKey}
+      rowKey={(rowKey === undefined || rowKey === null) ? uuidv4() : rowKey}
       dataSource={data}
       columns={columns}
       bordered

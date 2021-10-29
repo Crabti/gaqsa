@@ -106,8 +106,6 @@ class RequestPriceChange(APIView):
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()
-        print(token)
-        print(provider.token)
         if not provider or provider.token_used or provider.token != token:
             return Response(
                 data={"code": "INVALID_TOKEN"},
