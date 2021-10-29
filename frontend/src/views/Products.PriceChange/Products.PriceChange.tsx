@@ -53,6 +53,11 @@ const PriceChange: React.VC = ({ verboseName, parentName }) => {
           description: 'Verifique que el código fue escrito '
           + 'correctamente o que aún es válido.',
         });
+        form.setFields([{
+          name: ['token'],
+          errors: ['El token ingresado es inválido.'],
+        }]);
+        form.scrollToField(['token']);
         break;
       default:
         notification.error({
