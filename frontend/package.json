@@ -34,7 +34,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**' --fix",
     "typecheck": "tsc",
-    "ci": "eslint 'src/**' --fix && tsc && react-scripts test --watchAll=false"
+    "ci": "eslint 'src/**' --fix && tsc && react-scripts test --watchAll=false",
+    "generate": "node ./tools/generate.js"
   },
   "eslintConfig": {
     "extends": [
@@ -66,6 +67,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.26.0",
-    "eslint-plugin-react-hooks": "^4.2.0"
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "generate-template-files": "^3.2.0"
   }
 }

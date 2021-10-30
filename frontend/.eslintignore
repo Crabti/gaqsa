@@ -2,3 +2,4 @@
 *.svg
 *.png
 *.less
+tools/**
