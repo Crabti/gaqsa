@@ -252,7 +252,7 @@ LOGGING = {
         "file": {
             "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": "./error.log",
+            "filename": os.path.join(BASE_DIR, 'error.log'),
             "formatter": "verbose",
         },
         "console": {
