@@ -80,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.middlewares.error_handler.ErrorHandlerMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -226,10 +227,51 @@ EMAIL_PORT = os.getenv('EMAIL_PORT', None)
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', False)
 
 # If email settings not set, use console email backend for development
-if (EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT):
+if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD and EMAIL_PORT:
     EMAIL_BACKEND = 'backend.emails.EmailBackend'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": (
+                "{levelname} {asctime} {module} {process:d} {thread:d} "
+                "{message}"
+            ),
+            "style": '{',
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "./error.log",
+            "formatter": "verbose",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "propagate": True,
+        },
+        "error.handling": {
+            "handlers": ["file", "console"],
+            "propagate": True,
+        }
+    },
+}
 
 SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
