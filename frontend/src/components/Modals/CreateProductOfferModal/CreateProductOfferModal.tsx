@@ -30,7 +30,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
       ...data,
       ending_at: moment(data.ending_at).format('YYYY-MM-DD'),
       product: product.id,
-      discount_percentage: +(data.discount_percentage / 100).toFixed(2),
+      discount_percentage: +(data.discount_percentage / 100).toFixed(15),
     };
 
     const [response, error] = await backend.offers.createOne(
@@ -78,7 +78,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   };
 
   const handleNewPriceUpdate = (value: number): void => {
-    const newDiscount = +((1 - value / product.price) * 100).toFixed(2);
+    const newDiscount = +((1 - value / product.price) * 100);
     setDiscount(newDiscount);
     setNewPrice(value);
     form.setFieldsValue({

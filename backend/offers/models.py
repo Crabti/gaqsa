@@ -9,8 +9,8 @@ class Offer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     discount_percentage = models.DecimalField(
-        decimal_places=2,
-        max_digits=2,
+        decimal_places=15,
+        max_digits=16,
         validators=[
             MinValueValidator(0.01),
             MaxValueValidator(1),
