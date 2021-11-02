@@ -28,7 +28,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
 
     const payload : CreateOfferForm = {
       ...data,
-      ending_at: moment(data.ending_at).format('YYYY-MM-DD HH:mm'),
+      ending_at: moment(data.ending_at).format('YYYY-MM-DD'),
       product: product.id,
       discount_percentage: +(data.discount_percentage / 100).toFixed(2),
     };
@@ -157,7 +157,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
           />
         </Form.Item>
         <Form.Item name="ending_at" label="Fecha limite" required>
-          <DatePicker showTime disabledDate={disabledDate} />
+          <DatePicker disabledDate={disabledDate} />
         </Form.Item>
       </Form>
     </Modal>
