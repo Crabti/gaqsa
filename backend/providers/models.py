@@ -24,6 +24,10 @@ class Provider(Business):
         default=False,
         verbose_name='Token Cambio de Precio Utilizado'
     )
+    token_apply_date = models.DateField(
+        null=True,
+        verbose_name='Fecha de aplicación de codigo',
+    )
     # TODO: Remove default after applying migration to production
     nav_key = models.CharField(
         verbose_name="Clave Nav",

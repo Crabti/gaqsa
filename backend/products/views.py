@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
 from backend.utils.groups import is_admin, is_provider
 from backend.utils.permissions import IsAdmin, IsProvider
@@ -106,7 +106,9 @@ class RequestPriceChange(APIView):
         token = request.data["token"]
 
         provider = Provider.objects.filter(user=request.user.pk).first()
-        if not provider or provider.token_used or provider.token != token:
+        if (not provider or provider.token_used or
+                provider.token != token or
+                provider.token_apply_date != date.today()):
             return Response(
                 data={"code": "INVALID_TOKEN"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -115,6 +117,9 @@ class RequestPriceChange(APIView):
         products = request.data["products"]
         for product in products:
             pk = product["product"]
+            if 'new_price' not in product or product["new_price"] is None:
+                continue
+
             new_price = product["new_price"]
             if new_price and pk:
                 data = {

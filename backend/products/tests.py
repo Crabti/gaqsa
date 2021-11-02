@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import json
 from http import HTTPStatus
 
@@ -327,7 +328,11 @@ class RequestProductPriceChange(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.provider = ProviderFactory.create(user=self.provider_user)
+        self.provider = ProviderFactory.create(
+            user=self.provider_user,
+            token='BACSO',
+            token_apply_date=date.today()
+        )
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
 
@@ -387,6 +392,19 @@ class RequestProductPriceChange(BaseTestCase):
         response = self.provider_client.post(
             reverse("request_price_change"),
             data=json.dumps(self.invalid_payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_product_price_change_request_should_fail_with_invalid_apply_date(
+        self,
+    ) -> None:
+        self.provider.token_apply_date = date.today() + timedelta(days=2)
+        self.provider.save()
+        response = self.provider_client.post(
+            reverse("request_price_change"),
+            data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
 

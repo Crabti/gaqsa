@@ -14,15 +14,16 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
-  ExclamationCircleOutlined, MailOutlined,
+  MailOutlined,
 } from '@ant-design/icons';
-import confirm from 'antd/lib/modal/confirm';
 import {
   INVOICES_MAILS_CATEGORY, ORDERS_MAILS_CATEGORY, PRICE_CHANGE_MAILS_CATEGORY,
 } from 'constants/strings';
+import SendPriceChangeModal from 'components/Modals/SendPriceChangeModal';
 
-interface ProviderId {
-  pk: number
+interface SendCodeModal {
+  visible: boolean,
+  providers: Provider[] | undefined,
 }
 
 const ListProviders: React.VC = ({ verboseName, parentName }) => {
@@ -30,6 +31,9 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [providers, setProviders] = useState<Provider[] | undefined>(undefined);
+  const [codeModalVisible, setCodeModalVisible] = useState<SendCodeModal>(
+    { visible: false, providers: undefined },
+  );
 
   const fetchProviders = useCallback(async () => {
     setLoading(true);
@@ -52,75 +56,24 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
     fetchProviders();
   }, [history, fetchProviders]);
 
-  const onCodeError = () : void => {
-    notification.error({
-      message: 'Ocurrió un error al enviar los codigos!',
-      description: 'Intentalo más tarde',
+  const onClose = () : void => {
+    setCodeModalVisible({
+      visible: false,
+      providers: undefined,
     });
-  };
-
-  const sendCodeOne = async (providerId: number) : Promise<void> => {
-    setLoading(true);
-    const [, error] = await backend.providers.put('/codes', [
-      {
-        pk: providerId,
-      },
-    ]);
-
-    if (error) {
-      onCodeError();
-    } else {
-      notification.success({
-        message: '¡Códigos enviado!',
-        description: 'Se han enviado los códigos de manera exitosa',
-      });
-    }
-    setLoading(false);
-  };
-
-  const sendCodeMassive = async () : Promise<void> => {
-    setLoading(true);
-    if (providers) {
-      const payload : ProviderId[] = providers.map((provider) => ({
-        pk: provider.id,
-      }));
-
-      const [, error] = await backend.providers.put('/codes', payload);
-
-      if (error) {
-        onCodeError();
-      } else {
-        notification.success({
-          message: '¡Código enviado!',
-          description: 'Se ha enviado el código de manera exitosa',
-        });
-      }
-    }
-    setLoading(false);
   };
 
   const showConfirmMassive = () : void => {
-    confirm({
-      title: '¿Está seguro que desea enviar códigos '
-      + 'para cambio de precio a todos los proveedores?',
-      icon: <ExclamationCircleOutlined />,
-      content: 'Se enviará por correo electrónico '
-      + ' el código generado a cada proveedor.',
-      onOk() {
-        sendCodeMassive();
-      },
+    setCodeModalVisible({
+      visible: true,
+      providers,
     });
   };
 
-  const showConfirmOne = (providerId: number) : void => {
-    confirm({
-      title: '¿Está seguro que desea enviar el código para cambio de precio?',
-      icon: <ExclamationCircleOutlined />,
-      content: 'Se enviará un correo electrónico al '
-      + ' proveedor con el código generado.',
-      onOk() {
-        sendCodeOne(providerId);
-      },
+  const showConfirmOne = (provider: Provider) : void => {
+    setCodeModalVisible({
+      visible: true,
+      providers: [provider],
     });
   };
 
@@ -154,13 +107,13 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
       title: 'Acciones',
       dataIndex: 'action',
       key: 'action',
-      render: (id: number) => (
+      render: (_: number, provider: Provider) => (
         <Tooltip title="Enviar Código">
           <Button
             type="primary"
             shape="circle"
             icon={<MailOutlined />}
-            onClick={() => showConfirmOne(id)}
+            onClick={() => showConfirmOne(provider)}
           />
         </Tooltip>
       ),
@@ -177,9 +130,10 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !providers ? <LoadingIndicator /> : (
-        <Table
-          rowKey={(row) => `${row.id}`}
-          data={
+        <>
+          <Table
+            rowKey={(row) => `${row.id}`}
+            data={
             providers.map((provider) => ({
               id: provider.id,
               action: provider.id,
@@ -197,15 +151,21 @@ const ListProviders: React.VC = ({ verboseName, parentName }) => {
               )),
             }))
         }
-          columns={columns}
-          actions={[
-            {
-              action: showConfirmMassive,
-              text: 'Código masivo',
-              icon: <MailOutlined />,
-            },
-          ]}
-        />
+            columns={columns}
+            actions={[
+              {
+                action: showConfirmMassive,
+                text: 'Código masivo',
+                icon: <MailOutlined />,
+              },
+            ]}
+          />
+          <SendPriceChangeModal
+            providers={codeModalVisible.providers}
+            visible={codeModalVisible.visible}
+            onClose={onClose}
+          />
+        </>
       )}
     </Content>
   );

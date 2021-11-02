@@ -254,7 +254,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   };
 
   const changePriceButton = () : void => {
-    history.replace('/productos/cambio-precio');
+    history.push('/productos/cambio-precio');
   };
 
   useEffect(() => {
@@ -291,6 +291,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                     action: changePriceButton,
                     text: 'Cambio de precios',
                     icon: <PlusOutlined />,
+                    hidden: (isAdmin),
                   },
                   {
                     action: handleButton,

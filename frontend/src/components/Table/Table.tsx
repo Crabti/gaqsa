@@ -20,16 +20,18 @@ const GenericTable: React.FC<Props> = ({
       }}
     >
       {actions?.map((button) => (
-        <Col className="gutter-row" span={3} key={uuidv4()}>
-          <Button
-            onClick={button.action}
-            type="primary"
-            block
-            icon={button.icon}
-          >
-            {button.text}
-          </Button>
-        </Col>
+        button.hidden ? null : (
+          <Col className="gutter-row" span={3} key={uuidv4()}>
+            <Button
+              onClick={button.action}
+              type="primary"
+              block
+              icon={button.icon}
+            >
+              {button.text}
+            </Button>
+          </Col>
+        )
       ))}
     </Row>
     <Table

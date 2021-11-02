@@ -49,7 +49,8 @@ class CreateCodeSerializer(serializers.ModelSerializer):
         model = Provider
         fields = (
             "token",
-            "token_used"
+            "token_used",
+            "token_apply_date"
         )
 
 
