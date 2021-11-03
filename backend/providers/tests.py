@@ -9,9 +9,10 @@ from providers.factories.provider import ProviderFactory
 
 from django.urls import reverse
 from http import HTTPStatus
+from datetime import date
 
 
-class CreateCodeOneProvider(BaseTestCase):
+class CreateCodeForProvider(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.providers = [
@@ -19,10 +20,12 @@ class CreateCodeOneProvider(BaseTestCase):
             ProviderFactory.create(user=UserFactory.create()),
             ProviderFactory.create(user=UserFactory.create()),
         ]
-
-        self.valid_payload = ProviderPkSerializer(
-            self.providers, many=True
-        ).data
+        self.token_apply_date = date.today()
+        self.valid_payload = {
+            'providers': ProviderPkSerializer(
+                self.providers, many=True).data,
+            'token_apply_date': str(self.token_apply_date)
+        }
 
     def test_require_authentication(self) -> None:
         response = self.anonymous.put(
@@ -43,6 +46,7 @@ class CreateCodeOneProvider(BaseTestCase):
         for provider in self.providers:
             provider = Provider.objects.get(pk=provider.pk)
             self.assertNotEqual(provider.token, None)
+            self.assertEqual(provider.token_apply_date, self.token_apply_date)
         self.assertEqual(len(mail.outbox), len(self.providers))
 
 

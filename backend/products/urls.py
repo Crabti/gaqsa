@@ -21,7 +21,7 @@ urlpatterns = [
         name="list_product_options"
     ),
     path(
-        "price_change/<int:pk>",
+        "price_change",
         views.RequestPriceChange.as_view(),
         name="request_price_change",
     ),

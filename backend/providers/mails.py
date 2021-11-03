@@ -5,7 +5,7 @@ from django.utils.html import strip_tags
 from users.models import UserEmail
 
 
-def send_mail_on_new_code(providers):
+def send_mail_on_new_code(providers, token_apply_date):
     connection = mail.get_connection(fail_silently=True)
     connection.open()
     emails = []
@@ -15,7 +15,8 @@ def send_mail_on_new_code(providers):
         subject = f'GAQSA - {title}'
         context = {
             'provider': provider,
-            'title': title
+            'title': title,
+            'token_apply_date': token_apply_date
         }
         from_email = 'noreply@gaqsa.com'
         provider_emails = list(UserEmail.objects.filter(

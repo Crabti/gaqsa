@@ -253,6 +253,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     history.replace('/productos/nuevo');
   };
 
+  const changePriceButton = () : void => {
+    history.push('/productos/cambio-precio');
+  };
+
   useEffect(() => {
     resetFiltered();
   }, [products, resetFiltered]);
@@ -283,6 +287,12 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 data={filtered}
                 columns={columns}
                 actions={[
+                  {
+                    action: changePriceButton,
+                    text: 'Cambio de precios',
+                    icon: <PlusOutlined />,
+                    hidden: (isAdmin),
+                  },
                   {
                     action: handleButton,
                     text: 'Nuevo',

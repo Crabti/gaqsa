@@ -13,6 +13,7 @@ interface TableAction {
     action(): void,
     text: string,
     icon?: React.ReactNode,
+    hidden?: boolean;
 }
 
 interface Props {

@@ -145,3 +145,11 @@ class CreateChangePriceRequest(serializers.ModelSerializer):
     class Meta:
         model = ChangePriceRequest
         fields = "__all__"
+
+
+class UpdateProductPrice(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "price",
+        )

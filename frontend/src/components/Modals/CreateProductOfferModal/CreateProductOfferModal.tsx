@@ -28,9 +28,9 @@ const CreateProductOfferModal: React.FC<Props> = ({
 
     const payload : CreateOfferForm = {
       ...data,
-      ending_at: moment(data.ending_at).format('YYYY-MM-DD HH:mm'),
+      ending_at: moment(data.ending_at).format('YYYY-MM-DD'),
       product: product.id,
-      discount_percentage: +(data.discount_percentage / 100).toFixed(2),
+      discount_percentage: +(data.discount_percentage / 100).toFixed(15),
     };
 
     const [response, error] = await backend.offers.createOne(
@@ -78,7 +78,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   };
 
   const handleNewPriceUpdate = (value: number): void => {
-    const newDiscount = +((1 - value / product.price) * 100).toFixed(2);
+    const newDiscount = +((1 - value / product.price) * 100);
     setDiscount(newDiscount);
     setNewPrice(value);
     form.setFieldsValue({
@@ -157,7 +157,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
           />
         </Form.Item>
         <Form.Item name="ending_at" label="Fecha limite" required>
-          <DatePicker showTime disabledDate={disabledDate} />
+          <DatePicker disabledDate={disabledDate} />
         </Form.Item>
       </Form>
     </Modal>

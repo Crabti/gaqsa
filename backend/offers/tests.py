@@ -15,6 +15,8 @@ from products.factories.product import ProductFactory
 from offers.factories.offer import OfferFactory
 
 from backend.utils.tests import BaseTestCase
+from datetime import date
+from datetime import timedelta
 
 
 class CreateOffer(BaseTestCase):
@@ -80,3 +82,39 @@ class CreateOffer(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
         self.assertGreater(len(mail.outbox), 0)
+
+
+class OfferExpire(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        provider = ProviderFactory.create(user=self.provider_user)
+        category = CategoryFactory.create()
+        laboratory = LaboratoryFactory.create()
+        self.product = ProductFactory.create(
+            provider=provider,
+            status=Product.ACCEPTED,
+            category=category, laboratory=laboratory,
+        )
+
+    def test_offer_valid(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product=self.product,
+        )
+        self.assertEqual(offer.active, True)
+
+    def test_offer_cancelled(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product=self.product,
+            cancelled=True,
+        )
+        self.assertEqual(offer.active, False)
+
+    def test_offer_date_expired(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product=self.product,
+            ending_at=date.today() - timedelta(days=7)
+        )
+        self.assertEqual(offer.active, False)

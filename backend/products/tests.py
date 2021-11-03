@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import json
 from http import HTTPStatus
 
@@ -327,48 +328,59 @@ class RequestProductPriceChange(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.provider = ProviderFactory.create(user=self.provider_user)
+        self.provider = ProviderFactory.create(
+            user=self.provider_user,
+            token='BACSO',
+            token_apply_date=date.today()
+        )
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
 
-        self.product = ProductFactory.create(
+        self.products = ProductFactory.create_batch(
+            10,
             provider=self.provider,
             category=category,
-            laboratory=laboratory
+            laboratory=laboratory,
+            price=100
         )
         self.expected_price = 500.
+
+        self.products_payload = [
+            {
+                "product": product.pk,
+                "new_price": self.expected_price
+            }
+            for product in self.products
+        ]
+
         self.valid_payload = {
-            "price": self.expected_price,
             "token": self.provider.token,
-            "product": self.product.pk,
+            "products": self.products_payload,
         }
+
         self.invalid_payload = {
-            "price": self.expected_price,
-            "product": self.product.pk,
+            "products": self.products_payload,
             "token": "12345678",
         }
-        self.kwargs = {"pk": self.product.pk}
 
     def test_product_price_change_request_should_be_successful(self) -> None:
-        response = self.provider_client.patch(
-            reverse("request_price_change", kwargs=self.kwargs),
+        response = self.provider_client.post(
+            reverse("request_price_change"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
-
-        result = json.loads(json.dumps(response.data))
-
-        self.assertEqual(response.status_code, HTTPStatus.CREATED)
-        self.assertEqual(float(result["new_price"]), self.expected_price)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.provider.refresh_from_db(fields=["token_used"])
+        self.products[0].refresh_from_db(fields=["price"])
+        self.assertEqual(self.products[0].price, self.expected_price)
         self.assertEqual(self.provider.token_used, True)
 
     def test_product_price_change_request_should_fail_with_no_access(
             self,
     ) -> None:
-        response = self.service_client.patch(
-            reverse("request_price_change", kwargs=self.kwargs),
+        response = self.service_client.post(
+            reverse("request_price_change"),
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
@@ -377,9 +389,22 @@ class RequestProductPriceChange(BaseTestCase):
     def test_product_price_change_request_should_fail_with_invalid_token(
         self,
     ) -> None:
-        response = self.provider_client.patch(
-            reverse("request_price_change", kwargs=self.kwargs),
+        response = self.provider_client.post(
+            reverse("request_price_change"),
             data=json.dumps(self.invalid_payload),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_product_price_change_request_should_fail_with_invalid_apply_date(
+        self,
+    ) -> None:
+        self.provider.token_apply_date = date.today() + timedelta(days=2)
+        self.provider.save()
+        response = self.provider_client.post(
+            reverse("request_price_change"),
+            data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
 
