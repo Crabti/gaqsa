@@ -297,7 +297,6 @@ class ListAllUsers(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         result = json.loads(json.dumps(response.data))
-        print(result)
         self.assertEqual(len(result), self.users_quantity + 3)
 
 
