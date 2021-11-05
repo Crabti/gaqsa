@@ -56,12 +56,12 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
     );
     if (error || !result) {
       notification.error({
-        message: 'Ocurrió un error al modificar el acceso al usuario!',
+        message: 'Ocurrió un error al modificar el acceso del usuario!',
         description: 'Intentalo más tarde',
       });
     }
     notification.success({
-      message: !activate ? 'El usuario se ha desactiado exitosamente.'
+      message: !activate ? 'El usuario se ha desactivado exitosamente.'
         : 'El usuario se ha activado exitosamente.',
     });
     fetchUsers();
