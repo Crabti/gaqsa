@@ -7,38 +7,44 @@
     <h4>{{ provider.name}}</h4>
     <h4>RFC: {{ provider.rfc }}</h4>
   </div>
-  <h4>Se ha solicitado modificación del precio un producto</h4>
-  <h3>Precio actual: $ {{ product.price }}</h3>
-  <h3>Nuevo precio: $ {{ new_price }}</h3>
+
   <table style="width:100%">
-    <tr>
-      <th>
-        Atributo
-      </th>
-      <th>
-        Valor
-      </th>
-    </tr>
-    <tr>
-      <td>Nombre</td>
-      <td>{{ product.name }}</td>
-    </tr>
-    <tr>    
-      <td>Presentación</td>
-      <td>{{ product.presentation }}</td>
-    </tr>
-    <tr>    
-      <td>Laboratorio</td>
-      <td>{{ product.laboratory }}</td>
-    </tr>
-    <tr>    
-      <td>Categoría</td>
-      <td>{{ product.category }}</td>
-    </tr>
-    <tr>    
-      <td>Precio</td>
-      <td>{{ product.price }}</td>
-    </tr>
+    <th>Clave</th>
+    <th>Producto</th>
+    <th>Presentación</th>
+    <th>Laboratorio</th>
+    <th>Precio anterior</th>
+    <th>Precio nuevo</th>
+    <th>Diferencia precio</th>
+    <th>%</th>
+    {% for product in products %}
+      <tr {% if product.price_diff <= 0 %} style="background-color: #50d941" {% else %} style="background-color: #ede728" {% endif %}>
+        <td>
+          {{ product.key }}
+        </td>
+        <td>
+          {{ product.name }}
+        </td>
+        <td>
+          {{ product.presentation }}
+        </td>
+        <td>
+          {{ product.laboratory.name }}
+        </td>
+        <td>
+          $ {{ product.old_price }}
+        </td>
+        <td>
+          $ {{ product.price}}
+        </td>
+        <td>
+          $ {{ product.price_diff }}
+        </td>
+        <td>
+          {{ product.diff_percentage }} %
+        </td>
+      </tr>
+    {% endfor %}
   </table>
 {% endblock %}
 

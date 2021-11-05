@@ -180,7 +180,6 @@ class UpdateProduct(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_update_product_test(self) -> None:
-        mail.outbox = []
         new_product = self.product
         new_product.status = Product.ACCEPTED
         valid_product = UpdateProductSerializer(
@@ -199,7 +198,6 @@ class UpdateProduct(BaseTestCase):
         # Creates new m2m animal group relation instances
         self.assertEqual(len(response.data["animal_groups"]),
                          len(self.animal_groups))
-        self.assertGreater(len(mail.outbox), 0)
 
 
 class DetailProduct(BaseTestCase):
@@ -364,6 +362,7 @@ class RequestProductPriceChange(BaseTestCase):
         }
 
     def test_product_price_change_request_should_be_successful(self) -> None:
+        mail.outbox = []
         response = self.provider_client.post(
             reverse("request_price_change"),
             data=json.dumps(self.valid_payload),
@@ -375,6 +374,7 @@ class RequestProductPriceChange(BaseTestCase):
         self.products[0].refresh_from_db(fields=["price"])
         self.assertEqual(self.products[0].price, self.expected_price)
         self.assertEqual(self.provider.token_used, True)
+        self.assertGreater(len(mail.outbox), 0)
 
     def test_product_price_change_request_should_fail_with_no_access(
             self,

@@ -76,6 +76,8 @@ const PriceChangeForm: React.FC<Props> = ({
               formatter={(value) => `$${value}`.replace(
                 /\B(?=(\d{3})+(?!\d))/g, ',',
               )}
+              precision={2}
+              step={0.01}
             />
           </Form.Item>
           <Form.Item
