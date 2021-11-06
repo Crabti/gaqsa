@@ -9,6 +9,7 @@ from backend.utils.product_key import create_product_key
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from products.mails import send_mail_on_price_change
 
 from products.serializers.animal_group import ListAnimalGroupSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
@@ -114,6 +115,7 @@ class RequestPriceChange(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        results = []
         products = request.data["products"]
         for product in products:
             pk = product["product"]
@@ -127,6 +129,7 @@ class RequestPriceChange(APIView):
                 }
 
                 product = Product.objects.get(pk=pk)
+                old_price = product.price
 
                 serializer = UpdateProductPrice(instance=product, data=data)
 
@@ -136,11 +139,22 @@ class RequestPriceChange(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                serializer.save()
+                updated_product = serializer.save()
+                new_result = updated_product
+                new_result.old_price = old_price
+                new_result.price_diff = new_result.price - new_result.old_price
+
+                new_result.diff_percentage = (
+                    new_result.price - new_result.old_price
+                ) / 2
+
+                results.append(new_result)
 
         provider.token_used = True
         provider.updated_at = datetime.utcnow()
         provider.save()
+
+        send_mail_on_price_change(products=results, provider=provider)
 
         return Response(data={}, status=status.HTTP_200_OK)
 

@@ -285,7 +285,11 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
               <Table
                 rowKey={(row) => `${row.id}`}
                 data={filtered}
-                columns={columns}
+                columns={isAdmin
+                  ? columns
+                  : columns.filter(
+                    (column) => column.key !== 'provider',
+                  )}
                 actions={[
                   {
                     action: changePriceButton,

@@ -78,6 +78,21 @@ generateTemplateFiles([
         },
     },
     {
+        option: 'Create Modal',
+        defaultCase: '(pascalCase)',
+        entry: {
+            folderPath: './tools/templates/Modal',
+        },
+        stringReplacers: ['__name__'],
+        output: {
+            path: './src/components/Modals/__name__Modal',
+            pathAndFileNameDefaultCase: '(pascalCase)',
+        },
+        onComplete: (results) => {
+            console.log(`results`, results);
+        },
+    },
+    {
         option: 'Create Generic Component',
         defaultCase: '(pascalCase)',
         entry: {
@@ -107,4 +122,5 @@ generateTemplateFiles([
             console.log(`results`, results);
         },
     },
+
 ]);

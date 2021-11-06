@@ -32,6 +32,10 @@ class UserLogin(TestCase):
     def setUp(self) -> None:
         self.password = sfaker.password()
         self.user = UserFactory.create(password=make_password(self.password))
+        self.inactive_user = UserFactory.create(
+            password=make_password(self.password),
+            is_active=False
+        )
 
     def test_login_with_invalid_data_should_fail(
         self,
@@ -73,6 +77,19 @@ class UserLogin(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertNotEqual(response.data['access'], None)
         self.assertNotEqual(response.data['refresh'], None)
+
+    def test_login_with_not_active_user_should_fail(
+        self,
+    ) -> None:
+        response = self.client.post(
+            reverse("login"),
+            data={
+                'username': self.inactive_user.username,
+                'password': self.password
+            },
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_refresh_with_valid_token_should_succeed(
         self,
@@ -280,5 +297,71 @@ class ListAllUsers(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         result = json.loads(json.dumps(response.data))
-        print(result)
         self.assertEqual(len(result), self.users_quantity + 3)
+
+
+class ToggleUserActive(BaseTestCase):
+    def setUp(self) -> None:
+        self.active_user = UserFactory.create()
+        self.unactive_user = UserFactory.create(
+            is_active=False
+        )
+        self.active_payload = json.dumps({
+            "is_active": True,
+        })
+
+        self.unactive_payload = json.dumps({
+            'is_active': False,
+        })
+
+    def test_require_authentication(
+        self,
+    ) -> None:
+        response = self.anonymous.patch(
+            reverse("user-active", kwargs={"pk": self.active_user.pk}),
+            content_type="application/json",
+            data=self.active_payload
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin_role(
+        self,
+    ) -> None:
+        response = self.service_client.patch(
+            reverse("user-active", kwargs={"pk": self.active_user.pk}),
+            content_type="application/json",
+            data=self.active_payload
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        response = self.provider_client.patch(
+            reverse("user-active", kwargs={"pk": self.active_user.pk}),
+            content_type="application/json",
+            data=self.active_payload
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_activate_user_should_succeed(
+        self,
+    ) -> None:
+        self.assertEqual(self.unactive_user.is_active, False)
+        response = self.admin_client.patch(
+            reverse("user-active", kwargs={"pk": self.unactive_user.pk}),
+            content_type="application/json",
+            data=self.active_payload
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.unactive_user.refresh_from_db(fields=["is_active"])
+        self.assertEqual(self.unactive_user.is_active, True)
+
+    def test_deactivate_user_should_succeed(
+        self,
+    ) -> None:
+        self.assertEqual(self.active_user.is_active, True)
+        response = self.admin_client.patch(
+            reverse("user-active", kwargs={"pk": self.active_user.pk}),
+            content_type="application/json",
+            data=self.unactive_payload
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.active_user.refresh_from_db(fields=["is_active"])
+        self.assertEqual(self.active_user.is_active, False)
