@@ -21,8 +21,11 @@ class ListOrders(generics.ListAPIView):
     def get_queryset(self):
         if is_client(self.request.user):
             return Order.objects.filter(user=self.request.user)
+        elif is_provider(self.request.user):
+            return Order.objects.all(user=self.request.user)
         else:
             return Order.objects.all()
+
 
 
 class CreateOrder(APIView):
@@ -83,3 +86,8 @@ class ListRequisitions(generics.ListAPIView):
             return Requisition.objects.filter(provider=provider)
         else:
             return Requisition.objects.all()
+
+
+class RetrieveOrderView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = ListOrderSerializer

@@ -14,7 +14,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
-  EditOutlined, PlusOutlined, SearchOutlined, TagOutlined,
+  EditOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TagOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
@@ -253,6 +253,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     history.replace('/productos/nuevo');
   };
 
+  const handleOrder = () : void => {
+    history.replace('/pedidos/create');
+  };
+
   useEffect(() => {
     resetFiltered();
   }, [products, resetFiltered]);
@@ -278,24 +282,34 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
           />
           { !isClient
             ? (
-              <Table
-                rowKey={(row) => `${row.id}`}
-                data={filtered}
-                columns={columns}
-                actions={[
-                  {
-                    action: handleButton,
-                    text: 'Nuevo',
-                    icon: <PlusOutlined />,
-                  },
-                ]}
-              />
+              <>
+                <Table
+                  rowKey={(row) => `${row.id}`}
+                  data={filtered}
+                  columns={columns}
+                  actions={[
+                    {
+                      action: handleButton,
+                      text: 'Nuevo',
+                      icon: <PlusOutlined />,
+                    },
+                  ]}
+                />
+
+              </>
             )
             : (
               <Table
                 rowKey={(row) => `${row.id}`}
                 data={filtered}
                 columns={columns}
+                actions={[
+                  {
+                    action: handleOrder,
+                    text: 'Ordenar',
+                    icon: <ShoppingCartOutlined />,
+                  },
+                ]}
               />
             )}
           { offerModal.product

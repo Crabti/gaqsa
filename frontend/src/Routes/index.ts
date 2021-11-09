@@ -9,7 +9,6 @@ import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
-import ListClientOrders from 'views/Orders.ListClientOrders';
 import ListRequisitions from 'views/Orders.ListRequisitions';
 import ListProviders from 'views/Providers.ListProviders';
 import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
@@ -19,9 +18,12 @@ import ListLaboratory from 'views/Laboratory.ListLaboratory';
 import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
 import ProductsDetail from 'views/Products.Detail';
+import ListClientOrderDetail from 'views/Orders.ListClientOrderDetail';
+import ListClientOrder from 'views/Order.ListClientOrder/Order.ListClientOrder';
+import ListProviderOrders from 'views/Order.ListProviderOrders';
 
 import {
-  LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
+  LIST_PROVIDERS,
   SHOW_CREATE_USER,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
@@ -89,18 +91,11 @@ export const productRoutes: Routes = {
 
 const ordersRoutes: Routes = {
   listOrderHistory: {
-    path: '/pedidos/historial',
-    view: ListClientOrders,
-    verboseName: 'Historial de Pedidos',
-    showInMenu: LIST_CLIENT_ORDERS,
+    path: '/pedidos/cliente/:id',
+    view: ListClientOrderDetail,
+    verboseName: 'Detalle de orden',
+    showInMenu: false,
     hasAccess: ((auth) => auth.isClient),
-  },
-  listRequisitions: {
-    path: '/pedidos',
-    view: ListRequisitions,
-    verboseName: 'Pedidos Realizados',
-    showInMenu: LIST_REQUISITIONS,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
   createOrder: {
     path: '/pedidos/create',
@@ -108,6 +103,20 @@ const ordersRoutes: Routes = {
     verboseName: 'Realizar pedido',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+  listOrder: {
+    path: '/pedidos/cliente',
+    view: ListClientOrder,
+    verboseName: 'Historial de pedidos',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
+  },
+  listOrderProvider: {
+    path: '/pedidos/proveedor',
+    view: ListProviderOrders,
+    verboseName: 'Pedidos Recibidos',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
 };
 
