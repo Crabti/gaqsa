@@ -23,11 +23,11 @@
     </tr>
     <tr>
       <td>Precio</td>
-      <td>{{ product.price }}</td>
+      <td>{{ product_provider.price }}</td>
     </tr>
     <tr>
       <td>IVA (%)</td>
-      <td>{{ product.iva }} %</td>
+      <td>{{ product_provider.iva }} %</td>
     </tr>
     <tr>    
       <td>Presentación</td>
@@ -43,7 +43,7 @@
     </tr>
     <tr>
       <td>Laboratorio</td>
-      <td>{{ product.laboratory }}</td>
+      <td>{{ product_provider.laboratory }}</td>
     </tr>
     <tr>
       <td>Categoría</td>
@@ -52,10 +52,6 @@
     <tr>
       <td>Substancia Activa</td>
       <td>{{ product.active_substance }}</td>
-    </tr>
-    <tr>
-      <td>Clave</td>
-      <td>{{ product.key }}</td>
     </tr>
   </table>
 {% endblock %}

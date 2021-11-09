@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   Form,
   notification,
 } from 'antd';
@@ -15,17 +14,12 @@ import ProductForm from 'components/ProductForm';
 import { productRoutes } from 'Routes';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { PRODUCTS_OPTIONS_ROOT } from 'settings';
-import RequestPriceUpdateModal from 'components/Modals/RequestPriceUpdateModal';
-import useAuth from 'hooks/useAuth';
-import { DEFAULT_DISABLED_MESSAGE } from 'constants/strings';
 
 const UpdateForm: React.VC = ({ verboseName, parentName }) => {
   const [form] = Form.useForm();
   const backend = useBackend();
   const history = useHistory();
-  const { isProvider, isAdmin } = useAuth();
   const [isLoading, setLoading] = useState(false);
-  const [visible, setIsVisible] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | undefined>(undefined);
   const [options, setOptions] = useState<ProductOptions | undefined>(undefined);
@@ -43,7 +37,6 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
       setLoading(false);
       return;
     }
-
     setProduct(result.data);
     setLoading(false);
   }, [backend.products, id]);
@@ -92,13 +85,9 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
         message: '¡Producto modificado exitosamente!',
       });
       form.resetFields();
-      history.replace(productRoutes.listPendingProduct.path);
+      history.replace(productRoutes.listProducts.path);
     }
     setLoading(false);
-  };
-
-  const onCloseModal = (): void => {
-    setIsVisible(false);
   };
 
   if (isLoading || !options) {
@@ -110,11 +99,6 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
       <Title
         viewName={verboseName}
         parentName={parentName}
-        extra={isProvider && [
-          <Button type="primary" onClick={() => setIsVisible(true)}>
-            Solicitar cambio de precio
-          </Button>,
-        ]}
       />
       <ProductForm
         form={form}
@@ -123,32 +107,7 @@ const UpdateForm: React.VC = ({ verboseName, parentName }) => {
         onFinishFailed={onFinishFailed}
         initialState={product as UpdateProductForm}
         options={options}
-        disabledFields={isAdmin ? undefined : {
-          price: (
-            'Da click en el botón de arriba para solicitar cambio de precio.'
-          ),
-          key: DEFAULT_DISABLED_MESSAGE,
-          active_substance: DEFAULT_DISABLED_MESSAGE,
-          animal_groups: DEFAULT_DISABLED_MESSAGE,
-          category: DEFAULT_DISABLED_MESSAGE,
-          ieps: DEFAULT_DISABLED_MESSAGE,
-          iva: DEFAULT_DISABLED_MESSAGE,
-          laboratory: DEFAULT_DISABLED_MESSAGE,
-          more_info: DEFAULT_DISABLED_MESSAGE,
-          name: DEFAULT_DISABLED_MESSAGE,
-          provider: DEFAULT_DISABLED_MESSAGE,
-          reject_reason: DEFAULT_DISABLED_MESSAGE,
-          status: DEFAULT_DISABLED_MESSAGE,
-          presentation: DEFAULT_DISABLED_MESSAGE,
-        }}
         isUpdate
-      />
-      <RequestPriceUpdateModal
-        visible={visible}
-        onClose={onCloseModal}
-        currentPrice={product ? product.price : 0}
-        productId={product ? product.id : 0}
-        productName={product ? product.name : ''}
       />
     </Content>
   );

@@ -9,8 +9,10 @@ from backend.utils.product_key import create_product_key
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from products.mails import send_mail_on_price_change
-
+from products.mails import (
+    send_mail_on_create_product_request,
+    send_mail_on_price_change, send_mail_on_reject_product
+)
 from products.serializers.animal_group import ListAnimalGroupSerializer
 from drf_multiple_model.views import ObjectMultipleModelAPIView
 from products.serializers.laboratory import (
@@ -21,15 +23,20 @@ from products.serializers.category import (
     CategorySerializer,
     ListCategorySerializer
 )
-from products.models import AnimalGroup, Category, Laboratory, Product
+from products.models import (
+    AnimalGroup, Category, Laboratory, Product, ProductProvider
+)
 from providers.models import Provider
 
 from products.serializers.product import (
-    CreateProductAsAdminSerializer, CreateProductSerializer,
-    ListProductSerializer, ProductSerializer, UpdateProductPrice,
-    UpdateProductSerializer
+    AcceptProductSerializer,
+    CreateProductSerializer,
+    ListProductSerializer, ListProviderProductsSerializer,
+    ProductSerializer,
+    RejectProductSerializer, UpdateProductPrice,
+    UpdateProductProviderSerializer,
+    UpdateProductSerializer,
 )
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 
@@ -42,32 +49,55 @@ class ListProductView(generics.ListAPIView):
     def get_queryset(self):
         if is_provider(self.request.user):
             provider = Provider.objects.get(user=self.request.user)
-            return Product.objects.filter(provider=provider)
+            return Product.objects.filter(
+                productprovider__provider=provider
+            )
         else:
             return Product.objects.all()
 
+    def get_serializer_class(self):
+        if is_provider(self.request.user):
+            return ListProviderProductsSerializer
+        else:
+            return ListProductSerializer
+
 
 class CreateProductView(generics.CreateAPIView):
-    queryset = Product.objects.all()
     permission_classes = (IsProvider | IsAdmin, )  # type: ignore
 
-    # Get product provider from request user if user is provider.
-    def perform_create(self, serializer):
+    def post(self, request: Request) -> Response:
         # Create key from data
         key = create_product_key(
             self.request.data['category'], self.request.data['name']
         )
-        if is_provider(self.request.user):
-            provider = Provider.objects.get(user=self.request.user)
-            serializer.save(provider=provider, key=key)
-        elif is_admin(self.request.user):
-            serializer.save(status=Product.ACCEPTED, key=key)
+        data = self.request.data
 
-    def get_serializer_class(self):
         if is_provider(self.request.user):
-            return CreateProductSerializer
+            provider = Provider.objects.get(
+                user=self.request.user
+            )
+            data['provider']['provider'] = provider.id
         else:
-            return CreateProductAsAdminSerializer
+            provider = Provider.objects.get(pk=data['provider']['provider'])
+        serializer = CreateProductSerializer(
+            data=data,
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if is_admin(self.request.user):
+            product = serializer.save(key=key, status=Product.ACCEPTED)
+        else:
+            product = serializer.save(key=key)
+        product_provider = ProductProvider.objects.filter(
+            provider=provider, product=product
+        ).last()
+        send_mail_on_create_product_request(product_provider)
+        return Response(
+            data=serializer.data, status=status.HTTP_201_CREATED
+        )
 
 
 class UpdateProductView(generics.UpdateAPIView):
@@ -100,6 +130,133 @@ class ListProductSelectOptions(ObjectMultipleModelAPIView):
     ]
 
 
+class AcceptProductAsNew(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request) -> Response:
+        for data in request.data:
+            id = data['id']
+            request = Product.objects.get(pk=id)
+            if not request:
+                return Response(
+                    data={"code": "PRODUCT_REQUEST_NOT_FOUND"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = AcceptProductSerializer(
+                instance=request,
+                data={
+                    'status': Product.ACCEPTED,
+                },
+                partial=True
+            )
+            if not serializer.is_valid():
+                return Response(
+                    data=serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            product = serializer.save()
+
+            # At this point in time, new product should only have one provider
+            product_provider = product.providers.first()
+            if product_provider:
+                serializer = UpdateProductProviderSerializer(
+                    product_provider,
+                    data=data,
+                    partial=True,
+                )
+                if not serializer.is_valid():
+                    return Response(
+                        data=serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                serializer.save()
+        return Response(
+            data={'code': 'PRODUCTS_ACCEPTED'},
+            status=status.HTTP_200_OK
+        )
+
+
+class GroupProductsView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request) -> Response:
+        data = request.data
+        target = Product.objects.get(pk=data['product'])
+        if not target:
+            return Response(
+                data={"code": "TARGET_PRODUCT_NOT_FOUND"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        for data in data['providers']:
+            id = data['id']
+            product_provider = ProductProvider.objects.get(pk=id)
+            if not product_provider:
+                return Response(
+                    data={"code": "PRODUCT_PROVIDER_NOT_FOUND"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            # Update fields if passed
+            serializer = UpdateProductProviderSerializer(
+                product_provider,
+                data=data,
+                partial=True,
+            )
+            if not serializer.is_valid():
+                return Response(
+                    data=serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            # Change relation to target
+            instance = serializer.save()
+
+            # Change state of old product instance
+            instance.product.status = Product.INACTIVE
+            instance.product.save()
+            instance.product = target
+            instance.save()
+
+        return Response(
+            data={'code': 'PRODUCTS_GROUPED'},
+            status=status.HTTP_200_OK
+        )
+
+
+class RejectProductsView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request) -> Response:
+        products = request.data['products']
+        reject_reason = request.data['reject_reason']
+        mail_data = []
+        for product in products:
+            product = Product.objects.get(pk=product)
+            if not product:
+                return Response(
+                    data={"code": "PRODUCT_REQUEST_NOT_FOUND"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = RejectProductSerializer(
+                instance=product,
+                data={
+                    'status': Product.REJECTED,
+                    'reject_reason': reject_reason
+                },
+                partial=True
+            )
+            if not serializer.is_valid():
+                return Response(
+                    data=serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            product = serializer.save()
+
+            mail_data.append(product)
+        send_mail_on_reject_product(mail_data)
+        return Response(
+            data={'code': 'PRODUCTS_REJECTED'}, status=status.HTTP_200_OK
+        )
+
+
 class RequestPriceChange(APIView):
     permission_classes = [IsProvider]
 
@@ -127,11 +284,15 @@ class RequestPriceChange(APIView):
                 data = {
                     "price": new_price,
                 }
+                product_provider = ProductProvider.objects.filter(
+                    product=pk,
+                    provider=provider
+                ).last()
+                old_price = product_provider.price
 
-                product = Product.objects.get(pk=pk)
-                old_price = product.price
-
-                serializer = UpdateProductPrice(instance=product, data=data)
+                serializer = UpdateProductPrice(
+                    instance=product_provider, data=data
+                )
 
                 if not serializer.is_valid():
                     return Response(
@@ -139,8 +300,10 @@ class RequestPriceChange(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                updated_product = serializer.save()
-                new_result = updated_product
+                instance = serializer.save()
+                new_result = instance.product
+                new_result.price = instance.price
+                new_result.laboratory = instance.laboratory
                 new_result.old_price = old_price
                 new_result.price_diff = new_result.price - new_result.old_price
 
@@ -154,7 +317,9 @@ class RequestPriceChange(APIView):
         provider.updated_at = datetime.utcnow()
         provider.save()
 
-        send_mail_on_price_change(products=results, provider=provider)
+        send_mail_on_price_change(
+           products=results, provider=provider
+        )
 
         return Response(data={}, status=status.HTTP_200_OK)
 

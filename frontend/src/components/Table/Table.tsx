@@ -1,13 +1,15 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable max-len */
 import React from 'react';
 import {
-  Button, Col, Layout, Row,
+  Button, Col, Layout, Row, Tooltip,
 } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import Props from './Table.type';
 import { Table } from './Table.styled';
 
 const GenericTable: React.FC<Props> = ({
-  data, columns, expandedRowRender, rowKey, actions,
+  data, columns, expandedRowRender, rowKey, actions, selection,
 }) => (
   <Layout>
     <Row
@@ -22,14 +24,22 @@ const GenericTable: React.FC<Props> = ({
       {actions?.map((button) => (
         button.hidden ? null : (
           <Col className="gutter-row" span={3} key={uuidv4()}>
-            <Button
-              onClick={button.action}
-              type="primary"
-              block
-              icon={button.icon}
+            <Tooltip title={
+              (
+                button.disabled && button.disabledTooltip
+              ) ? button.disabledTooltip : button.tooltip ? button.tooltip : null
+            }
             >
-              {button.text}
-            </Button>
+              <Button
+                onClick={button.action}
+                type="primary"
+                block
+                disabled={button.disabled}
+                icon={button.icon}
+              >
+                {button.text}
+              </Button>
+            </Tooltip>
           </Col>
         )
       ))}
@@ -42,6 +52,8 @@ const GenericTable: React.FC<Props> = ({
       size="small"
       expandedRowRender={expandedRowRender}
       pagination={false}
+      defaultExpandAllRows
+      rowSelection={selection}
     />
   </Layout>
 

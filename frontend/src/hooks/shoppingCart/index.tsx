@@ -1,8 +1,23 @@
-import { Offer, Product } from '@types';
+import { Offer } from '@types';
 import React, { useEffect, useState } from 'react';
 
+interface ProductCart {
+  id: number;
+  name: string;
+  presentation: string;
+  category: string;
+  key: string;
+  active_substance: string;
+  laboratory: string;
+  price: number;
+  iva: number;
+  ieps: number;
+  provider: string;
+  originalPrice?: number;
+}
+
 export interface ShoppingCartProductType {
-  product: Product;
+  product: ProductCart;
   offer?: Offer;
   amount: number;
 }
@@ -42,12 +57,12 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     let newTotal = 0;
 
     newProducts.forEach((e) => {
-      const { price } = e.product;
+      const { price, iva } = e.product;
 
       newSubtotal += (e.amount * price);
 
       newIeps += e.amount * ((e.product.ieps / 100) * price);
-      newIVA += e.amount * ((e.product.iva / 100) * price);
+      newIVA += e.amount * ((iva / 100) * price);
     });
     newTotal = newSubtotal + newIVA + newIeps;
     setSubtotal(newSubtotal);

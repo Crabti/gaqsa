@@ -20,6 +20,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<CreateOfferForm>();
   const [discount, setDiscount] = useState(INITIAL_DISCOUNT);
+
   const [newPrice, setNewPrice] = useState(product.price);
   const backend = useBackend();
 
@@ -29,7 +30,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
     const payload : CreateOfferForm = {
       ...data,
       ending_at: moment(data.ending_at).format('YYYY-MM-DD'),
-      product: product.id,
+      product_provider: product.id,
       discount_percentage: +(data.discount_percentage / 100).toFixed(15),
     };
 
@@ -97,7 +98,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
       onOk={handleOk}
       okText="Crear"
       cancelText="Cancelar"
-      title={`Crear una nueva oferta para el producto ${product.name}`}
+      title="Crear una nueva oferta para el producto."
       confirmLoading={loading}
     >
       <Row>
@@ -113,8 +114,11 @@ const CreateProductOfferModal: React.FC<Props> = ({
         <Typography.Text strong>
           Precio con descuento: $
           {' '}
-          {(product.price - product.price * (discount / 100)).toFixed(2)}
-          {' '}
+          {
+            (
+              product.price - product.price * (discount / 100)
+            ).toFixed(2)
+          }
         </Typography.Text>
       </Row>
       <Form
