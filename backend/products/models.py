@@ -47,37 +47,14 @@ class AnimalGroup(models.Model):
         return self.name
 
 
-class Product(models.Model):
-    ACCEPTED = "Aceptado"
-    PENDING = "Pendiente"
-    REJECTED = "Rechazado"
-    INACTIVE = "Inactivo"
-    STATUSES = [
-        (ACCEPTED, ACCEPTED),
-        (PENDING, PENDING),
-        (REJECTED, REJECTED),
-        (INACTIVE, INACTIVE)
-    ]
-
+class BaseProduct(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    key = models.CharField(
-            max_length=KEY_LEN, verbose_name="Clave",
-            unique=True)
     name = models.CharField(max_length=50, verbose_name="Nombre del Producto")
     presentation = models.CharField(
         max_length=20, verbose_name="Presenta", blank=True,
     )
-    price = models.DecimalField(
-        decimal_places=2, max_digits=10, verbose_name="Precio", default=0.0,
-    )
-    iva = models.DecimalField(
-        decimal_places=2, max_digits=5, verbose_name="IVA", default=0.0,
-        validators=[
-            MinValueValidator(0.00),
-            MaxValueValidator(100),
-        ]
-    )
+
     ieps = models.DecimalField(
         decimal_places=2, max_digits=5, verbose_name="IEPS", default=0.0,
         validators=[
@@ -89,29 +66,81 @@ class Product(models.Model):
         max_length=200, blank=True, verbose_name="Información",
     )
 
-    status = models.CharField(
-        max_length=20,
-        choices=STATUSES,
-        default=PENDING,
-        verbose_name="Estado de producto",
+    active_substance = models.CharField(
+        max_length=150, verbose_name="Sustancia activa"
     )
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+
+    animal_groups = models.ManyToManyField(AnimalGroup)
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+
+    class Meta:
+        abstract = True
+
+
+class Product(BaseProduct):
+    key = models.CharField(
+            max_length=KEY_LEN, verbose_name="Clave",
+            unique=True)
+
+    providers = models.ManyToManyField(
+        Provider, through='products.ProductProvider',
+        related_name='products'
+    )
+    ACCEPTED = "Aceptado"
+    PENDING = "Pendiente"
+    REJECTED = "Rechazado"
+    INACTIVE = "Inactivo"
+    STATUSES = [
+        (ACCEPTED, ACCEPTED),
+        (PENDING, PENDING),
+        (REJECTED, REJECTED),
+        (INACTIVE, INACTIVE)
+    ]
+
     reject_reason = models.CharField(
         max_length=500,
         default="N/A"
     )
-    active_substance = models.CharField(
-        max_length=150, verbose_name="Sustancia activa")
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        default=PENDING,
+        verbose_name="Estado de petición"
+    )
 
-    animal_groups = models.ManyToManyField(AnimalGroup)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT)
-    laboratory = models.ForeignKey(Laboratory, on_delete=models.PROTECT)
+    @property
+    def providers(self):
+        return self.productprovider_set.all()
 
-    def __str__(self):
-        return (
-            f"{self.key} - {self.provider.name}"
-            f" - {self.name} - {self.presentation} - {self.status}"
-        )
+    def __str__(self) -> str:
+        return f"{self.name} - {self.key} - {self.category}"
+
+
+class ProductProvider(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+
+    price = models.DecimalField(
+        decimal_places=2,
+        max_digits=10,
+        verbose_name="Precio",
+        default=0.0,
+    )
+    iva = models.DecimalField(
+        decimal_places=2, max_digits=5, verbose_name="IVA", default=0.0,
+        validators=[
+            MinValueValidator(0.00),
+            MaxValueValidator(100),
+        ]
+    )
+    laboratory = models.ForeignKey(
+        Laboratory, on_delete=models.PROTECT
+    )
+
+    def __str__(self) -> str:
+        return f"${self.product} - {self.provider} - {self.price}"
 
 
 class ChangePriceRequest(models.Model):

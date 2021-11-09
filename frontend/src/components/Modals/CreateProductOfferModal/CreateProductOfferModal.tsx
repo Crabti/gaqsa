@@ -20,6 +20,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm<CreateOfferForm>();
   const [discount, setDiscount] = useState(INITIAL_DISCOUNT);
+
   const [newPrice, setNewPrice] = useState(product.price);
   const backend = useBackend();
 
@@ -28,9 +29,9 @@ const CreateProductOfferModal: React.FC<Props> = ({
 
     const payload : CreateOfferForm = {
       ...data,
-      ending_at: moment(data.ending_at).format('YYYY-MM-DD HH:mm'),
-      product: product.id,
-      discount_percentage: +(data.discount_percentage / 100).toFixed(2),
+      ending_at: moment(data.ending_at).format('YYYY-MM-DD'),
+      product_provider: product.id,
+      discount_percentage: +(data.discount_percentage / 100).toFixed(15),
     };
 
     const [response, error] = await backend.offers.createOne(
@@ -78,7 +79,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
   };
 
   const handleNewPriceUpdate = (value: number): void => {
-    const newDiscount = +((1 - value / product.price) * 100).toFixed(2);
+    const newDiscount = +((1 - value / product.price) * 100);
     setDiscount(newDiscount);
     setNewPrice(value);
     form.setFieldsValue({
@@ -97,7 +98,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
       onOk={handleOk}
       okText="Crear"
       cancelText="Cancelar"
-      title={`Crear una nueva oferta para el producto ${product.name}`}
+      title="Crear una nueva oferta para el producto."
       confirmLoading={loading}
     >
       <Row>
@@ -113,8 +114,11 @@ const CreateProductOfferModal: React.FC<Props> = ({
         <Typography.Text strong>
           Precio con descuento: $
           {' '}
-          {(product.price - product.price * (discount / 100)).toFixed(2)}
-          {' '}
+          {
+            (
+              product.price - product.price * (discount / 100)
+            ).toFixed(2)
+          }
         </Typography.Text>
       </Row>
       <Form
@@ -157,7 +161,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
           />
         </Form.Item>
         <Form.Item name="ending_at" label="Fecha limite" required>
-          <DatePicker showTime disabledDate={disabledDate} />
+          <DatePicker disabledDate={disabledDate} />
         </Form.Item>
       </Form>
     </Modal>

@@ -10,11 +10,13 @@ from providers.factories.provider import ProviderFactory
 from products.models import Product
 from products.factories.laboratory import LaboratoryFactory
 from products.factories.category import CategoryFactory
-from products.factories.product import ProductFactory
+from products.factories.product import ProductFactory, ProductProviderFactory
 
 from offers.factories.offer import OfferFactory
 
 from backend.utils.tests import BaseTestCase
+from datetime import date
+from datetime import timedelta
 
 
 class CreateOffer(BaseTestCase):
@@ -24,12 +26,16 @@ class CreateOffer(BaseTestCase):
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
         product = ProductFactory.create(
-            provider=provider,
             status=Product.ACCEPTED,
-            category=category, laboratory=laboratory,
+            category=category
+        )
+        product_provider = ProductProviderFactory.create(
+            laboratory=laboratory,
+            product=product,
+            provider=provider
         )
         offer = OfferFactory.build(
-            product=product
+            product_provider=product_provider
         )
         self.valid_payload = CreateOfferSerializer(
             offer,
@@ -42,21 +48,6 @@ class CreateOffer(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
-    def test_request_to_create_offer_without_product_should_fail(
-        self
-    ) -> None:
-
-        invalid_offer = OfferFactory.build()
-        invalid_payload = CreateOfferSerializer(
-            invalid_offer,
-        ).data
-        response = self.provider_client.post(
-            reverse("create_offer"),
-            data=json.dumps(invalid_payload),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_request_to_create_offer_with_invalid_role_should_fail(
         self
@@ -80,3 +71,43 @@ class CreateOffer(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertEqual(response.data, self.valid_payload)
         self.assertGreater(len(mail.outbox), 0)
+
+
+class OfferExpire(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        category = CategoryFactory.create()
+        product = ProductFactory.create(
+            status=Product.ACCEPTED,
+            category=category,
+        )
+        laboratory = LaboratoryFactory.create()
+        provider = ProviderFactory.create()
+        self.product_provider = ProductProviderFactory.create(
+            product=product,
+            laboratory=laboratory,
+            provider=provider
+        )
+
+    def test_offer_valid(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product_provider=self.product_provider,
+        )
+        self.assertEqual(offer.active, True)
+
+    def test_offer_cancelled(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product_provider=self.product_provider,
+            cancelled=True,
+        )
+        self.assertEqual(offer.active, False)
+
+    def test_offer_date_expired(self) -> None:
+        offer = OfferFactory.create(
+            user=self.provider_user,
+            product_provider=self.product_provider,
+            ending_at=date.today() - timedelta(days=7)
+        )
+        self.assertEqual(offer.active, False)

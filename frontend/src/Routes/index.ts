@@ -21,6 +21,7 @@ import ProductsDetail from 'views/Products.Detail';
 import ListClientOrderDetail from 'views/Orders.ListClientOrderDetail';
 import ListClientOrder from 'views/Order.ListClientOrder/Order.ListClientOrder';
 import ListProviderOrders from 'views/Order.ListProviderOrders';
+import PriceChange from 'views/Products.PriceChange';
 
 import {
   LIST_PROVIDERS,
@@ -86,6 +87,12 @@ export const productRoutes: Routes = {
     verboseName: 'Modificar producto',
     showInMenu: false,
     hasAccess: (auth) => auth.isAdmin || auth.isProvider,
+  },
+  changePrice: {
+    path: '/productos/cambio-precio',
+    view: PriceChange,
+    verboseName: 'Cambio de precios',
+    hasAccess: (auth) => auth.isProvider,
   },
 };
 

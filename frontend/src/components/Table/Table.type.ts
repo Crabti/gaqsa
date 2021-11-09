@@ -13,6 +13,10 @@ interface TableAction {
     action(): void,
     text: string,
     icon?: React.ReactNode,
+    hidden?: boolean;
+    disabled?: boolean;
+    tooltip?: string;
+    disabledTooltip?: string;
 }
 
 interface Props {
@@ -21,6 +25,7 @@ interface Props {
     expandedRowRender?: any,
     rowKey: string | ((record: any) => string),
     actions?: TableAction[],
+    selection?: any,
 }
 
 export default Props;

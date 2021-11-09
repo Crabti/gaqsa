@@ -16,7 +16,7 @@ import {
   MinusOutlined,
 } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
-import { Product } from '@types';
+import { ProductProvider } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
@@ -97,8 +97,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       key: 'price',
       render: (_: number, data: any) => (data.offer ? (
         <DiscountText
-          originalPrice={(data.price
-            + data.price * data.offer.discount_percentage).toFixed(2)}
+          originalPrice={data.originalPrice}
           discount={data.offer.discount_percentage}
         />
       ) : (
@@ -111,11 +110,11 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'IVA',
       dataIndex: 'iva',
       key: 'iva',
-      render: (_: number, product: Product) => {
-        const { price } = product;
+      render: (_: number, provider: ProductProvider) => {
+        const { price, iva } = provider;
         return (
           <Text>
-            {`$${((product.iva / 100) * price).toFixed(2)}`}
+            {`$${((iva / 100) * price).toFixed(2)}`}
           </Text>
         );
       },
@@ -124,11 +123,11 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'IEPS',
       dataIndex: 'ieps',
       key: 'ieps',
-      render: (_: number, product: Product) => {
-        const { price } = product;
+      render: (_: number, data: any) => {
+        const { price, ieps } = data;
         return (
           <Text>
-            {`$${((product.ieps / 100) * price).toFixed(2)}`}
+            {`$${((ieps / 100) * price).toFixed(2)}`}
           </Text>
         );
       },
@@ -137,7 +136,10 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'Cantidad',
       dataIndex: 'amount',
       key: 'amount',
-      render: (id: number, product: Product & {amount: string}) => (
+      render: (
+        _: number,
+        product: any,
+      ) => (
         <InputNumber<string>
           defaultValue={product.amount}
           min="1"
@@ -153,14 +155,14 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'Acciones',
       dataIndex: 'action',
       key: 'action',
-      render: (id: number, product: Product) => (
+      render: (id: number, data: any) => (
         <>
           <Tooltip title="Eliminar del carrito">
             <Button
               shape="circle"
               icon={<MinusOutlined />}
               onClick={() => removeProducts({
-                product: { ...product },
+                product: { ...data },
                 amount: -1,
               })}
             />
@@ -198,7 +200,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
               data={products.map((product) => ({
                 id: product.product.id,
                 name: product.product.name,
-                provider: product.product.provider,
                 presentation: product.product.presentation,
                 laboratory: product.product.laboratory,
                 category: product.product.category,
@@ -206,7 +207,9 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 iva: product.product.iva,
                 ieps: product.product.ieps,
                 amount: product.amount,
+                provider: product.product.provider,
                 offer: product.offer,
+                originalPrice: product.product.originalPrice,
               }))}
               columns={columns}
               rowKey={(row) => `${row.id}`}

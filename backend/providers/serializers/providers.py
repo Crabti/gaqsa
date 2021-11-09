@@ -38,6 +38,12 @@ class ListProviderSerializer(serializers.ModelSerializer):
         )
 
 
+class SimpleProviderSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        fields = ('id', 'name')
+
+
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider
@@ -49,7 +55,8 @@ class CreateCodeSerializer(serializers.ModelSerializer):
         model = Provider
         fields = (
             "token",
-            "token_used"
+            "token_used",
+            "token_apply_date"
         )
 
 

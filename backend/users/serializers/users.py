@@ -47,3 +47,9 @@ class ListUserSerializer(serializers.ModelSerializer):
             "provider",
             "client"
         )
+
+
+class UserIsActiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('is_active', 'pk')

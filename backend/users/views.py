@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, User
 from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP
@@ -6,7 +7,9 @@ from providers.serializers.providers import CreateProviderSerializer
 from clients.serializers.ranch import CreateRanchSerializer
 from clients.serializers.client import CreateClientSerializer
 from users.serializers.profile import CreateProfileSerializer
-from users.serializers.users import CreateUserSerializer, ListUserSerializer
+from users.serializers.users import (
+    CreateUserSerializer, ListUserSerializer, UserIsActiveSerializer
+)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import (
     TokenObtainPairView, TokenRefreshView
@@ -27,7 +30,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["first_name"] = user.first_name
         token["last_name"] = user.last_name
         token["username"] = user.username
-        print(user.username)
         token["groups"] = list(user.groups.values_list('name', flat=True))
         return token
 
@@ -44,6 +46,30 @@ class ListUserView(generics.ListAPIView):
     permission_classes = [IsAdmin]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
+
+
+class UpdateUserActiveView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [IsAdmin]
+    lookup_field = 'pk'
+    serializer_class = UserIsActiveSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        data = request.data
+        serializer = self.get_serializer(instance, data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'code': 'UPDATED_USER_ACTIVE'}, HTTPStatus.OK)
+        else:
+            return Response(
+                {
+                    'code': 'UPDATE_USER_ACTIVE_FAILED',
+                    'errors': serializer.errors
+                },
+                HTTPStatus.BAD_REQUEST
+            )
 
 
 class CreateUser(APIView):
