@@ -1,7 +1,7 @@
 # from django.http import request
 from order.mails import (
     send_mail_on_create_order, send_mail_on_create_order_user)
-from products.models import ProductProvider
+from products.models import Product, ProductProvider
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
@@ -32,49 +32,60 @@ class CreateOrder(APIView):
 
     def post(self, request):
 
-        # TODO: Create orders by providers
-        order_serializer = OrderSerializer(
-            data={"user": request.user.pk}
-        )
-        if not order_serializer.is_valid():
-            return Response(
-                order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
-        new_order = order_serializer.save()
-
-        data = []
         providers = []
         products = request.data['products']
         for product in products:
             relation = ProductProvider.objects.get(pk=product['product']['id'])
             provider_id = relation.provider.id
-            data.append({
-                'order': new_order.pk,
-                'provider': provider_id,
-                'product': relation.product.id,
-                'quantity_requested': product['amount'],
-                'price': float(product['product']['price'])
-            })
             if provider_id not in providers:
                 providers.append(provider_id)
 
-        requisition_serializer = CreateRequisitionSerializer(
-            data=data, many=True
+        for provider in providers:
+            # TODO: Create orders by providers
+            order_serializer = OrderSerializer(
+                data={
+                    "user": request.user.pk,
+                    "provider": provider
+                    }
             )
-        if not requisition_serializer.is_valid():
-            return Response(
-                requisition_serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+            if not order_serializer.is_valid():
+                print("this")
+                return Response(
+                    order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+            new_order = order_serializer.save()
+
+            data = []
+
+            for product in products:
+                relation = ProductProvider.objects.get(pk=product['product']['id'])
+                if relation.provider.id == provider:
+                    data.append({
+                        'order': new_order.pk,
+                        'product': relation.product.id,
+                        'quantity_requested': product['amount'],
+                        'price': float(product['product']['price'])
+                    })
+
+            print(data)
+            requisition_serializer = CreateRequisitionSerializer(
+                data=data, many=True
                 )
+            if not requisition_serializer.is_valid():
+                return Response(
+                    requisition_serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
 
-        requisition_serializer.save()
+            requisition_serializer.save()
 
-        send_mail_on_create_order(
-            new_order, providers, products
-        )
-        send_mail_on_create_order_user(
-            new_order, products
-        )
+            send_mail_on_create_order(
+                new_order, products
+            )
+            send_mail_on_create_order_user(
+                new_order, products
+            )
+
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
 
