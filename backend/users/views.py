@@ -8,7 +8,7 @@ from clients.serializers.ranch import CreateRanchSerializer
 from clients.serializers.client import CreateClientSerializer
 from users.serializers.profile import CreateProfileSerializer
 from users.serializers.users import (
-    CreateUserSerializer, ListUserSerializer, UserIsActiveSerializer
+    CreateUserSerializer, ListUserSerializer, UserIsActiveSerializer, UserSerializer
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import (
@@ -18,7 +18,7 @@ from django.db import IntegrityError, transaction
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
-from backend.utils.permissions import IsAdmin
+from backend.utils.permissions import IsAdmin, IsOwnUserOrAdmin
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -46,6 +46,12 @@ class ListUserView(generics.ListAPIView):
     permission_classes = [IsAdmin]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
+
+
+class RetrieveUserView(generics.RetrieveAPIView):
+    permission_classes = [IsOwnUserOrAdmin]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class UpdateUserActiveView(generics.UpdateAPIView):
