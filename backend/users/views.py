@@ -8,7 +8,10 @@ from clients.serializers.ranch import CreateRanchSerializer
 from clients.serializers.client import CreateClientSerializer
 from users.serializers.profile import CreateProfileSerializer
 from users.serializers.users import (
-    CreateUserSerializer, ListUserSerializer, UserIsActiveSerializer, UserSerializer
+    CreateUserSerializer,
+    ListUserSerializer,
+    UserIsActiveSerializer,
+    UserSerializer,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import (

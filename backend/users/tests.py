@@ -384,7 +384,9 @@ class RetrieveUser(BaseTestCase):
         self.assertEqual(user_response["id"], self.expected_user.pk)
         self.assertEqual(user_response["email"], self.expected_user.email)
 
-    def test_get_user_with_no_admin_group_should_return_unauthorized(self) -> None:
+    def test_get_user_with_no_admin_group_should_return_unauthorized(
+        self
+    ) -> None:
         response = self.service_client.get(
             reverse("retrieve_user", kwargs={"pk": self.expected_user.pk}),
             content_type="application/json",
@@ -392,7 +394,9 @@ class RetrieveUser(BaseTestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
-    def test_get_user_with_non_existing_pk_should_return_not_found(self) -> None:
+    def test_get_user_with_non_existing_pk_should_return_not_found(
+        self
+    ) -> None:
         response = self.admin_client.get(
             reverse("retrieve_user", kwargs={"pk": 1234}),
             content_type="application/json",
