@@ -1,29 +1,38 @@
+import { Maybe, User } from '@types';
+import LoadingIndicator from 'components/LoadingIndicator';
+import NotFound from 'components/NotFound';
 import { useBackend } from 'integrations';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import UpdateUserComp from './Users.UpdateUser';
 
 const UpdateUser: React.FC = () => {
   const { id } = useParams<{ id: string; }>();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<Maybe<User>>(undefined);
   const backend = useBackend();
 
-  const fetchUser = async (): Promise<void> => {
-    setLoading(true);
+  const fetchUser = useCallback(async () => {
+    setIsLoading(true);
     const [result, error] = await backend.users.getOne(id);
 
     if (error || !result || !result.data) {
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
-    setLoading(false);
-  };
+    setIsLoading(false);
+  }, [id, backend.users]);
 
   useEffect(() => {
     fetchUser();
   }, [id, fetchUser]);
 
-  return (<></>);
+  if (isLoading) return <LoadingIndicator />;
+
+  if (!isLoading || !user) return <NotFound />;
+
+  return (<UpdateUserComp user={user} />);
 };
 
 export default UpdateUser;
