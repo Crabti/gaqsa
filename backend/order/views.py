@@ -1,7 +1,11 @@
 # from django.http import request
 from order.mails import (
     send_mail_on_create_order, send_mail_on_create_order_user)
+<<<<<<< HEAD
 from products.models import Product, ProductProvider
+=======
+from products.models import ProductProvider
+>>>>>>> 74666a04d601b0978f71398a08676daaad9e5b28
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
@@ -31,12 +35,26 @@ class ListOrders(generics.ListAPIView):
 class CreateOrder(APIView):
 
     def post(self, request):
+<<<<<<< HEAD
+=======
+
+        # TODO: Create orders by providers
+        order_serializer = OrderSerializer(
+            data={"user": request.user.pk}
+        )
+        if not order_serializer.is_valid():
+            return Response(
+                order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                )
+        new_order = order_serializer.save()
+>>>>>>> 74666a04d601b0978f71398a08676daaad9e5b28
 
         providers = []
         products = request.data['products']
         for product in products:
             relation = ProductProvider.objects.get(pk=product['product']['id'])
             provider_id = relation.provider.id
+<<<<<<< HEAD
             if provider_id not in providers:
                 providers.append(provider_id)
 
@@ -47,6 +65,20 @@ class CreateOrder(APIView):
                     "user": request.user.pk,
                     "provider": provider
                     }
+=======
+            data.append({
+                'order': new_order.pk,
+                'provider': provider_id,
+                'product': relation.product.id,
+                'quantity_requested': product['amount'],
+                'price': float(product['product']['price'])
+            })
+            if provider_id not in providers:
+                providers.append(provider_id)
+
+        requisition_serializer = CreateRequisitionSerializer(
+            data=data, many=True
+>>>>>>> 74666a04d601b0978f71398a08676daaad9e5b28
             )
             if not order_serializer.is_valid():
                 print("this")
@@ -79,6 +111,7 @@ class CreateOrder(APIView):
 
             requisition_serializer.save()
 
+<<<<<<< HEAD
             send_mail_on_create_order(
                 new_order, products
             )
@@ -86,6 +119,16 @@ class CreateOrder(APIView):
                 new_order, products
             )
 
+=======
+        requisition_serializer.save()
+
+        send_mail_on_create_order(
+            new_order, providers, products
+        )
+        send_mail_on_create_order_user(
+            new_order, products
+        )
+>>>>>>> 74666a04d601b0978f71398a08676daaad9e5b28
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
 
