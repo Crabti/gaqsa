@@ -371,7 +371,6 @@ class RetrieveUser(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.expected_user: User = self.admin_user
-        UserFactory.create_batch(3)
 
     def test_get_user_with_existing_pk_should_return_user(self) -> None:
         response = self.admin_client.get(
