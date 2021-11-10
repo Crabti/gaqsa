@@ -142,7 +142,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
     }
 
     notification.success({
-      message: '¡Producto(s) creados exitosamente!',
+      message: '¡Producto(s) aceptado(s) exitosamente!',
     });
     setLoading(false);
     history.push('/productos');
