@@ -49,7 +49,6 @@ class Business(models.Model):
             )
         ],
     )
-    # TODO: Remove default after applying migration to production
     dimension = models.IntegerField(default=1)
     internal_key = models.CharField(default="", max_length=100)
     invoice_telephone = models.CharField(default="", max_length=20)

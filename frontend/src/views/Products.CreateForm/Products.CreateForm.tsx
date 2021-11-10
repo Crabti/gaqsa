@@ -19,12 +19,14 @@ import useAuth from 'hooks/useAuth';
 
 const INITIAL_STATE : CreateProductForm = {
   name: '',
-  price: 0.01,
-  iva: 16.00,
+  provider: {
+    price: 0.50,
+    iva: 16.00,
+    laboratory: 1,
+  },
   ieps: 0.00,
   more_info: '',
   category: 1,
-  laboratory: 1,
   animal_groups: [],
   active_substance: '',
 };
@@ -88,23 +90,31 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
     }
   }, [history, fetchOptions, fetchProviders, isAdmin]);
 
-  const onFinish = async (values: CreateProductForm) : Promise<void> => {
+  const onFinish = async (
+    values: CreateProductForm,
+  ) : Promise<void> => {
     setLoading(true);
+
     const [, error] = await backend.products.createOne({
       ...values,
     });
-
     if (error) {
       onFinishFailed();
     } else {
-      notification.success({
-        message: '¡Petición de producto creado exitosamente!',
-        description: 'Su petición sera validado por un administrador proxima'
-          + 'proximamente. Sera notificado ya que esta petición '
+      if (isAdmin) {
+        notification.success({
+          message: '¡Producto creado exitosamente!',
+        });
+      } else {
+        notification.success({
+          message: '¡Petición de producto creado exitosamente!',
+          description: 'Su petición sera validado por un administrador'
+          + ' proximamente. Sera notificado ya que esta petición '
           + 'cambie de estado',
-      });
+        });
+      }
       form.resetFields();
-      history.replace('/');
+      history.replace('/productos');
     }
     setLoading(false);
   };

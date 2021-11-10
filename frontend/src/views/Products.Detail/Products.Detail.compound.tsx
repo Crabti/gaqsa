@@ -7,9 +7,12 @@ import ProductDetail from './Products.Detail';
 
 const ProductDetailCompound: React.FC = () => {
   const [product, setProduct] = useState<Maybe<Product>>(undefined);
+
   const [loading, setLoading] = useState(false);
   const backend = useBackend();
-  const { id: productId } = useParams<{ id: string; }>();
+  const {
+    id: productId,
+  } = useParams<{ id: string; }>();
 
   useEffect(() => {
     const fetchProduct = async (): Promise<void> => {

@@ -4,6 +4,12 @@ from . import views
 
 urlpatterns = [
     path("", views.ListProductView.as_view(), name="list_products"),
+    path("accept", views.AcceptProductAsNew.as_view(),
+         name="accept_products"),
+    path("group", views.GroupProductsView.as_view(),
+         name="group_products"),
+    path("reject", views.RejectProductsView.as_view(),
+         name="reject_products"),
     path("create", views.CreateProductView.as_view(), name="create_product"),
     path(
         "<int:pk>/update",

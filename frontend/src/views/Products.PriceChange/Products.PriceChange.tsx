@@ -12,6 +12,7 @@ import { useBackend } from 'integrations';
 import {
   ChangePriceForm,
   Product,
+  ProductGroup,
 } from '@types';
 import PriceChangeForm from 'components/PriceChangeForm';
 
@@ -26,7 +27,7 @@ const PriceChange: React.VC = ({ verboseName, parentName }) => {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
 
-    const [result, error] = await backend.products.getAll(
+    const [result, error] = await backend.products.getAll<ProductGroup[]>(
       'status=Aceptado',
     );
     if (error || !result) {
@@ -37,7 +38,14 @@ const PriceChange: React.VC = ({ verboseName, parentName }) => {
       setLoading(false);
       return;
     }
-    setProducts(result.data);
+    const parsed = result.data.map((product) => ({
+      ...product,
+      provider: {
+        ...product.providers[0],
+        laboratory: product.providers[0].laboratory.name,
+      },
+    }));
+    setProducts(parsed);
     setLoading(false);
   }, [backend.products]);
 

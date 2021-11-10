@@ -41,11 +41,6 @@ const PriceChangeForm: React.FC<Props> = ({
       key: 'active_substance',
     },
     {
-      title: 'Laboratorio',
-      dataIndex: 'laboratory',
-      key: 'laboratory',
-    },
-    {
       title: 'Categoría',
       dataIndex: 'category',
       key: 'category',
@@ -56,8 +51,8 @@ const PriceChangeForm: React.FC<Props> = ({
       key: 'price',
       render: (_: number, product: Product) => (
         <DiscountText
-          originalPrice={product.price}
-          discount={product.offer?.discount_percentage}
+          originalPrice={product.provider.price}
+          discount={product.provider.offer?.discount_percentage}
         />
       ),
     },
@@ -97,9 +92,6 @@ const PriceChangeForm: React.FC<Props> = ({
     product.name.toLowerCase().includes(
       value.toLowerCase(),
     )
-    || product.provider?.toLowerCase().includes(
-      value.toLowerCase(),
-    )
     || product.presentation.toLowerCase().includes(
       value.toLowerCase(),
     )
@@ -113,8 +105,8 @@ const PriceChangeForm: React.FC<Props> = ({
       )
     )
     || (
-      typeof product.laboratory === 'string'
-      && product.laboratory.toLowerCase().includes(
+      typeof product.provider.laboratory === 'string'
+      && product.provider.laboratory.toLowerCase().includes(
         value.toLowerCase(),
       )
     )
@@ -154,10 +146,8 @@ const PriceChangeForm: React.FC<Props> = ({
             useAny
             fieldsToFilter={[
               { key: 'name', value: 'Nombre' },
-              { key: 'provider', value: 'Proveedor' },
               { key: 'presentation', value: 'Presentación' },
               { key: 'active_substance', value: 'Substancia activa' },
-              { key: 'laboratory', value: 'Laboratorio' },
               { key: 'category', value: 'Categoria' },
             ]}
             onFilter={setFiltered}

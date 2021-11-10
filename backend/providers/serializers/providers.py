@@ -38,6 +38,12 @@ class ListProviderSerializer(serializers.ModelSerializer):
         )
 
 
+class SimpleProviderSerialzer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        fields = ('id', 'name')
+
+
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider

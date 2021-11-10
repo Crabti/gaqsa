@@ -5,6 +5,8 @@ import {
   UpdateProductForm,
   ProductPriceChange,
   ChangePriceForm,
+  ProductProvider,
+  ProductGroup,
 } from './product';
 import CommonType from './common';
 import { Category, CreateCategoryForm, UpdateCategoryForm } from './category';
@@ -53,4 +55,6 @@ export type {
   UserEmail,
   ProductPriceChange,
   ChangePriceForm,
+  ProductProvider,
+  ProductGroup,
 };
