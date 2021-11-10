@@ -1,24 +1,22 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Content } from 'antd/lib/layout/layout';
-import {
-  Button,
-  notification, Tooltip,
-} from 'antd';
-import { useHistory } from 'react-router';
-import Title from 'components/Title';
-import { useBackend } from 'integrations';
-import {
-  User,
-} from '@types';
-import Table from 'components/Table';
-import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import moment from 'moment';
 import {
   CheckCircleOutlined,
-  ExclamationCircleOutlined, PlusOutlined, StopOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  PlusOutlined,
+  StopOutlined,
 } from '@ant-design/icons';
-import useAuth, { UserGroups } from 'hooks/useAuth';
+import { User } from '@types';
+import { Button, notification, Tooltip } from 'antd';
+import { Content } from 'antd/lib/layout/layout';
 import confirm from 'antd/lib/modal/confirm';
+import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import Table from 'components/Table';
+import Title from 'components/Title';
+import useAuth, { UserGroups } from 'hooks/useAuth';
+import { useBackend } from 'integrations';
+import moment from 'moment';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { Actions } from './Users.ListUsers.styled';
 
 const ListUsers: React.VC = ({ verboseName, parentName }) => {
@@ -47,7 +45,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
 
   const updateUserActive = async (
     userId: number, activate: boolean,
-  ) : Promise<void> => {
+  ): Promise<void> => {
     const payload = {
       is_active: activate,
     };
@@ -148,7 +146,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
           ? 'Se desabilitara el acceso al usuario y no'
           + ' podra ingresar al sistema nuevamente.'
           : 'Se habilitara el acceso al usuario y'
-            + ' podra ingresar nuevamente';
+          + ' podra ingresar nuevamente';
 
         const isMe = auth.user?.id === data.id;
         const toolTipTitle = active ? 'Desactivar usuario' : 'Activar usuario';
@@ -158,7 +156,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
               isMe
                 ? 'No está permitido realizar esta acción con su propia cuenta.'
                 : toolTipTitle
-              }
+            }
             >
               <Button
                 shape="circle"
@@ -179,22 +177,30 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
                 }}
               />
             </Tooltip>
+            <Tooltip title="Editar usuario">
+              <Button
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() => { history.push(`/usuario/${data.id}/editar`); }}
+              />
+            </Tooltip>
           </Actions>
         );
       },
     },
   ];
 
-  const getBusinessName = (user: User) : string => {
+  const getBusinessName = (user: User): string => {
     if (UserGroups.CLIENT === user.groups[0] && user.client) {
       return user.client.name;
-    } if (UserGroups.PROVIDER === user.groups[0] && user.provider) {
+    }
+    if (UserGroups.PROVIDER === user.groups[0] && user.provider) {
       return user.provider.name;
     }
     return NOT_APPLICABLE;
   };
 
-  const handleButton = () : void => {
+  const handleButton = (): void => {
     history.replace('/usuarios/nuevo');
   };
 
@@ -220,7 +226,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
               date_joined: moment(user.date_joined).format('YYYY-MM-DD HH:mm'),
               businessName: getBusinessName(user),
             }))
-        }
+          }
           columns={columns}
           actions={[
             {
