@@ -39,3 +39,10 @@ class IsAdmin(CustomBasePermission):
 
 class IsProvider(CustomBasePermission):
     required_groups = [PROVIDER_GROUP]
+
+
+class IsOwnUserOrAdmin(permissions.BasePermission):
+    """Allow only same users or admins"""
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj or _is_in_group(request.user, ADMIN_GROUP)
