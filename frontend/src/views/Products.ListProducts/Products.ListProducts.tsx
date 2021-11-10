@@ -404,7 +404,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                     action: handleOrder,
                     text: 'Ordenar',
                     icon: <ShoppingCartOutlined />,
-                    hidden: (isAdmin || isProvider)
+                    hidden: (isAdmin || isProvider),
                   },
                   {
                     action: changePriceButton,
