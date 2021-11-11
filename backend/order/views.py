@@ -6,7 +6,6 @@ from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
 from rest_framework import generics, status
-import users
 from .serializers import (
     ListRequisitionSerializer, OrderSerializer,
     ListOrderSerializer, CreateRequisitionSerializer
@@ -23,7 +22,7 @@ class ListOrders(generics.ListAPIView):
         if is_client(self.request.user):
             return Order.objects.filter(user=self.request.user)
         elif is_provider(self.request.user):
-            provider=Provider.objects.get(user=self.request.user)
+            provider = Provider.objects.get(user=self.request.user)
             return Order.objects.filter(provider=provider)
         else:
             return Order.objects.all()
@@ -59,7 +58,9 @@ class CreateOrder(APIView):
             data = []
             productOrder = []
             for product in products:
-                relation = ProductProvider.objects.get(pk=product['product']['id'])
+                relation = ProductProvider.objects.get(
+                    pk=product['product']['id']
+                    )
                 if relation.provider.id == provider:
                     data.append({
                         'order': new_order.pk,
