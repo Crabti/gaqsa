@@ -8,7 +8,7 @@ from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
     ListRequisitionSerializer, OrderSerializer,
-    ListOrderSerializer, CreateRequisitionSerializer
+    ListOrderSerializer, CreateRequisitionSerializer, RetrieveOrderSerializer
     )
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
@@ -84,3 +84,10 @@ class ListRequisitions(generics.ListAPIView):
             return Requisition.objects.filter(provider=provider)
         else:
             return Requisition.objects.all()
+
+
+class RetrieveOrderView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = RetrieveOrderSerializer
+
+    # TODO: Add permission only to order provider or client

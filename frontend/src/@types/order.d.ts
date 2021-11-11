@@ -1,10 +1,10 @@
-import { CommonType } from '@types';
+import { CommonType, Product } from '@types';
 
 export interface Requisition {
     id: number;
     order: number;
     provider: number | string;
-    product: number | string;
+    product: number | string | Product;
     quantity_requested: number;
     quantity_accepted: number;
     price: number;

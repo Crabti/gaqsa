@@ -20,6 +20,7 @@ import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
 import ProductsDetail from 'views/Products.Detail';
 import PriceChange from 'views/Products.PriceChange';
+import OrderUpdate from 'views/Orders.Update';
 
 import {
   LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
@@ -115,6 +116,12 @@ const ordersRoutes: Routes = {
     verboseName: 'Realizar pedido',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+  updateOrder: {
+    path: '/pedidos/:id/modificar',
+    view: OrderUpdate,
+    verboseName: 'Modificar pedido',
+    hasAccess: (auth) => auth.isProvider,
   },
 };
 
