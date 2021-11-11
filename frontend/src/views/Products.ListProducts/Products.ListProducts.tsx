@@ -93,26 +93,31 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const onFinish = async () : Promise<void> => {
     setLoading(true);
     if (user) {
-      const [, error] = await backend.orders.createOne({
-        productsSh, user: user.id,
-      });
-      if (!(productsSh === [])) {
-        clear();
+      if (productsSh.length > 0) {
+        const [, error] = await backend.orders.createOne({
+          productsSh, user: user.id,
+        });
         if (error) {
           onFinishFailed();
+          history.replace('/productos/');
         } else {
-          clear();
           notification.success({
             message: '¡Petición de orden creado exitosamente!',
             description: 'Su orden de compra ha sido recibida y será procesada.'
             + 'El proveedor le informará lo mas pronto posible '
             + 'el estatus de su solicitud.',
           });
-          history.replace('/pedidos/historial');
+          history.replace('/pedidos/cliente');
         }
-        setLoading(false);
+      } else {
+        notification.error({
+          message: '¡Carrito de compras vacío!',
+          description: 'Inserte alguna cantidad en algún producto.',
+        });
       }
     }
+    clear();
+    setLoading(false);
   };
 
   const renderLabs = (
