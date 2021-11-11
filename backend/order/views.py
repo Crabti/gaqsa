@@ -6,6 +6,7 @@ from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
 from rest_framework import generics, status
+import users
 from .serializers import (
     ListRequisitionSerializer, OrderSerializer,
     ListOrderSerializer, CreateRequisitionSerializer
@@ -22,10 +23,10 @@ class ListOrders(generics.ListAPIView):
         if is_client(self.request.user):
             return Order.objects.filter(user=self.request.user)
         elif is_provider(self.request.user):
-            return Order.objects.all(user=self.request.user)
+            provider=Provider.objects.get(user=self.request.user)
+            return Order.objects.filter(provider=provider)
         else:
             return Order.objects.all()
-
 
 
 class CreateOrder(APIView):
@@ -33,7 +34,8 @@ class CreateOrder(APIView):
     def post(self, request):
 
         providers = []
-        products = request.data['products']
+        products = request.data['productsSh']
+        print(products)
         for product in products:
             relation = ProductProvider.objects.get(pk=product['product']['id'])
             provider_id = relation.provider.id
@@ -49,14 +51,13 @@ class CreateOrder(APIView):
                     }
             )
             if not order_serializer.is_valid():
-                print("this")
                 return Response(
                     order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
             new_order = order_serializer.save()
 
             data = []
-
+            productOrder = []
             for product in products:
                 relation = ProductProvider.objects.get(pk=product['product']['id'])
                 if relation.provider.id == provider:
@@ -65,6 +66,10 @@ class CreateOrder(APIView):
                         'product': relation.product.id,
                         'quantity_requested': product['amount'],
                         'price': float(product['product']['price'])
+                    })
+                    productOrder.append({
+                        'product': product['product'],
+                        'amount': product['amount']
                     })
 
             print(data)
@@ -80,10 +85,10 @@ class CreateOrder(APIView):
             requisition_serializer.save()
 
             send_mail_on_create_order(
-                new_order, products
+                new_order, productOrder
             )
             send_mail_on_create_order_user(
-                new_order, products
+                new_order, productOrder
             )
 
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)

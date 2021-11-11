@@ -67,6 +67,11 @@ const ListProviderOrders: React.VC = ({ verboseName, parentName }) => {
       },
     },
     {
+      title: 'Cliente',
+      dataIndex: 'user',
+      key: 'user',
+    },
+    {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
@@ -100,6 +105,7 @@ const ListProviderOrders: React.VC = ({ verboseName, parentName }) => {
         data={
           orders.map((order) => ({
             id: order.id,
+            user: order.user,
             created_at: moment(order.created_at).format('YYYY-mm-DD hh:mm'),
           }))
       }

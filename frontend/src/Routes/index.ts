@@ -4,13 +4,10 @@ import {
 import { RouteProps } from 'react-router-dom';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
-import OrderCreateOrder from 'views/Order.CreateOrder';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
-import ListRequisitions from 'views/Orders.ListRequisitions';
-import ListProviders from 'views/Providers.ListProviders';
 import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
 import CreateUser from 'views/Users.CreateForm/Users.CreateForm';
 import ListUsers from 'views/Users.ListUsers/Users.ListUsers';
@@ -22,6 +19,8 @@ import ListClientOrderDetail from 'views/Orders.ListClientOrderDetail';
 import ListClientOrder from 'views/Order.ListClientOrder/Order.ListClientOrder';
 import ListProviderOrders from 'views/Order.ListProviderOrders';
 import PriceChange from 'views/Products.PriceChange';
+import OrderListOrderProviderDetail from 'views/Order.ListOrderProviderDetail';
+import ListProviders from 'views/Providers.ListProviders';
 
 import {
   LIST_PROVIDERS,
@@ -97,18 +96,11 @@ export const productRoutes: Routes = {
 };
 
 const ordersRoutes: Routes = {
-  listOrderHistory: {
+  listOrderClientDetail: {
     path: '/pedidos/cliente/:id',
     view: ListClientOrderDetail,
     verboseName: 'Detalle de orden',
     showInMenu: false,
-    hasAccess: ((auth) => auth.isClient),
-  },
-  createOrder: {
-    path: '/pedidos/create',
-    view: OrderCreateOrder,
-    verboseName: 'Realizar pedido',
-    showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
   },
   listOrder: {
@@ -121,8 +113,15 @@ const ordersRoutes: Routes = {
   listOrderProvider: {
     path: '/pedidos/proveedor',
     view: ListProviderOrders,
-    verboseName: 'Pedidos Recibidos',
+    verboseName: 'Historial de pedidos',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+  },
+  listOrderProviderDetailed: {
+    path: '/pedidos/proveedor/:id',
+    view: OrderListOrderProviderDetail,
+    verboseName: 'Pedido detallado',
+    showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
 };
@@ -156,7 +155,7 @@ const catalogsRoutes: Routes = {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
     verboseName: 'Registrar Categoría',
-    showInMenu: true,
+    showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listCategory: {
@@ -170,7 +169,7 @@ const catalogsRoutes: Routes = {
     path: '/laboratorios/nuevo',
     view: LaboratoryCreateForm,
     verboseName: 'Registrar Laboratorio',
-    showInMenu: true,
+    showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listLaboratory: {

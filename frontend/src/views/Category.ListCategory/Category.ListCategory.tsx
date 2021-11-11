@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
-  Col,
   notification,
 } from 'antd';
 import { useHistory } from 'react-router';
@@ -13,6 +11,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { PlusOutlined } from '@ant-design/icons';
 
 const ListCategory: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -21,7 +20,7 @@ const ListCategory: React.VC = ({ verboseName, parentName }) => {
   // eslint-disable-next-line max-len
   const [category, setCategory] = useState<Category[] | undefined>(undefined);
 
-  const buttonHandler = () :void => {
+  const handleButton = () :void => {
     history.replace('/categorias/nuevo');
   };
 
@@ -64,15 +63,19 @@ const ListCategory: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !category ? <LoadingIndicator /> : (
         <>
-          <Col span={3} push={20}>
-            <Button type="primary" onClick={buttonHandler}> + Agregar</Button>
-          </Col>
           <Table
             rowKey={(row) => `${row.id}`}
             data={category.map((cat) => ({
               key: cat.code.toUpperCase(),
               name: cat.name,
             }))}
+            actions={[
+              {
+                action: handleButton,
+                text: 'Nuevo',
+                icon: <PlusOutlined />,
+              },
+            ]}
             columns={columns}
           />
 
