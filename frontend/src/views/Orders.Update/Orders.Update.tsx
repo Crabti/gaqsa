@@ -64,7 +64,7 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
   ];
 
   const onSubmit = async (): Promise<void> => {
-    const values = await form.validateFields();
+    // const values = await form.validateFields();
     setLoading(true);
     setLoading(false);
   };

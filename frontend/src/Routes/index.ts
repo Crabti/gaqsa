@@ -121,7 +121,7 @@ const ordersRoutes: Routes = {
     path: '/pedidos/:id/modificar',
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
-    hasAccess: (auth) => auth.isProvider,
+    hasAccess: (auth) => auth.isProvider || auth.isAdmin,
   },
 };
 
