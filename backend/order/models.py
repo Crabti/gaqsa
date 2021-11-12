@@ -3,37 +3,39 @@ from users.models import User
 from products.models import Product
 from providers.models import Provider
 
+
 class Requisition(models.Model):
     DELIVERED = 'Entregado'
     PENDING = 'Pendiente'
-    REJECTED = 'Rechazado'
     INCOMPLETE = 'Incompleto'
-    CANCELLED = 'Cancelado',
     STATUSES = [
         (DELIVERED, DELIVERED),
         (PENDING, PENDING),
-        (REJECTED, REJECTED),
         (INCOMPLETE, INCOMPLETE),
-        (CANCELLED, CANCELLED),
     ]
     order = models.ForeignKey("order.Order", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
     quantity_accepted = models.PositiveIntegerField(default=0)
     price = models.FloatField()
+    sent = models.BooleanField(default=False)
 
     @property
     def status(self):
-        if self.quantity_accepted < self.quantity_requested:
+        if not self.sent:
             return Requisition.PENDING
+
+        if self.quantity_accepted < self.quantity_requested:
+            return Requisition.INCOMPLETE
         else:
             return Requisition.DELIVERED
 
 
 class Order(models.Model):
-    ACCEPTED = 'Entregado'
+    DELIVERED = 'Entregado'
     CANCELLED = 'Cancelado'
     INCOMPLETE = 'Incompleto'
+    PENDING = 'Pendiente'
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -51,15 +53,21 @@ class Order(models.Model):
             return Order.CANCELLED
 
         received = self.requisition_set.all()
-        received_count = 0
+        sent_count = 0
+        incomplete_found = False
         for requisition in received:
-            if requisition.status == Requisition.DELIVERED:
-                received_count = received_count + 1
+            if requisition.sent:
+                sent_count = sent_count + 1
+                if requisition.status == Requisition.INCOMPLETE:
+                    incomplete_found = True
 
-        if received_count >= len(self.requisitions):
-            return Order.ACCEPTED
+        if sent_count >= len(self.requisitions):
+            if incomplete_found:
+                return Order.INCOMPLETE
+            else:
+                return Order.DELIVERED
         else:
-            return Order.INCOMPLETE
+            return Order.PENDING
 
     def __str__(self):
         return f"{self.created_at} - {self.user} \

@@ -128,8 +128,12 @@ class ListRequisitions(BaseTestCase):
 class UpdateOrderRequisitions(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.order = OrderFactory.create(user=self.provider_user)
         self.provider = ProviderFactory.create(user=self.provider_user)
+
+        self.order = OrderFactory.create(
+            user=self.provider_user,
+            provider=self.provider,
+        )
         category = CategoryFactory.create()
         product = ProductFactory.create(
             category=category,
@@ -138,7 +142,6 @@ class UpdateOrderRequisitions(BaseTestCase):
 
         self.requisitions = RequisitionFactory.create_batch(
             self.requisitions_per_order,
-            provider=self.provider,
             order=self.order,
             product=product,
             quantity_requested=3,
@@ -147,14 +150,16 @@ class UpdateOrderRequisitions(BaseTestCase):
         self.valid_payload = json.dumps([
             {
                 "requisition": requisition.id,
-                "quantity_accepted": 3
+                "quantity_accepted": 3,
+                "sent": True,
             }
             for requisition in self.requisitions
         ])
         self.incomplete_payload = json.dumps([
             {
                 "requisition": requisition.id,
-                "quantity_accepted": 1
+                "quantity_accepted": 1,
+                "sent": True,
             }
             for requisition in self.requisitions
         ])
@@ -176,7 +181,7 @@ class UpdateOrderRequisitions(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_update_order_requisitions_incomplete(self) -> None:
-        self.assertEqual(self.order.status, Order.INCOMPLETE)
+        self.assertEqual(self.order.status, Order.PENDING)
         response = self.provider_client.patch(
             reverse("update_order", kwargs={'pk': self.order.pk}),
             data=self.incomplete_payload,
@@ -186,11 +191,11 @@ class UpdateOrderRequisitions(BaseTestCase):
         self.assertEqual(self.order.status, Order.INCOMPLETE)
 
     def test_update_order_requisitions(self) -> None:
-        self.assertEqual(self.order.status, Order.INCOMPLETE)
+        self.assertEqual(self.order.status, Order.PENDING)
         response = self.provider_client.patch(
             reverse("update_order", kwargs={'pk': self.order.pk}),
             data=self.valid_payload,
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(self.order.status, Order.ACCEPTED)
+        self.assertEqual(self.order.status, Order.DELIVERED)

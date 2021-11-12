@@ -1,5 +1,5 @@
 # from django.http import request
-from backend.utils.permissions import IsProvider
+from backend.utils.permissions import IsOwnProviderOrAdmin
 from order.mails import (
     send_mail_on_create_order, send_mail_on_create_order_user)
 from products.models import ProductProvider
@@ -15,6 +15,7 @@ from .serializers import (
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.request import Request
 
 
 class ListOrders(generics.ListAPIView):
@@ -110,10 +111,14 @@ class RetrieveOrderView(generics.RetrieveAPIView):
     serializer_class = RetrieveOrderSerializer
 
 
-class UpdateOrderRequisitionsView(APIView):
-    permission_classes = (IsProvider, )
+class UpdateOrderRequisitionsView(generics.UpdateAPIView):
+    permission_classes = [IsOwnProviderOrAdmin]
+    serializer_class = UpdateOrderQuantitySerializer
+    lookup_field = 'pk'
+    queryset = Order.objects.all()
 
-    def patch(self, request, pk) -> Response:
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        self.get_object()
         for data in request.data:
             requisition: Requisition = Requisition.objects.get(
                 pk=data['requisition']
@@ -123,7 +128,7 @@ class UpdateOrderRequisitionsView(APIView):
                     {"code": "REQUISIITON NOT FOUND"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            serializer = UpdateOrderQuantitySerializer(
+            serializer = self.get_serializer(
                 requisition,
                 data=data,
                 partial=True

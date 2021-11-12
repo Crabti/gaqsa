@@ -24,6 +24,7 @@ class NestedRequisitionSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='name',
     )
+    status = serializers.ReadOnlyField()
 
     product = ProductSerializer()
 
@@ -68,7 +69,8 @@ class ListOrderSerializer(serializers.ModelSerializer):
             'requisitions',
             'status',
             'user',
-            'created_at'
+            'created_at',
+            'provider'
         )
 
 
@@ -93,6 +95,10 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
     requisitions = NestedRequisitionSerializer(many=True)
 
     status = serializers.ReadOnlyField()
@@ -104,7 +110,8 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             'requisitions',
             'status',
             'user',
-            'created_at'
+            'created_at',
+            'provider'
         )
 
 
@@ -113,4 +120,5 @@ class UpdateOrderQuantitySerializer(serializers.ModelSerializer):
         model = Requisition
         fields = (
             'quantity_accepted',
+            'sent'
         )
