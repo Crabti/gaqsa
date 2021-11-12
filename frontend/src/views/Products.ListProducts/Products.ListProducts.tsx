@@ -95,7 +95,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     if (user) {
       if (productsSh.length > 0) {
         const [, error] = await backend.orders.createOne({
-          productsSh, user: user.id,
+          productsSh,
         });
         if (error) {
           onFinishFailed();
