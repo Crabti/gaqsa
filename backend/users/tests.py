@@ -365,3 +365,40 @@ class ToggleUserActive(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.active_user.refresh_from_db(fields=["is_active"])
         self.assertEqual(self.active_user.is_active, False)
+
+
+class RetrieveUser(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.expected_user: User = self.admin_user
+
+    def test_get_user_with_existing_pk_should_return_user(self) -> None:
+        response = self.admin_client.get(
+            reverse("retrieve_user", kwargs={"pk": self.expected_user.pk}),
+            content_type="application/json",
+        )
+        user_response = json.loads(json.dumps(response.data))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(user_response["id"], self.expected_user.pk)
+        self.assertEqual(user_response["email"], self.expected_user.email)
+
+    def test_get_user_with_no_admin_group_should_return_unauthorized(
+        self
+    ) -> None:
+        response = self.service_client.get(
+            reverse("retrieve_user", kwargs={"pk": self.expected_user.pk}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_get_user_with_non_existing_pk_should_return_not_found(
+        self
+    ) -> None:
+        response = self.admin_client.get(
+            reverse("retrieve_user", kwargs={"pk": 1234}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
