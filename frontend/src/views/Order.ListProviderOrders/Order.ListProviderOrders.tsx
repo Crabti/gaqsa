@@ -2,7 +2,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
+  Col,
   notification,
+  Row,
   Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
@@ -15,10 +17,10 @@ import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
 import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
-import {
-  Actions,
-} from 'views/Products.ListProducts/Products.ListProducts.styled';
+
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
+import OrderStatusTag from 'components/OrderStatusTag';
+import { EditOutlined } from '@ant-design/icons';
 
 const ListProviderOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -72,23 +74,42 @@ const ListProviderOrders: React.VC = ({ verboseName, parentName }) => {
       key: 'user',
     },
     {
+      title: 'Estado',
+      dataIndex: 'status',
+      key: 'status,',
+      render: (status: string) => <OrderStatusTag status={status} />,
+    },
+    {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
       render: (_: number, order: Order) => (
-        <Actions>
+        <Row gutter={10} justify="center">
           { !SHOW_BUTTON_CANCEL_ORDER && (
-          <Tooltip title="Ver detalles">
-            <Button
-              shape="circle"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                history.push(`/pedidos/proveedor/${order.id}`);
-              }}
-            />
-          </Tooltip>
+            <Col>
+              <Tooltip title="Ver detalles">
+                <Button
+                  shape="circle"
+                  icon={<SearchOutlined />}
+                  onClick={() => {
+                    history.push(`/pedidos/proveedor/${order.id}`);
+                  }}
+                />
+              </Tooltip>
+            </Col>
           )}
-        </Actions>
+          <Col>
+            <Tooltip title="Modificar pedido">
+              <Button
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  history.push(`/pedidos/proveedor/${order.id}/modificar`);
+                }}
+              />
+            </Tooltip>
+          </Col>
+        </Row>
       ),
     },
   ];
@@ -107,6 +128,7 @@ const ListProviderOrders: React.VC = ({ verboseName, parentName }) => {
             id: order.id,
             user: order.user,
             created_at: moment(order.created_at).format('YYYY-mm-DD hh:mm'),
+            status: order.status,
           }))
       }
         columns={columns}

@@ -34,12 +34,15 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
     },
     {
       label: 'Proveedor',
-      // TODO: Add provider info once model changes
-      value: 'COMERCIALIZADORA',
+      value: (order.provider as string),
     },
     {
       label: 'Fecha de creación',
       value: moment(order.created_at).format('YYYY-MM-dd'),
+    },
+    {
+      label: 'Estado',
+      value: order.status,
     },
   ];
 

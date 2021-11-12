@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   notification,
-  Tag,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -12,6 +11,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import RequisitionStatusTag from 'components/RequisitionStatusTag';
 
 const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -65,28 +65,7 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        let color = '';
-        switch (status) {
-          case 'Pendiente':
-            color = 'yellow';
-            break;
-          case 'Aceptado':
-            color = 'green';
-            break;
-          case 'Rechazado':
-            color = 'red';
-            break;
-          default:
-            color = 'blue';
-            break;
-        }
-        return (
-          <Tag key={status} color={color}>
-            {status.toUpperCase()}
-          </Tag>
-        );
-      },
+      render: (status: string) => <RequisitionStatusTag status={status} />,
     },
   ];
 

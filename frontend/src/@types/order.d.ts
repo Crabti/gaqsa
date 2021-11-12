@@ -9,6 +9,7 @@ export interface Requisition {
     quantity_accepted: number;
     price: number;
     status: string;
+    sent: boolean;
 }
 
 export interface Order extends CommonType {
@@ -17,6 +18,7 @@ export interface Order extends CommonType {
     created_at: Date;
     requisitions: Requisition[];
     provider: string | Provider;
+    status: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -3,18 +3,18 @@ import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
   notification,
-  Tag,
 } from 'antd';
 import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
-  Order,
+  Order, Product,
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
 import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
+import RequisitionStatusTag from 'components/RequisitionStatusTag';
 
 const ListClientOrdersDetail: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -92,28 +92,7 @@ const ListClientOrdersDetail: React.VC = ({ verboseName, parentName }) => {
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        let color = '';
-        switch (status) {
-          case 'Pendiente':
-            color = 'yellow';
-            break;
-          case 'Aceptado':
-            color = 'green';
-            break;
-          case 'Rechazado':
-            color = 'red';
-            break;
-          default:
-            color = 'blue';
-            break;
-        }
-        return (
-          <Tag key={status} color={color}>
-            {status.toUpperCase()}
-          </Tag>
-        );
-      },
+      render: (status: string) => <RequisitionStatusTag status={status} />,
     },
     {
       title: 'Acciones',
@@ -137,31 +116,21 @@ const ListClientOrdersDetail: React.VC = ({ verboseName, parentName }) => {
     return <LoadingIndicator />;
   }
 
-  const listItems = () : any => {
-    const list : any[] = [];
-    orders.requisitions.forEach((requisition) => {
-      list.push({
-        order: orders.id.toString(),
-        created_at: moment(orders.created_at).format('YYYY-mm-DD hh:mm'),
-        provider: requisition.provider,
-        product: requisition.product,
-        quantity_requested: requisition.quantity_requested,
-        quantity_accepted: requisition.quantity_accepted,
-        price: `$ ${requisition.price.toFixed(2)}`,
-        status: requisition.status,
-      });
-    });
-    return list;
-  };
-
-  // order: `Pedido ${order.id.toString()}
-  // - ${moment(order.created_at).format('YYYY-mm-DD hh:mm')}`,
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       <Table
         rowKey={(row) => row.id}
-        data={listItems()}
+        data={orders.requisitions.map((requisition) => ({
+          order: orders.id.toString(),
+          created_at: moment(orders.created_at).format('YYYY-mm-DD hh:mm'),
+          provider: requisition.provider,
+          product: (requisition.product as Product).name,
+          quantity_requested: requisition.quantity_requested,
+          quantity_accepted: requisition.quantity_accepted,
+          price: `$ ${requisition.price.toFixed(2)}`,
+          status: requisition.status,
+        }))}
         columns={columns}
       />
     </Content>

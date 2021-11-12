@@ -112,7 +112,7 @@ const ordersRoutes: Routes = {
     hasAccess: ((auth) => auth.isClient),
   },
   updateOrder: {
-    path: '/pedidos/:id/modificar',
+    path: '/pedidos/proveedor/:id/modificar',
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
     hasAccess: (auth) => auth.isProvider || auth.isAdmin,

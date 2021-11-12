@@ -13,18 +13,39 @@ interface Props {
   order: Order;
 }
 
+interface OrderUpdateForm {
+  quantity_accepted: number;
+  requisition: number;
+  sent: boolean;
+}
+
 const OrderUpdate: React.FC<Props> = ({ order }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
   const backend = useBackend();
   const history = useHistory();
+  const initialSentRequisitons = order.requisitions.filter(
+    (requisition) => requisition.sent,
+  );
+  const initialSelected = initialSentRequisitons.map(
+    (requisition) => requisition.id,
+  );
+  const [
+    selectedRowKeys,
+    setSelected,
+  ] = useState(initialSelected);
+
+  const onSelectChange = (rows : any) : void => {
+    setSelected(rows);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+    columnTitle: 'Surtido',
+  };
 
   const columns = [
-    {
-      title: 'Clave',
-      dataIndex: 'key',
-      key: 'key',
-    },
     {
       title: 'Producto',
       dataIndex: 'name',
@@ -53,9 +74,12 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
         <>
           <Form.Item
             name={['requisitions', index, 'quantity_accepted']}
-            initialValue={0}
+            initialValue={data.quantity_accepted}
           >
-            <InputNumber max={data.quantity_requested} />
+            <InputNumber
+              max={data.quantity_requested}
+              min={0}
+            />
           </Form.Item>
           <Form.Item
             hidden
@@ -69,8 +93,13 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
 
   const onSubmit = async (): Promise<void> => {
     const values = await form.validateFields();
+    const payload = values.requisitions.map((data: OrderUpdateForm) => ({
+      ...data,
+      sent: selectedRowKeys.find(
+        (id: number) => id === data.requisition,
+      ) !== undefined,
+    }));
     setLoading(true);
-    const payload = values.requisitions;
     const [, error] = await backend.orders.patch(
       `${order.id}/update`,
       payload,
@@ -83,7 +112,7 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
       notification.success({
         message: 'Se ha modificado el pedido exitosamente.',
       });
-      history.replace('/pedidos');
+      history.replace(`/pedidos/proveedor/${order.id}`);
     }
     setLoading(false);
   };
@@ -96,11 +125,11 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
         <Table
           rowKey={(row) => row.id}
           columns={columns}
+          selection={rowSelection}
           data={
           order.requisitions.map((requisition) => ({
             id: requisition.id,
             name: (requisition.product as Product).name,
-            key: (requisition.product as Product).key,
             active_substance: (requisition.product as Product).active_substance,
             presentation: (requisition.product as Product).presentation,
             quantity_accepted: requisition.quantity_accepted,
