@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from users.factories.user import UserFactory
 from backend.utils.tests import BaseTestCase
 import json
@@ -31,7 +30,7 @@ class ListOrderTest(BaseTestCase):
         # Create multiple orders with random users and a list of requisitions
         for i in range(self.orders_amount):
             user = UserFactory.create()
-            order = OrderFactory.create(user=user,provider=provider)
+            order = OrderFactory.create(user=user, provider=provider)
             RequisitionFactory.create_batch(
                 requisitions_per_order,
                 order=order,
@@ -57,7 +56,9 @@ class ListOrderTest(BaseTestCase):
     def test_list_client_history_orders(self) -> None:
         other_user = UserFactory.create()
         provider = ProviderFactory.create(user=other_user)
-        my_orders = OrderFactory.create_batch(5, user=self.client_user, provider=provider)
+        my_orders = OrderFactory.create_batch(
+            5, user=self.client_user, provider=provider
+        )
         response = self.service_client.get(
             reverse("list_order"),
             content_type="application/json",
