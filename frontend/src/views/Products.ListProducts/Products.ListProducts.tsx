@@ -90,7 +90,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     });
   };
 
-  const onFinish = async () : Promise<void> => {
+  const createOrder = async () : Promise<void> => {
     setLoading(true);
     if (user) {
       if (productsSh.length > 0) {
@@ -502,7 +502,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 columns={columns}
                 actions={[
                   {
-                    action: onFinish,
+                    action: createOrder,
                     text: 'Ordenar',
                     icon: <ShoppingCartOutlined />,
                     hidden: (isAdmin || isProvider),
