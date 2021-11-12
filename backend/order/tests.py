@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from users.factories.user import UserFactory
 from backend.utils.tests import BaseTestCase
 import json
@@ -30,10 +31,9 @@ class ListOrderTest(BaseTestCase):
         # Create multiple orders with random users and a list of requisitions
         for i in range(self.orders_amount):
             user = UserFactory.create()
-            order = OrderFactory.create(user=user)
+            order = OrderFactory.create(user=user,provider=provider)
             RequisitionFactory.create_batch(
                 requisitions_per_order,
-                provider=provider,
                 order=order,
                 product=product
             )
@@ -55,7 +55,9 @@ class ListOrderTest(BaseTestCase):
         self.assertEqual(len(result), self.orders_amount)
 
     def test_list_client_history_orders(self) -> None:
-        my_orders = OrderFactory.create_batch(5, user=self.client_user)
+        other_user = UserFactory.create()
+        provider = ProviderFactory.create(user=other_user)
+        my_orders = OrderFactory.create_batch(5, user=self.client_user, provider=provider)
         response = self.service_client.get(
             reverse("list_order"),
             content_type="application/json",
@@ -68,7 +70,7 @@ class ListOrderTest(BaseTestCase):
 class ListRequisitions(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        order = OrderFactory.create(user=self.provider_user)
+        user = UserFactory.create()
         self.provider = ProviderFactory.create(user=self.provider_user)
         category = CategoryFactory.create()
         product = ProductFactory.create(
@@ -83,10 +85,9 @@ class ListRequisitions(BaseTestCase):
         # Order and requisitiosn from other provider
         for i in range(self.orders_amount):
             user = UserFactory.create()
-            order = OrderFactory.create(user=user)
+            order = OrderFactory.create(user=user, provider=other_provider)
             RequisitionFactory.create_batch(
                 self.requisitions_per_order,
-                provider=other_provider,
                 order=order,
                 product=product
             )
@@ -94,10 +95,9 @@ class ListRequisitions(BaseTestCase):
         # Orders with my requistiions
         for i in range(self.orders_amount):
             user = UserFactory.create()
-            order = OrderFactory.create(user=user)
+            order = OrderFactory.create(user=user, provider=self.provider)
             RequisitionFactory.create_batch(
                 self.requisitions_per_order,
-                provider=self.provider,
                 order=order,
                 product=product
             )
@@ -109,15 +109,15 @@ class ListRequisitions(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
-    def test_list_provider_requisitions(self) -> None:
+    def test_list_provider_order(self) -> None:
         response = self.provider_client.get(
-            reverse("list_requisitions"),
+            reverse("list_order"),
             content_type="application/json",
         )
         result = json.loads(json.dumps(response.data))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
-            len(result), self.orders_amount * self.requisitions_per_order
+            len(result), self.orders_amount
         )
-        for requisition in result:
-            self.assertEqual(requisition['provider'], self.provider.name)
+        for order in result:
+            self.assertEqual(order['provider'], self.provider.name)
