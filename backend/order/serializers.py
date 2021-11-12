@@ -102,3 +102,11 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             'user',
             'created_at'
         )
+
+
+class UpdateOrderQuantitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requisition
+        fields = (
+            'quantity_accepted',
+        )

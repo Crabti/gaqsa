@@ -34,6 +34,7 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
     },
     {
       label: 'Proveedor',
+      // TODO: Add provider info once model changes
       value: 'COMERCIALIZADORA',
     },
     {

@@ -1,3 +1,4 @@
+from order.models import Order
 from users.factories.user import UserFactory
 from backend.utils.tests import BaseTestCase
 import json
@@ -121,3 +122,74 @@ class ListRequisitions(BaseTestCase):
         )
         for requisition in result:
             self.assertEqual(requisition['provider'], self.provider.name)
+
+
+class UpdateOrderRequisitions(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.order = OrderFactory.create(user=self.provider_user)
+        self.provider = ProviderFactory.create(user=self.provider_user)
+        category = CategoryFactory.create()
+        product = ProductFactory.create(
+            category=category,
+        )
+        self.requisitions_per_order = 3
+
+        self.requisitions = RequisitionFactory.create_batch(
+            self.requisitions_per_order,
+            provider=self.provider,
+            order=self.order,
+            product=product,
+            quantity_requested=3,
+            quantity_accepted=0,
+        )
+        self.valid_payload = json.dumps([
+            {
+                "requisition": requisition.id,
+                "quantity_accepted": 3
+            }
+            for requisition in self.requisitions
+        ])
+        self.incomplete_payload = json.dumps([
+            {
+                "requisition": requisition.id,
+                "quantity_accepted": 1
+            }
+            for requisition in self.requisitions
+        ])
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.patch(
+            reverse("update_order", kwargs={'pk': self.order.pk}),
+            data=self.valid_payload,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_provider_role(self) -> None:
+        response = self.service_client.patch(
+            reverse("update_order", kwargs={'pk': self.order.pk}),
+            data=self.valid_payload,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_update_order_requisitions_incomplete(self) -> None:
+        self.assertEqual(self.order.status, Order.INCOMPLETE)
+        response = self.provider_client.patch(
+            reverse("update_order", kwargs={'pk': self.order.pk}),
+            data=self.incomplete_payload,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(self.order.status, Order.INCOMPLETE)
+
+    def test_update_order_requisitions(self) -> None:
+        self.assertEqual(self.order.status, Order.INCOMPLETE)
+        response = self.provider_client.patch(
+            reverse("update_order", kwargs={'pk': self.order.pk}),
+            data=self.valid_payload,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(self.order.status, Order.ACCEPTED)

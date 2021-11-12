@@ -24,7 +24,6 @@ const ListRequisitions: React.VC = ({ verboseName, parentName }) => {
     setLoading(true);
 
     const [result, error] = await backend.requisitions.getAll();
-
     if (error || !result) {
       notification.error({
         message: 'Ocurrió un error al cargar los pedidos!',

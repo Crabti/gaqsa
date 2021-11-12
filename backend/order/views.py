@@ -1,4 +1,5 @@
 # from django.http import request
+from backend.utils.permissions import IsProvider
 from order.mails import (
     send_mail_on_create_order, send_mail_on_create_order_user)
 from products.models import ProductProvider
@@ -8,8 +9,9 @@ from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
     ListRequisitionSerializer, OrderSerializer,
-    ListOrderSerializer, CreateRequisitionSerializer, RetrieveOrderSerializer
-    )
+    ListOrderSerializer, CreateRequisitionSerializer,
+    RetrieveOrderSerializer, UpdateOrderQuantitySerializer
+)
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -91,3 +93,32 @@ class RetrieveOrderView(generics.RetrieveAPIView):
     serializer_class = RetrieveOrderSerializer
 
     # TODO: Add permission only to order provider or client
+
+
+class UpdateOrderRequisitionsView(APIView):
+    permission_classes = (IsProvider, )
+
+    def patch(self, request, pk) -> Response:
+        for data in request.data:
+            requisition: Requisition = Requisition.objects.get(
+                pk=data['requisition']
+            )
+            if not requisition:
+                return Response(
+                    {"code": "REQUISIITON NOT FOUND"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = UpdateOrderQuantitySerializer(
+                requisition,
+                data=data,
+                partial=True
+            )
+
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

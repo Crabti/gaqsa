@@ -4,8 +4,10 @@ import OrderSummary from 'components/OrderSummary';
 import { Content } from 'antd/lib/layout/layout';
 import { Order, Product } from '@types';
 import Table from 'components/Table';
-import { InputNumber, Form } from 'antd';
+import { InputNumber, Form, notification } from 'antd';
 import FormButton from 'components/FormButton';
+import { useBackend } from 'integrations';
+import { useHistory } from 'react-router';
 
 interface Props {
   order: Order;
@@ -14,6 +16,8 @@ interface Props {
 const OrderUpdate: React.FC<Props> = ({ order }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
+  const backend = useBackend();
+  const history = useHistory();
 
   const columns = [
     {
@@ -56,7 +60,7 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
           <Form.Item
             hidden
             initialValue={data.id}
-            name={['requisitions', index, 'product']}
+            name={['requisitions', index, 'requisition']}
           />
         </>
       ),
@@ -64,8 +68,23 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
   ];
 
   const onSubmit = async (): Promise<void> => {
-    // const values = await form.validateFields();
+    const values = await form.validateFields();
     setLoading(true);
+    const payload = values.requisitions;
+    const [, error] = await backend.orders.patch(
+      `${order.id}/update`,
+      payload,
+    );
+    if (error) {
+      notification.error({
+        message: 'Ocurrio un error al enviar los cambios.',
+      });
+    } else {
+      notification.success({
+        message: 'Se ha modificado el pedido exitosamente.',
+      });
+      history.replace('/pedidos');
+    }
     setLoading(false);
   };
 

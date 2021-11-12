@@ -26,7 +26,7 @@ class Requisition(models.Model):
 
     @property
     def status(self):
-        if self.quantity_accepted > self.quantity_requested:
+        if self.quantity_accepted < self.quantity_requested:
             return Requisition.PENDING
         else:
             return Requisition.DELIVERED
