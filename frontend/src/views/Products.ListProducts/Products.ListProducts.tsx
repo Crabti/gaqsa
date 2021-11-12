@@ -112,7 +112,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       } else {
         notification.error({
           message: '¡Carrito de compras vacío!',
-          description: 'Inserte alguna cantidad en algún producto.',
+          description: 'Inserte alguna cantidad en algún producto que requiera',
         });
       }
     }
