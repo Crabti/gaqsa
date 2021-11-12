@@ -11,6 +11,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { PlusOutlined } from '@ant-design/icons';
 
 const ListLaboratory: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -40,6 +41,10 @@ const ListLaboratory: React.VC = ({ verboseName, parentName }) => {
     fetchLaboratory();
   }, [history, fetchLaboratory]);
 
+  const handleButton = () : void => {
+    history.replace('/laboratorios/nuevo');
+  };
+
   const columns = [
     {
       title: 'Nombre',
@@ -57,9 +62,15 @@ const ListLaboratory: React.VC = ({ verboseName, parentName }) => {
           data={
               laboratory.map((lab) => ({
                 name: lab.name,
-
               }))
           }
+          actions={[
+            {
+              action: handleButton,
+              text: 'Nuevo',
+              icon: <PlusOutlined />,
+            },
+          ]}
           columns={columns}
         />
       )}

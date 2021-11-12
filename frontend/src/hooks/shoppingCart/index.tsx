@@ -23,7 +23,7 @@ export interface ShoppingCartProductType {
 }
 
 export interface ShoppingCartType {
-    products: ShoppingCartProductType[];
+    productsSh: ShoppingCartProductType[];
     subtotal: number;
     subieps: number;
     subiva: number;
@@ -42,14 +42,14 @@ export const ShoppingCartContext = (
 
 export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   const [loaded, setLoaded] = useState<boolean>(false);
-  const [products, setProducts] = useState<ShoppingCartProductType[]>([]);
+  const [productsSh, setProductsSh] = useState<ShoppingCartProductType[]>([]);
   const [total, setTotal] = useState<ShoppingCartType['total']>(0);
   const [subtotal, setSubtotal] = useState<ShoppingCartType['subtotal']>(0);
   const [subieps, setSubieps] = useState<ShoppingCartType['subieps']>(0);
   const [subiva, setSubiva] = useState<ShoppingCartType['subiva']>(0);
 
   const persistProducts = (newProducts: ShoppingCartProductType[]): void => {
-    setProducts(newProducts);
+    setProductsSh(newProducts);
 
     let newSubtotal = 0;
     let newIeps = 0;
@@ -81,20 +81,20 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   };
 
   const addProducts = (newProduct: ShoppingCartProductType): void => {
-    if (products.some((e) => e.product.id === newProduct.product.id)) {
+    if (productsSh.some((e) => e.product.id === newProduct.product.id)) {
       persistProducts(
-        products.map((e) => (e.product.id === newProduct.product.id
-          ? { ...e, amount: e.amount + newProduct.amount }
+        productsSh.map((e) => (e.product.id === newProduct.product.id
+          ? { ...e, amount: newProduct.amount }
           : e)),
       );
       return;
     }
-    persistProducts([...products, newProduct]);
+    persistProducts([...productsSh, newProduct]);
   };
 
   const removeProducts = (newProduct: ShoppingCartProductType): void => {
     persistProducts(
-      products.filter((e) => newProduct.product.id !== e.product.id),
+      productsSh.filter((e) => newProduct.product.id !== e.product.id),
     );
   };
 
@@ -102,13 +102,13 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
     const stored = localStorage.getItem('shoppingCart');
     if (stored) {
       const parsedStored = JSON.parse(stored);
-      setProducts(parsedStored.products);
+      setProductsSh(parsedStored.products);
       setTotal(parsedStored.total);
       setSubieps(parsedStored.subieps);
       setSubiva(parsedStored.subiva);
       setSubtotal(parsedStored.subtotal);
     } else {
-      setProducts([]);
+      setProductsSh([]);
     }
     setLoaded(true);
   };
@@ -126,7 +126,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   return (
     <ShoppingCartContext.Provider value={{
       // eslint-disable-next-line max-len
-      products, total, addProducts, removeProducts, clear, subieps, subiva, subtotal,
+      productsSh, total, addProducts, removeProducts, clear, subieps, subiva, subtotal,
     }}
     >
       {children}

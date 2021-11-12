@@ -21,6 +21,9 @@ class ListOrders(generics.ListAPIView):
     def get_queryset(self):
         if is_client(self.request.user):
             return Order.objects.filter(user=self.request.user)
+        elif is_provider(self.request.user):
+            provider = Provider.objects.get(user=self.request.user)
+            return Order.objects.filter(provider=provider)
         else:
             return Order.objects.all()
 
@@ -29,49 +32,64 @@ class CreateOrder(APIView):
 
     def post(self, request):
 
-        # TODO: Create orders by providers
-        order_serializer = OrderSerializer(
-            data={"user": request.user.pk}
-        )
-        if not order_serializer.is_valid():
-            return Response(
-                order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
-        new_order = order_serializer.save()
-
-        data = []
         providers = []
-        products = request.data['products']
+        products = request.data['productsSh']
         for product in products:
             relation = ProductProvider.objects.get(pk=product['product']['id'])
             provider_id = relation.provider.id
-            data.append({
-                'order': new_order.pk,
-                'provider': provider_id,
-                'product': relation.product.id,
-                'quantity_requested': product['amount'],
-                'price': float(product['product']['price'])
-            })
             if provider_id not in providers:
                 providers.append(provider_id)
 
-        requisition_serializer = CreateRequisitionSerializer(
-            data=data, many=True
+        for provider in providers:
+            # TODO: Create orders by providers
+            order_serializer = OrderSerializer(
+                data={
+                    "user": request.user.pk,
+                    "provider": provider
+                    }
             )
-        if not requisition_serializer.is_valid():
-            return Response(
-                requisition_serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+            if not order_serializer.is_valid():
+                return Response(
+                    order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+            new_order = order_serializer.save()
+
+            data = []
+            productOrder = []
+            for product in products:
+                relation = ProductProvider.objects.get(
+                    pk=product['product']['id']
+                    )
+                if relation.provider.id == provider:
+                    data.append({
+                        'order': new_order.pk,
+                        'product': relation.product.id,
+                        'quantity_requested': product['amount'],
+                        'price': float(product['product']['price'])
+                    })
+                    productOrder.append({
+                        'product': product['product'],
+                        'amount': product['amount']
+                    })
+
+            requisition_serializer = CreateRequisitionSerializer(
+                data=data, many=True
                 )
+            if not requisition_serializer.is_valid():
+                return Response(
+                    requisition_serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
 
-        requisition_serializer.save()
+            requisition_serializer.save()
 
-        send_mail_on_create_order(
-            new_order, providers, products
-        )
-        send_mail_on_create_order_user(
-            new_order, products
-        )
+            send_mail_on_create_order(
+                new_order, productOrder
+            )
+            send_mail_on_create_order_user(
+                new_order, productOrder
+            )
+
         return Response(order_serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -84,3 +102,8 @@ class ListRequisitions(generics.ListAPIView):
             return Requisition.objects.filter(provider=provider)
         else:
             return Requisition.objects.all()
+
+
+class RetrieveOrderView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = ListOrderSerializer

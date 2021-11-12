@@ -35,6 +35,10 @@ class ListOrderSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
     requisitions = RequisitionSerializer(
         many=True,
         read_only=True,
