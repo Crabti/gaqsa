@@ -52,7 +52,6 @@ class IsOwnerOrAdmin(permissions.BasePermission):
     """Allow only same users or admins"""
 
     def has_object_permission(self, request, view, obj):
-        print(obj)
         return request.user == obj.user or _is_in_group(
             request.user, ADMIN_GROUP
         )
