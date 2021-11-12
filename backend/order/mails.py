@@ -10,9 +10,7 @@ def send_mail_on_create_order(order, products):
     connection = mail.get_connection(fail_silently=True)
     connection.open()
     emails = []
-    print("aqui ")
     provider = Provider.objects.get(pk=order.provider.pk)
-    print("aqui 2")
     title = f"Orden de compra - {order.pk} - Socio { order.user } "
     subject = f"GAQSA - {title}"
     context = {
