@@ -72,7 +72,6 @@ class CreateOrder(APIView):
                         'amount': product['amount']
                     })
 
-            print(data)
             requisition_serializer = CreateRequisitionSerializer(
                 data=data, many=True
                 )
