@@ -34,7 +34,6 @@ class CreateOrder(APIView):
 
         providers = []
         products = request.data['productsSh']
-        print(products)
         for product in products:
             relation = ProductProvider.objects.get(pk=product['product']['id'])
             provider_id = relation.provider.id
