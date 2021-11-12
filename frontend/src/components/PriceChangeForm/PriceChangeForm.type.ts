@@ -7,6 +7,6 @@ interface Props {
     onFinishFailed: (values: any) => void;
     products?: Product[];
     isLoading: boolean;
-  }
+}
 
 export default Props;

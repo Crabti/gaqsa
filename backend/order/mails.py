@@ -11,7 +11,8 @@ def send_mail_on_create_order(order, providers, products):
     connection.open()
     emails = []
 
-    for provider in providers:
+    for id in providers:
+        provider = Provider.objects.get(pk=id)
         title = f"Orden de compra - {order.pk} - Socio { order.user } "
         subject = f"GAQSA - {title}"
         context = {
@@ -20,7 +21,7 @@ def send_mail_on_create_order(order, providers, products):
             "provider": provider,
             "products": products
         }
-        user = Provider.objects.get(name=provider).user
+        user = provider.user
 
         provider_emails = list(UserEmail.objects.filter(
             user=user, category=UserEmail.ORDERS

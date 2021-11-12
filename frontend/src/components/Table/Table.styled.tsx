@@ -10,4 +10,7 @@ export const Table = styled(TableAntd)`
   .ant-table.ant-table-small tfoot > tr > td {
     padding: 2px 8px;
   }
+  .ant-table-cell .ant-row button {
+    margin: 0.25em 0px 0.25em 0px;
+  }
 `;

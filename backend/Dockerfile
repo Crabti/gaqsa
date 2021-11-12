@@ -9,8 +9,10 @@ ENV WAIT_VERSION 2.7.2
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
 RUN chmod +x /wait
 
-RUN pip3 install poetry
-RUN pip3 install mysqlclient
+RUN pip install --upgrade pip
+
+RUN pip install poetry
+RUN pip install mysqlclient
 RUN poetry config virtualenvs.create false
 COPY poetry.lock pyproject.toml /app/backend/
 RUN poetry install

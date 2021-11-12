@@ -13,7 +13,7 @@ class CreateOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
         fields = (
-            "product",
+            "product_provider",
             "discount_percentage",
             "ending_at",
         )

@@ -11,7 +11,7 @@ export interface Offer extends CommonType {
 
 export interface CreateOfferForm {
     discount_percentage: number;
-    product: number;
+    product_provider: number;
     ending_at: string;
     newPrice?: number;
 }

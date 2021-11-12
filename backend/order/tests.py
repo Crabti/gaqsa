@@ -2,7 +2,6 @@ from users.factories.user import UserFactory
 from backend.utils.tests import BaseTestCase
 import json
 from http import HTTPStatus
-from products.factories.laboratory import LaboratoryFactory
 from products.factories.category import CategoryFactory
 
 from django.urls import reverse
@@ -23,11 +22,8 @@ class ListOrderTest(BaseTestCase):
         super().setUp()
         provider = ProviderFactory.create(user=self.provider_user)
         category = CategoryFactory.create()
-        laboratory = LaboratoryFactory.create()
         product = ProductFactory.create(
-            provider=provider,
             category=category,
-            laboratory=laboratory
         )
         self.orders_amount = 10
         requisitions_per_order = 3
@@ -75,11 +71,8 @@ class ListRequisitions(BaseTestCase):
         order = OrderFactory.create(user=self.provider_user)
         self.provider = ProviderFactory.create(user=self.provider_user)
         category = CategoryFactory.create()
-        laboratory = LaboratoryFactory.create()
         product = ProductFactory.create(
-            provider=self.provider,
             category=category,
-            laboratory=laboratory
         )
         self.orders_amount = 10
         self.requisitions_per_order = 3
