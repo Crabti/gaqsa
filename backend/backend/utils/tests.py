@@ -14,12 +14,10 @@ class BaseTestCase(TestCase):
     def setUpTestData(cls) -> None:
 
         cls.provider_user = UserFactory.create()
-        cls.provider_obj = ProviderFactory.create(user=cls.provider_user)
         provider_group = Group.objects.get(name=PROVIDER_GROUP)
         cls.provider_user.groups.add(provider_group)
 
         cls.client_user = UserFactory.create()
-        cls.client_obk = ClientFactory.create(user=cls.client_user)
         client_group = Group.objects.get(name=CLIENT_GROUP)
         cls.client_user.groups.add(client_group)
 

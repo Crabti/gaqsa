@@ -370,9 +370,11 @@ class ToggleUserActive(BaseTestCase):
 class RetrieveUser(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.admin_profile = ProfileFactory(user=self.admin_user)
-        self.client_profile = ProfileFactory(user=self.client_user)
-        self.provider_profile = ProfileFactory(user=self.provider_user)
+        ProfileFactory(user=self.admin_user)
+        ProfileFactory(user=self.client_user)
+        ProfileFactory(user=self.provider_user)
+        ProviderFactory.create(user=self.provider_user)
+        ClientFactory.create(user=self.client_user)
 
     def test_get_user_with_existing_pk_should_return_user(self) -> None:
         response = self.admin_client.get(
@@ -402,7 +404,9 @@ class RetrieveUser(BaseTestCase):
         self.assertEqual(user_response.get("client"), None)
         provider_data = user_response["provider"]
         self.assertEqual(provider_data["rfc"], self.provider_user.provider.rfc)
-        self.assertEqual(provider_data["nav_key"], self.provider_user.provider.nav_key)
+        self.assertEqual(
+            provider_data["nav_key"], self.provider_user.provider.nav_key,
+        )
 
     def test_get_client_user_with_existing_pk_should_return_client_user(
         self

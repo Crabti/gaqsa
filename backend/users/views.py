@@ -22,9 +22,9 @@ from rest_framework_simplejwt.views import (
 )
 from django.db import IntegrityError, transaction
 from rest_framework.response import Response
-from rest_framework import status, generics, serializers
+from rest_framework import status, generics
 from rest_framework.views import APIView
-from backend.utils.permissions import IsAdmin, IsOwnUserOrAdmin
+from backend.utils.permissions import IsAdmin
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -69,12 +69,16 @@ class RetrieveUserView(APIView):
         Validates the user's role and returns the corresponding data.
         """
         curr_user_groups = [g.name for g in request.user.groups.all()]
-        if (not request.user.pk == pk) and (ADMIN_GROUP not in curr_user_groups):
-            return Response({"code": "FORBIDDEN"}, status=status.HTTP_403_FORBIDDEN)
+        if not request.user.pk == pk and ADMIN_GROUP not in curr_user_groups:
+            return Response(
+                {"code": "FORBIDDEN"}, status=status.HTTP_403_FORBIDDEN,
+            )
 
         user = User.objects.filter(pk=pk).first()
         if not user:
-            return Response({"code": "NOT_FOUND"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"code": "NOT_FOUND"}, status=status.HTTP_404_NOT_FOUND,
+            )
 
         user_role = user.groups.all()[0].name
         if user_role == PROVIDER_GROUP:
@@ -84,7 +88,9 @@ class RetrieveUserView(APIView):
         if user_role == CLIENT_GROUP:
             return self.get_user_response(user, ClientUserSerializer)
 
-        return Response({"code": "BAD_REQUEST"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"code": "BAD_REQUEST"}, status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class UpdateUserActiveView(generics.UpdateAPIView):
