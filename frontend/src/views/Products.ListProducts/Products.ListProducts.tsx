@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button, Col, notification, Row, Tooltip,
+  Button, Col, notification, Popconfirm, Row, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -15,13 +15,14 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
-  EditOutlined, PlusOutlined, SearchOutlined, TagOutlined,
+  EditOutlined, PlusOutlined, SearchOutlined, StopOutlined, TagOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
   SHOW_ADD_OFFER_BTN,
   SHOW_ADD_TO_CART_BTN,
+  SHOW_CANCLE_OFFER_BTN,
   SHOW_EDIT_PRODUCT,
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
@@ -59,6 +60,9 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
   const shouldShowEditProduct = SHOW_EDIT_PRODUCT && isAdmin;
   const shouldShowDetailProduct = isProvider;
+  const shouldShowCancelOffer = SHOW_CANCLE_OFFER_BTN && (
+    isProvider || isAdmin
+  );
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -81,6 +85,26 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   useEffect(() => {
     fetchProducts();
   }, [history, fetchProducts]);
+
+  const onCancelOffer = async (id: number) : Promise<void> => {
+    setLoading(true);
+    const [result, error] = await backend.offers.patch(`${id}/cancel`);
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al cancelar la oferta!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+
+    notification.success({
+      message: 'Se ha cancelado la oferta exitosamente.',
+      description: 'El producto ha regresado a su precio original',
+    });
+    fetchProducts();
+  };
 
   const renderLabs = (
     providers: ProductProvider[],
@@ -123,24 +147,24 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     <Row justify="center" align="middle">
       <Col>
         <Actions>
-          {shouldShowEditProduct && (
-          <Tooltip title="Editar producto">
-            <Button
-              style={{ marginRight: '1em' }}
-              shape="circle"
-              icon={<EditOutlined />}
-              onClick={() => (
-                history.push(`/productos/${product.id}/modificar`)
-              )}
-            />
-          </Tooltip>
-          )}
+          {shouldShowEditProduct ? (
+            <Tooltip title="Editar producto">
+              <Button
+                style={{ marginRight: '1em' }}
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() => (
+                  history.push(`/productos/${product.id}/modificar`)
+                )}
+              />
+            </Tooltip>
+          ) : null}
         </Actions>
       </Col>
       <Col>
         {product.providers.map((provider, index) => (
-          <Row key={provider.id}>
-            <Actions>
+          <Row key={provider.id} gutter={6}>
+            <Col>
               {shouldShowAddToCard && (
               <Tooltip
                 title={
@@ -194,6 +218,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 />
               </Tooltip>
               )}
+            </Col>
+            <Col>
               {shouldShowDetailProduct && (
               <Tooltip title="Ver detalles">
                 <Button
@@ -205,6 +231,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 />
               </Tooltip>
               )}
+            </Col>
+            <Col>
               {shouldShowAddOffer && (
               <Tooltip title={
               provider.offer !== null
@@ -227,7 +255,34 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 />
               </Tooltip>
               )}
-            </Actions>
+            </Col>
+            <Col>
+              {shouldShowCancelOffer && (
+              <Tooltip title={
+                provider.offer === null
+                  ? 'Este producto no cuenta con una oferta activa.'
+                  : 'Cancelar oferta del producto'
+              }
+              >
+                <Popconfirm
+                  title={'¿Está seguro que desea cancelar '
+                  + 'la oferta de este producto?'}
+                  onConfirm={
+                    () => provider.offer && onCancelOffer(
+                      provider.offer.id,
+                    )
+                  }
+                  disabled={provider.offer === null}
+                >
+                  <Button
+                    shape="circle"
+                    icon={<StopOutlined />}
+                    disabled={provider.offer === null}
+                  />
+                </Popconfirm>
+              </Tooltip>
+              )}
+            </Col>
           </Row>
         ))}
       </Col>
