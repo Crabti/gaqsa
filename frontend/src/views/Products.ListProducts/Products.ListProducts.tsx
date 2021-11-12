@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button, Col, notification, Row, Tooltip,
+  Button, Col, InputNumber, notification, Row, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -15,7 +15,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
-  EditOutlined, PlusOutlined, SearchOutlined, TagOutlined,
+  EditOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TagOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
@@ -27,7 +27,6 @@ import {
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
 import TableFilter from 'components/TableFilter';
-import routes from 'Routes';
 import { Actions } from './Products.ListProducts.styled';
 
 interface OfferModal {
@@ -38,6 +37,7 @@ interface OfferModal {
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
+  const { user } = useAuth();
 
   const {
     isClient, isProvider, isAdmin,
@@ -51,7 +51,9 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     products, setProducts,
   ] = useState<ProductGroup[] | undefined>(undefined);
   const [filtered, setFiltered] = useState<ProductGroup[]>([]);
-  const { addProducts } = useShoppingCart();
+  const {
+    addProducts, removeProducts, clear, productsSh,
+  } = useShoppingCart();
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
   );
@@ -62,7 +64,6 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
-
     const [result, error] = await backend.products.getAll<ProductGroup[]>(
       'status=Aceptado',
     );
@@ -81,6 +82,43 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   useEffect(() => {
     fetchProducts();
   }, [history, fetchProducts]);
+
+  const onFinishFailed = () : void => {
+    notification.error({
+      message: '¡Ocurrió un error al intentar generar la orden de compra!',
+      description: 'Intentalo después.',
+    });
+  };
+
+  const createOrder = async () : Promise<void> => {
+    setLoading(true);
+    if (user) {
+      if (productsSh.length > 0) {
+        const [, error] = await backend.orders.createOne({
+          productsSh,
+        });
+        if (error) {
+          onFinishFailed();
+          history.replace('/productos/');
+        } else {
+          notification.success({
+            message: '¡Petición de orden creado exitosamente!',
+            description: 'Su orden de compra ha sido recibida y será procesada.'
+            + 'El proveedor le informará lo mas pronto posible '
+            + 'el estatus de su solicitud.',
+          });
+          history.replace('/pedidos/cliente');
+        }
+      } else {
+        notification.error({
+          message: '¡Carrito de compras vacío!',
+          description: 'Inserte alguna cantidad en algún producto que requiera',
+        });
+      }
+    }
+    clear();
+    setLoading(false);
+  };
 
   const renderLabs = (
     providers: ProductProvider[],
@@ -117,6 +155,118 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     </Row>
   ));
 
+  const renderQuantity = (
+    product: ProductGroup,
+  ) : any => (
+    <Col>
+      {product.providers.map((provider, index) => (
+        <Row key={provider.id}>
+          <Actions>
+            {shouldShowAddToCard && (
+              <Tooltip
+                title={
+                  `Añadir ${product.name}
+                  - ${product.providers[index].provider} al carrito`
+                }
+              >
+                <InputNumber
+                  min={0}
+                  step={1}
+                  onChange={(value) => {
+                    const rowProvider = product.providers[index];
+                    if (Number(value) > 0) {
+                      addProducts({
+                        product: {
+                          id: rowProvider.id,
+                          category: (product.category as string),
+                          key: product.key,
+                          ieps: product.ieps,
+                          iva: rowProvider.iva,
+                          name: product.name,
+                          active_substance: product.active_substance,
+                          presentation: product.presentation,
+                          laboratory: rowProvider.laboratory.name,
+                          provider: (rowProvider.provider as string),
+                          originalPrice: rowProvider.price,
+                          price: rowProvider.offer
+                            ? (
+                              rowProvider.price - rowProvider.price
+                        * rowProvider.offer.discount_percentage
+                            )
+                            : rowProvider.price,
+                        },
+                        amount: Number(value),
+                        offer: rowProvider.offer,
+                      });
+                    } else {
+                      removeProducts({
+                        product: {
+                          id: rowProvider.id,
+                          category: (product.category as string),
+                          key: product.key,
+                          ieps: product.ieps,
+                          iva: rowProvider.iva,
+                          name: product.name,
+                          active_substance: product.active_substance,
+                          presentation: product.presentation,
+                          laboratory: rowProvider.laboratory.name,
+                          provider: (rowProvider.provider as string),
+                          originalPrice: rowProvider.price,
+                          price: rowProvider.offer
+                            ? (
+                              rowProvider.price - rowProvider.price
+                        * rowProvider.offer.discount_percentage
+                            )
+                            : rowProvider.price,
+                        },
+                        offer: rowProvider.offer,
+                        amount: -1,
+                      });
+                    }
+                  }}
+                />
+              </Tooltip>
+            )}
+            {shouldShowDetailProduct && (
+              <Tooltip title="Ver detalles">
+                <Button
+                  shape="circle"
+                  icon={<SearchOutlined />}
+                  onClick={() => {
+                    history.push(`/productos/${product.id}/detalle`);
+                  }}
+                />
+              </Tooltip>
+            )}
+            {shouldShowAddOffer && (
+              <Tooltip title={
+              provider.offer !== null
+                ? 'Este producto ya cuenta con una oferta activa. '
+                   + 'Debe cancelar la oferta o esperar a que termine '
+                   + 'para poder crear una nueva.'
+                : 'Crear nueva oferta para producto'
+            }
+              >
+                <Button
+                  shape="circle"
+                  icon={<TagOutlined />}
+                  disabled={provider.offer !== null}
+                  onClick={() => (
+                    setOfferModal({
+                      visible: true,
+                      provider,
+                    })
+                  )}
+                />
+              </Tooltip>
+            )}
+          </Actions>
+        </Row>
+      ))}
+    </Col>
+
+  );
+
   const renderActions = (
     product: ProductGroup,
   ) : any => (
@@ -138,62 +288,9 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
         </Actions>
       </Col>
       <Col>
-        {product.providers.map((provider, index) => (
+        {product.providers.map((provider) => (
           <Row key={provider.id}>
             <Actions>
-              {shouldShowAddToCard && (
-              <Tooltip
-                title={
-                  `Añadir ${product.name}
-                  - ${product.providers[index].provider} al carrito`
-                }
-              >
-                <Button
-                  shape="circle"
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    notification.success({
-                      message: 'Se ha agregado el producto al carrito.',
-                      description: 'Puede acceder a detalle de su pedido para'
-                      + ' confirmar su pedido',
-                      btn: (
-                        <Button
-                          type="primary"
-                          onClick={() => history.push(
-                            routes.order.routes.createOrder.path,
-                          )}
-                        >
-                          Ir a detalle
-                        </Button>),
-                    });
-                    const rowProvider = product.providers[index];
-                    addProducts({
-                      product: {
-                        id: rowProvider.id,
-                        category: (product.category as string),
-                        key: product.key,
-                        ieps: product.ieps,
-                        iva: rowProvider.iva,
-                        name: product.name,
-                        active_substance: product.active_substance,
-                        presentation: product.presentation,
-                        laboratory: rowProvider.laboratory.name,
-                        provider: (rowProvider.provider as string),
-                        originalPrice: rowProvider.price,
-                        price: rowProvider.offer
-                          ? (
-                            rowProvider.price - rowProvider.price
-                      * rowProvider.offer.discount_percentage
-                          )
-                          : rowProvider.price,
-                      },
-                      amount: 1,
-                      offer: rowProvider.offer,
-                    });
-                  }}
-                />
-              </Tooltip>
-              )}
               {shouldShowDetailProduct && (
               <Tooltip title="Ver detalles">
                 <Button
@@ -297,6 +394,14 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       ) => renderIVA(product.providers),
     },
     {
+      title: 'Cantidad',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (
+        _: number, product: ProductGroup,
+      ) => renderQuantity(product),
+    },
+    {
       title: 'Acciones',
       dataIndex: 'action',
       key: 'action',
@@ -374,11 +479,34 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
           />
           { !isClient
             ? (
+              <>
+                <Table
+                  rowKey={(row) => `${row.id}`}
+                  data={filtered}
+                  columns={columns}
+                  actions={[
+                    {
+                      action: handleButton,
+                      text: 'Nuevo',
+                      icon: <PlusOutlined />,
+                    },
+                  ]}
+                />
+
+              </>
+            )
+            : (
               <Table
                 rowKey={(row) => `${row.id}`}
                 data={filtered}
                 columns={columns}
                 actions={[
+                  {
+                    action: createOrder,
+                    text: 'Ordenar',
+                    icon: <ShoppingCartOutlined />,
+                    hidden: (isAdmin || isProvider),
+                  },
                   {
                     action: changePriceButton,
                     text: 'Cambio de precios',
@@ -391,13 +519,6 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                     icon: <PlusOutlined />,
                   },
                 ]}
-              />
-            )
-            : (
-              <Table
-                rowKey={(row) => `${row.id}`}
-                data={filtered}
-                columns={columns}
               />
             )}
           { offerModal.provider

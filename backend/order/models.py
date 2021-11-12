@@ -3,7 +3,6 @@ from users.models import User
 from products.models import Product
 from providers.models import Provider
 
-
 class Requisition(models.Model):
     DELIVERED = 'Entregado'
     PENDING = 'Pendiente'
@@ -17,8 +16,7 @@ class Requisition(models.Model):
         (INCOMPLETE, INCOMPLETE),
         (CANCELLED, CANCELLED),
     ]
-    order = models.ForeignKey('order.Order', on_delete=models.CASCADE)
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+    order = models.ForeignKey("order.Order", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
     quantity_accepted = models.PositiveIntegerField(default=0)
@@ -41,6 +39,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cancelled = models.BooleanField(default=False)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
     @property
     def requisitions(self):

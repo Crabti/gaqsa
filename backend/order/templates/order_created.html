@@ -18,14 +18,12 @@
     </tr>
     {% for product in products %}
     <tr>
-      {% if product.product.provider == provider %}
       <th>
         {{ product.product.name}}
       </th>
       <th>
         {{ product.amount }}
       </th>
-      {% endif %}
     </tr>
     {% endfor%}
   </table>

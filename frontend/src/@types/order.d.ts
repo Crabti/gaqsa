@@ -1,4 +1,4 @@
-import { CommonType, Product } from '@types';
+import { CommonType, Product, Provider } from '@types';
 
 export interface Requisition {
     id: number;
@@ -16,6 +16,7 @@ export interface Order extends CommonType {
     user: number | string;
     created_at: Date;
     requisitions: Requisition[];
+    provider: string | Provider;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
