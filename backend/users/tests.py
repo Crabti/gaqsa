@@ -370,24 +370,61 @@ class ToggleUserActive(BaseTestCase):
 class RetrieveUser(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        self.expected_user: User = self.admin_user
+        self.admin_profile = ProfileFactory(user=self.admin_user)
+        self.client_profile = ProfileFactory(user=self.client_user)
+        self.provider_profile = ProfileFactory(user=self.provider_user)
 
     def test_get_user_with_existing_pk_should_return_user(self) -> None:
         response = self.admin_client.get(
-            reverse("retrieve_user", kwargs={"pk": self.expected_user.pk}),
+            reverse("retrieve_user", kwargs={"pk": self.admin_user.pk}),
             content_type="application/json",
         )
         user_response = json.loads(json.dumps(response.data))
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(user_response["id"], self.expected_user.pk)
-        self.assertEqual(user_response["email"], self.expected_user.email)
+        self.assertEqual(user_response["id"], self.admin_user.pk)
+        self.assertEqual(user_response["email"], self.admin_user.email)
+        self.assertEqual(user_response.get("client"), None)
+        self.assertEqual(user_response.get("provider"), None)
+
+    def test_get_provider_user_with_existing_pk_should_return_provider_user(
+        self
+    ) -> None:
+        response = self.admin_client.get(
+            reverse("retrieve_user", kwargs={"pk": self.provider_user.pk}),
+            content_type="application/json",
+        )
+        user_response = json.loads(json.dumps(response.data))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(user_response["id"], self.provider_user.pk)
+        self.assertEqual(user_response["email"], self.provider_user.email)
+        self.assertEqual(user_response.get("client"), None)
+        provider_data = user_response["provider"]
+        self.assertEqual(provider_data["rfc"], self.provider_user.provider.rfc)
+        self.assertEqual(provider_data["nav_key"], self.provider_user.provider.nav_key)
+
+    def test_get_client_user_with_existing_pk_should_return_client_user(
+        self
+    ) -> None:
+        response = self.admin_client.get(
+            reverse("retrieve_user", kwargs={"pk": self.client_user.pk}),
+            content_type="application/json",
+        )
+        user_response = json.loads(json.dumps(response.data))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(user_response["id"], self.client_user.pk)
+        self.assertEqual(user_response["email"], self.client_user.email)
+        self.assertEqual(user_response.get("provider"), None)
+        client_data = user_response["client"]
+        self.assertEqual(client_data["rfc"], self.client_user.client.rfc)
 
     def test_get_user_with_no_admin_group_should_return_unauthorized(
         self
     ) -> None:
         response = self.service_client.get(
-            reverse("retrieve_user", kwargs={"pk": self.expected_user.pk}),
+            reverse("retrieve_user", kwargs={"pk": self.admin_user.pk}),
             content_type="application/json",
         )
 

@@ -1,7 +1,10 @@
 from http import HTTPStatus
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, User
-from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP
+from rest_framework.request import Request
+
+from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP, ADMIN_GROUP
 from users.serializers.user_emails import CreateUserEmailSerializer
 from providers.serializers.providers import CreateProviderSerializer
 from clients.serializers.ranch import CreateRanchSerializer
@@ -11,7 +14,7 @@ from users.serializers.users import (
     CreateUserSerializer,
     ListUserSerializer,
     UserIsActiveSerializer,
-    UserSerializer,
+    UserSerializer, ClientUserSerializer, ProviderUserSerializer,
 )
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import (
@@ -19,7 +22,7 @@ from rest_framework_simplejwt.views import (
 )
 from django.db import IntegrityError, transaction
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status, generics, serializers
 from rest_framework.views import APIView
 from backend.utils.permissions import IsAdmin, IsOwnUserOrAdmin
 
@@ -51,10 +54,37 @@ class ListUserView(generics.ListAPIView):
     serializer_class = ListUserSerializer
 
 
-class RetrieveUserView(generics.RetrieveAPIView):
-    permission_classes = [IsOwnUserOrAdmin]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class RetrieveUserView(APIView):
+    @staticmethod
+    def get_user_response(
+        user: User, serializer,
+    ) -> Response:
+        user_serializer = serializer(user)
+        response = user_serializer.data
+        return Response(response, status=status.HTTP_200_OK)
+
+    def get(self, request: Request, pk: int) -> Response:
+        """
+        Returns user information.
+        Validates the user's role and returns the corresponding data.
+        """
+        curr_user_groups = [g.name for g in request.user.groups.all()]
+        if (not request.user.pk == pk) and (ADMIN_GROUP not in curr_user_groups):
+            return Response({"code": "FORBIDDEN"}, status=status.HTTP_403_FORBIDDEN)
+
+        user = User.objects.filter(pk=pk).first()
+        if not user:
+            return Response({"code": "NOT_FOUND"}, status=status.HTTP_404_NOT_FOUND)
+
+        user_role = user.groups.all()[0].name
+        if user_role == PROVIDER_GROUP:
+            return self.get_user_response(user, ProviderUserSerializer)
+        if user_role == ADMIN_GROUP:
+            return self.get_user_response(user, UserSerializer)
+        if user_role == CLIENT_GROUP:
+            return self.get_user_response(user, ClientUserSerializer)
+
+        return Response({"code": "BAD_REQUEST"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateUserActiveView(generics.UpdateAPIView):
