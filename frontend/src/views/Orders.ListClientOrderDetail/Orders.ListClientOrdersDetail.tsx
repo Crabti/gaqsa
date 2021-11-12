@@ -5,7 +5,7 @@ import {
   notification,
   Tag,
 } from 'antd';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
@@ -16,16 +16,17 @@ import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
 import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
 
-const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
+const ListClientOrdersDetail: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
+  const { id: orderId } = useParams<{ id: string; }>();
   const [isLoading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<Order[] | undefined>(undefined);
+  const [orders, setOrders] = useState<Order | undefined>(undefined);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
 
-    const [result, error] = await backend.orders.getAll();
+    const [result, error] = await backend.orders.getOne(orderId);
 
     if (error || !result) {
       notification.error({
@@ -37,7 +38,7 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
     }
     setOrders(result.data);
     setLoading(false);
-  }, [backend.orders]);
+  }, [backend.orders, orderId]);
 
   useEffect(() => {
     fetchOrders();
@@ -138,18 +139,16 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
 
   const listItems = () : any => {
     const list : any[] = [];
-    orders.forEach((order) => {
-      order.requisitions.forEach((requisition) => {
-        list.push({
-          order: order.id.toString(),
-          created_at: moment(order.created_at).format('YYYY-mm-DD hh:mm'),
-          provider: requisition.provider,
-          product: requisition.product,
-          quantity_requested: requisition.quantity_requested,
-          quantity_accepted: requisition.quantity_accepted,
-          price: `$ ${requisition.price.toFixed(2)}`,
-          status: requisition.status,
-        });
+    orders.requisitions.forEach((requisition) => {
+      list.push({
+        order: orders.id.toString(),
+        created_at: moment(orders.created_at).format('YYYY-mm-DD hh:mm'),
+        provider: requisition.provider,
+        product: requisition.product,
+        quantity_requested: requisition.quantity_requested,
+        quantity_accepted: requisition.quantity_accepted,
+        price: `$ ${requisition.price.toFixed(2)}`,
+        status: requisition.status,
       });
     });
     return list;
@@ -169,4 +168,4 @@ const ListClientOrders: React.VC = ({ verboseName, parentName }) => {
   );
 };
 
-export default ListClientOrders;
+export default ListClientOrdersDetail;

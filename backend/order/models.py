@@ -8,6 +8,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
 
     @property
     def requisitions(self):
@@ -30,7 +31,6 @@ class Requisition(models.Model):
         (INCOMPLETE, INCOMPLETE)
     ]
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
     quantity_accepted = models.PositiveIntegerField(default=0)
