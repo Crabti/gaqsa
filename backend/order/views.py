@@ -1,4 +1,5 @@
 # from django.http import request
+from backend.utils.permissions import IsOwnProviderOrAdmin
 from order.mails import (
     send_mail_on_create_order, send_mail_on_create_order_user)
 from products.models import ProductProvider
@@ -8,11 +9,13 @@ from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
     ListRequisitionSerializer, OrderSerializer,
-    ListOrderSerializer, CreateRequisitionSerializer
-    )
+    ListOrderSerializer, CreateRequisitionSerializer,
+    RetrieveOrderSerializer, UpdateOrderQuantitySerializer
+)
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.request import Request
 
 
 class ListOrders(generics.ListAPIView):
@@ -29,7 +32,6 @@ class ListOrders(generics.ListAPIView):
 
 
 class CreateOrder(APIView):
-
     def post(self, request):
 
         providers = []
@@ -106,4 +108,37 @@ class ListRequisitions(generics.ListAPIView):
 
 class RetrieveOrderView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
-    serializer_class = ListOrderSerializer
+    serializer_class = RetrieveOrderSerializer
+
+
+class UpdateOrderRequisitionsView(generics.UpdateAPIView):
+    permission_classes = [IsOwnProviderOrAdmin]
+    serializer_class = UpdateOrderQuantitySerializer
+    lookup_field = 'pk'
+    queryset = Order.objects.all()
+
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        self.get_object()
+        for data in request.data:
+            requisition: Requisition = Requisition.objects.get(
+                pk=data['requisition']
+            )
+            if not requisition:
+                return Response(
+                    {"code": "REQUISIITON NOT FOUND"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = self.get_serializer(
+                requisition,
+                data=data,
+                partial=True
+            )
+
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -19,6 +19,7 @@ import ListClientOrderDetail from 'views/Orders.ListClientOrderDetail';
 import ListClientOrder from 'views/Order.ListClientOrder/Order.ListClientOrder';
 import ListProviderOrders from 'views/Order.ListProviderOrders';
 import PriceChange from 'views/Products.PriceChange';
+import OrderUpdate from 'views/Orders.Update';
 import OrderListOrderProviderDetail from 'views/Order.ListOrderProviderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 
@@ -109,6 +110,12 @@ const ordersRoutes: Routes = {
     verboseName: 'Historial de pedidos',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+  updateOrder: {
+    path: '/pedidos/proveedor/:id/modificar',
+    view: OrderUpdate,
+    verboseName: 'Modificar pedido',
+    hasAccess: (auth) => auth.isProvider || auth.isAdmin,
   },
   listOrderProvider: {
     path: '/pedidos/proveedor',

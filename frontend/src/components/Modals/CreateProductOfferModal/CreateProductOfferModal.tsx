@@ -160,8 +160,15 @@ const CreateProductOfferModal: React.FC<Props> = ({
             precision={2}
           />
         </Form.Item>
-        <Form.Item name="ending_at" label="Fecha limite" required>
-          <DatePicker disabledDate={disabledDate} />
+        <Form.Item
+          name="ending_at"
+          label="Fecha limite"
+          required
+          rules={[{ required: true }]}
+        >
+          <DatePicker
+            disabledDate={disabledDate}
+          />
         </Form.Item>
       </Form>
     </Modal>
