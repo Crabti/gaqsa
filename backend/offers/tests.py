@@ -168,7 +168,6 @@ class OfferCancel(BaseTestCase):
             reverse("cancel_offer", kwargs={"pk": self.offer.pk}),
             content_type="application/json",
         )
-        print(response.content)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.offer.refresh_from_db(fields=["cancelled"])
         self.assertEqual(self.offer.cancelled, True)
