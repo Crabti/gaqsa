@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button, Col, InputNumber, notification, Row, Tooltip,
+  Button, Col, Popconfirm, notification, Row, Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -13,15 +13,18 @@ import {
   ProductProvider,
 } from '@types';
 import Table from 'components/Table';
+import AddToCart from 'components/TableCellActions/AddToCart';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
-  EditOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined, TagOutlined,
+  EditOutlined, PlusOutlined,
+  SearchOutlined, StopOutlined, ShoppingCartOutlined, TagOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
   SHOW_ADD_OFFER_BTN,
   SHOW_ADD_TO_CART_BTN,
+  SHOW_CANCEL_OFFER_BTN,
   SHOW_EDIT_PRODUCT,
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
@@ -37,7 +40,6 @@ interface OfferModal {
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
-  const { user } = useAuth();
 
   const {
     isClient, isProvider, isAdmin,
@@ -52,15 +54,18 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   ] = useState<ProductGroup[] | undefined>(undefined);
   const [filtered, setFiltered] = useState<ProductGroup[]>([]);
   const {
-    addProducts, removeProducts, clear, productsSh,
+    clear, productsSh,
   } = useShoppingCart();
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
   );
-  const shouldShowAddToCard = SHOW_ADD_TO_CART_BTN && isClient;
+  const shouldShowAddToCart = SHOW_ADD_TO_CART_BTN && isClient;
   const shouldShowAddOffer = SHOW_ADD_OFFER_BTN && isProvider;
   const shouldShowEditProduct = SHOW_EDIT_PRODUCT && isAdmin;
   const shouldShowDetailProduct = isProvider;
+  const shouldShowCancelOffer = SHOW_CANCEL_OFFER_BTN && (
+    isProvider || isAdmin
+  );
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -83,7 +88,27 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     fetchProducts();
   }, [history, fetchProducts]);
 
-  const onFinishFailed = () : void => {
+  const onCancelOffer = async (id: number) : Promise<void> => {
+    setLoading(true);
+    const [result, error] = await backend.offers.patch(`${id}/cancel`);
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al cancelar la oferta!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+
+    notification.success({
+      message: 'Se ha cancelado la oferta exitosamente.',
+      description: 'El producto ha regresado a su precio original',
+    });
+    fetchProducts();
+  };
+
+  const onOrderFailed = () : void => {
     notification.error({
       message: '¡Ocurrió un error al intentar generar la orden de compra!',
       description: 'Intentalo después.',
@@ -92,29 +117,27 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
 
   const createOrder = async () : Promise<void> => {
     setLoading(true);
-    if (user) {
-      if (productsSh.length > 0) {
-        const [, error] = await backend.orders.createOne({
-          productsSh,
-        });
-        if (error) {
-          onFinishFailed();
-          history.replace('/productos/');
-        } else {
-          notification.success({
-            message: '¡Petición de orden creado exitosamente!',
-            description: 'Su orden de compra ha sido recibida y será procesada.'
+    if (productsSh.length > 0) {
+      const [, error] = await backend.orders.createOne({
+        productsSh,
+      });
+      if (error) {
+        onOrderFailed();
+        history.replace('/productos/');
+      } else {
+        notification.success({
+          message: '¡Petición de orden creado exitosamente!',
+          description: 'Su orden de compra ha sido recibida y será procesada.'
             + 'El proveedor le informará lo mas pronto posible '
             + 'el estatus de su solicitud.',
-          });
-          history.replace('/pedidos/cliente');
-        }
-      } else {
-        notification.error({
-          message: '¡Carrito de compras vacío!',
-          description: 'Inserte alguna cantidad en algún producto que requiera',
         });
+        history.replace('/pedidos/cliente');
       }
+    } else {
+      notification.error({
+        message: '¡Carrito de compras vacío!',
+        description: 'Inserte alguna cantidad en algún producto que requiera',
+      });
     }
     clear();
     setLoading(false);
@@ -155,142 +178,30 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     </Row>
   ));
 
-  const renderQuantity = (
-    product: ProductGroup,
-  ) : any => (
-    <Col>
-      {product.providers.map((provider, index) => (
-        <Row key={provider.id}>
-          <Actions>
-            {shouldShowAddToCard && (
-              <Tooltip
-                title={
-                  `Añadir ${product.name}
-                  - ${product.providers[index].provider} al carrito`
-                }
-              >
-                <InputNumber
-                  min={0}
-                  step={1}
-                  onChange={(value) => {
-                    const rowProvider = product.providers[index];
-                    if (Number(value) > 0) {
-                      addProducts({
-                        product: {
-                          id: rowProvider.id,
-                          category: (product.category as string),
-                          key: product.key,
-                          ieps: product.ieps,
-                          iva: rowProvider.iva,
-                          name: product.name,
-                          active_substance: product.active_substance,
-                          presentation: product.presentation,
-                          laboratory: rowProvider.laboratory.name,
-                          provider: (rowProvider.provider as string),
-                          originalPrice: rowProvider.price,
-                          price: rowProvider.offer
-                            ? (
-                              rowProvider.price - rowProvider.price
-                        * rowProvider.offer.discount_percentage
-                            )
-                            : rowProvider.price,
-                        },
-                        amount: Number(value),
-                        offer: rowProvider.offer,
-                      });
-                    } else {
-                      removeProducts({
-                        product: {
-                          id: rowProvider.id,
-                          category: (product.category as string),
-                          key: product.key,
-                          ieps: product.ieps,
-                          iva: rowProvider.iva,
-                          name: product.name,
-                          active_substance: product.active_substance,
-                          presentation: product.presentation,
-                          laboratory: rowProvider.laboratory.name,
-                          provider: (rowProvider.provider as string),
-                          originalPrice: rowProvider.price,
-                          price: rowProvider.offer
-                            ? (
-                              rowProvider.price - rowProvider.price
-                        * rowProvider.offer.discount_percentage
-                            )
-                            : rowProvider.price,
-                        },
-                        offer: rowProvider.offer,
-                        amount: -1,
-                      });
-                    }
-                  }}
-                />
-              </Tooltip>
-            )}
-            {shouldShowDetailProduct && (
-              <Tooltip title="Ver detalles">
-                <Button
-                  shape="circle"
-                  icon={<SearchOutlined />}
-                  onClick={() => {
-                    history.push(`/productos/${product.id}/detalle`);
-                  }}
-                />
-              </Tooltip>
-            )}
-            {shouldShowAddOffer && (
-              <Tooltip title={
-              provider.offer !== null
-                ? 'Este producto ya cuenta con una oferta activa. '
-                   + 'Debe cancelar la oferta o esperar a que termine '
-                   + 'para poder crear una nueva.'
-                : 'Crear nueva oferta para producto'
-            }
-              >
-                <Button
-                  shape="circle"
-                  icon={<TagOutlined />}
-                  disabled={provider.offer !== null}
-                  onClick={() => (
-                    setOfferModal({
-                      visible: true,
-                      provider,
-                    })
-                  )}
-                />
-              </Tooltip>
-            )}
-          </Actions>
-        </Row>
-      ))}
-    </Col>
-
-  );
-
   const renderActions = (
     product: ProductGroup,
   ) : any => (
     <Row justify="center" align="middle">
       <Col>
         <Actions>
-          {shouldShowEditProduct && (
-          <Tooltip title="Editar producto">
-            <Button
-              style={{ marginRight: '1em' }}
-              shape="circle"
-              icon={<EditOutlined />}
-              onClick={() => (
-                history.push(`/productos/${product.id}/modificar`)
-              )}
-            />
-          </Tooltip>
-          )}
+          {shouldShowEditProduct ? (
+            <Tooltip title="Editar producto">
+              <Button
+                style={{ marginRight: '1em' }}
+                shape="circle"
+                icon={<EditOutlined />}
+                onClick={() => (
+                  history.push(`/productos/${product.id}/modificar`)
+                )}
+              />
+            </Tooltip>
+          ) : null}
         </Actions>
       </Col>
       <Col>
         {product.providers.map((provider) => (
           <Row key={provider.id}>
-            <Actions>
+            <Col>
               {shouldShowDetailProduct && (
               <Tooltip title="Ver detalles">
                 <Button
@@ -302,6 +213,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 />
               </Tooltip>
               )}
+            </Col>
+            <Col>
               {shouldShowAddOffer && (
               <Tooltip title={
               provider.offer !== null
@@ -324,7 +237,34 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 />
               </Tooltip>
               )}
-            </Actions>
+            </Col>
+            <Col>
+              {shouldShowCancelOffer && (
+              <Tooltip title={
+                provider.offer === null
+                  ? 'Este producto no cuenta con una oferta activa.'
+                  : 'Cancelar oferta del producto'
+              }
+              >
+                <Popconfirm
+                  title={'¿Está seguro que desea cancelar '
+                  + 'la oferta de este producto?'}
+                  onConfirm={
+                    () => provider.offer && onCancelOffer(
+                      provider.offer.id,
+                    )
+                  }
+                  disabled={provider.offer === null}
+                >
+                  <Button
+                    shape="circle"
+                    icon={<StopOutlined />}
+                    disabled={provider.offer === null}
+                  />
+                </Popconfirm>
+              </Tooltip>
+              )}
+            </Col>
           </Row>
         ))}
       </Col>
@@ -399,7 +339,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       key: 'quantity',
       render: (
         _: number, product: ProductGroup,
-      ) => renderQuantity(product),
+      ) => <AddToCart product={product} />,
     },
     {
       title: 'Acciones',
@@ -477,50 +417,36 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
             filterAny={onFilterAny}
             data={products}
           />
-          { !isClient
-            ? (
-              <>
-                <Table
-                  rowKey={(row) => `${row.id}`}
-                  data={filtered}
-                  columns={columns}
-                  actions={[
-                    {
-                      action: handleButton,
-                      text: 'Nuevo',
-                      icon: <PlusOutlined />,
-                    },
-                  ]}
-                />
+          <Table
+            rowKey={(row) => `${row.id}`}
+            data={filtered}
+            columns={
+              (!shouldShowAddToCart) ? columns.filter(
+                (column) => column.key !== 'quantity',
+              ) : columns
+            }
+            actions={[
+              {
+                action: createOrder,
+                text: 'Ordenar',
+                icon: <ShoppingCartOutlined />,
+                hidden: (isAdmin || isProvider),
+              },
+              {
+                action: changePriceButton,
+                text: 'Cambio de precios',
+                icon: <PlusOutlined />,
+                hidden: (isClient || isAdmin),
+              },
+              {
+                action: handleButton,
+                text: 'Nuevo',
+                icon: <PlusOutlined />,
+                hidden: (isClient),
+              },
+            ]}
+          />
 
-              </>
-            )
-            : (
-              <Table
-                rowKey={(row) => `${row.id}`}
-                data={filtered}
-                columns={columns}
-                actions={[
-                  {
-                    action: createOrder,
-                    text: 'Ordenar',
-                    icon: <ShoppingCartOutlined />,
-                    hidden: (isAdmin || isProvider),
-                  },
-                  {
-                    action: changePriceButton,
-                    text: 'Cambio de precios',
-                    icon: <PlusOutlined />,
-                    hidden: (isAdmin),
-                  },
-                  {
-                    action: handleButton,
-                    text: 'Nuevo',
-                    icon: <PlusOutlined />,
-                  },
-                ]}
-              />
-            )}
           { offerModal.provider
             ? (
               <CreateProductOfferModal

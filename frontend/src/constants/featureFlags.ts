@@ -8,3 +8,4 @@ export const SHOW_BUTTON_CANCEL_ORDER = false;
 export const SHOW_ADD_OFFER_BTN = true;
 export const SHOW_CREATE_USER = false;
 export const SHOW_USERS_LIST = true;
+export const SHOW_CANCEL_OFFER_BTN = true;

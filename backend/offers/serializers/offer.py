@@ -17,3 +17,11 @@ class CreateOfferSerializer(serializers.ModelSerializer):
             "discount_percentage",
             "ending_at",
         )
+
+
+class CancelOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Offer
+        fields = (
+            "cancelled",
+        )
