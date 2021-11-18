@@ -11,4 +11,9 @@ urlpatterns = [
         views.RetrieveOrderView.as_view(),
         name="detail_order",
     ),
+    path(
+        '<int:pk>/update',
+        views.UpdateOrderRequisitionsView.as_view(),
+        name="update_order"
+    )
 ]

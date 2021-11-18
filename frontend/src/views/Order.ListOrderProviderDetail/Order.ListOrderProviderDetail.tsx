@@ -1,27 +1,27 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  Button,
   notification,
-  Tag,
 } from 'antd';
 import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
-  Order,
+  Order, Product,
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
-import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
+import RequisitionStatusTag from 'components/RequisitionStatusTag';
+import OrderSummary from 'components/OrderSummary';
 
-// eslint-disable-next-line max-len
-const OrderListOrderProviderDetail: React.VC = ({ verboseName, parentName }) => {
+const OrderListOrderProviderDetail: React.VC = (
+  { verboseName, parentName },
+) => {
   const backend = useBackend();
   const history = useHistory();
   const { id: orderId } = useParams<{ id: string; }>();
   const [isLoading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<Order | undefined>(undefined);
+  const [order, setOrders] = useState<Order | undefined>(undefined);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -74,74 +74,39 @@ const OrderListOrderProviderDetail: React.VC = ({ verboseName, parentName }) => 
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        let color = '';
-        switch (status) {
-          case 'Pendiente':
-            color = 'yellow';
-            break;
-          case 'Aceptado':
-            color = 'green';
-            break;
-          case 'Rechazado':
-            color = 'red';
-            break;
-          default:
-            color = 'blue';
-            break;
-        }
-        return (
-          <Tag key={status} color={color}>
-            {status.toUpperCase()}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: 'Acciones',
-      dataIndex: 'actions',
-      key: 'actions',
-      render: (status: string) => (
-        SHOW_BUTTON_CANCEL_ORDER && (
-        <Button
-          disabled={(status === 'Pendiente')}
-          type="primary"
-          danger
-        >
-          Cancelar
-        </Button>
-        )
-      ),
+      render: (status: string) => <RequisitionStatusTag status={status} />,
     },
   ];
 
-  if (isLoading || !orders) {
+  if (isLoading || !order) {
     return <LoadingIndicator />;
   }
 
-  const listItems = () : any => {
-    const list : any[] = [];
-    orders.requisitions.forEach((requisition) => {
-      list.push({
-        order: orders.id.toString(),
-        product: requisition.product,
-        quantity_requested: requisition.quantity_requested,
-        quantity_accepted: requisition.quantity_accepted,
-        price: `$ ${requisition.price.toFixed(2)}`,
-        status: requisition.status,
-      });
-    });
-    return list;
-  };
-
-  // order: `Pedido ${order.id.toString()}
-  // - ${moment(order.created_at).format('YYYY-mm-DD hh:mm')}`,
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
+      <OrderSummary order={order} />
       <Table
         rowKey={(row) => row.id}
-        data={listItems()}
+        data={
+          order.requisitions.map((requisition) => ({
+            id: requisition.id,
+            order: order.id.toString(),
+            product: (requisition.product as Product).name,
+            quantity_requested: requisition.quantity_requested,
+            quantity_accepted: requisition.quantity_accepted,
+            price: `$ ${requisition.price.toFixed(2)}`,
+            status: requisition.status,
+          }))
+        }
+        actions={[
+          {
+            text: 'Modificar',
+            action: () => history.push(
+              `/pedidos/proveedor/${orderId}/modificar`,
+            ),
+          },
+        ]}
         columns={columns}
       />
     </Content>

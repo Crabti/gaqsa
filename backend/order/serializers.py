@@ -1,5 +1,6 @@
 from .models import Order, Requisition
 from rest_framework import serializers
+from products.serializers.product import ProductSerializer
 
 
 class RequisitionSerializer(serializers.ModelSerializer):
@@ -12,6 +13,20 @@ class RequisitionSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='name',
     )
+
+    class Meta:
+        model = Requisition
+        fields = '__all__'
+
+
+class NestedRequisitionSerializer(serializers.ModelSerializer):
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+    status = serializers.ReadOnlyField()
+
+    product = ProductSerializer()
 
     class Meta:
         model = Requisition
@@ -45,9 +60,18 @@ class ListOrderSerializer(serializers.ModelSerializer):
         source='requisition_set'
     )
 
+    status = serializers.ReadOnlyField()
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = (
+            'id',
+            'requisitions',
+            'status',
+            'user',
+            'created_at',
+            'provider'
+        )
 
 
 class ListRequisitionSerializer(serializers.ModelSerializer):
@@ -64,3 +88,37 @@ class ListRequisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisition
         fields = '__all__'
+
+
+class RetrieveOrderSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    provider = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name'
+    )
+    requisitions = NestedRequisitionSerializer(many=True)
+
+    status = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Order
+        fields = (
+            'id',
+            'requisitions',
+            'status',
+            'user',
+            'created_at',
+            'provider'
+        )
+
+
+class UpdateOrderQuantitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requisition
+        fields = (
+            'quantity_accepted',
+            'sent'
+        )
