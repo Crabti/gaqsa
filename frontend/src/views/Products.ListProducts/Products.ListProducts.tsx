@@ -17,12 +17,14 @@ import AddToCart from 'components/TableCellActions/AddToCart';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
   EditOutlined, PlusOutlined,
-  SearchOutlined, StopOutlined, ShoppingCartOutlined, TagOutlined,
+  SearchOutlined, StopOutlined,
+  ShoppingCartOutlined, TagOutlined, UserAddOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
 import {
   SHOW_ADD_OFFER_BTN,
+  SHOW_ADD_PROVIDER_TO_PRODUCT,
   SHOW_ADD_TO_CART_BTN,
   SHOW_CANCEL_OFFER_BTN,
   SHOW_EDIT_PRODUCT,
@@ -30,11 +32,18 @@ import {
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
 import TableFilter from 'components/TableFilter';
+import AddProviderToProductModal
+  from 'components/Modals/AddProviderToProductModal';
 import { Actions } from './Products.ListProducts.styled';
 
 interface OfferModal {
   visible: boolean,
   provider: ProductProvider | undefined,
+}
+
+interface AddProviderModal {
+  visible: boolean,
+  product: ProductGroup | undefined,
 }
 
 const ListProducts: React.VC = ({ verboseName, parentName }) => {
@@ -48,6 +57,11 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const [offerModal, setOfferModal] = useState<OfferModal>(
     { visible: false, provider: undefined },
   );
+
+  const [addProviderModal, setAddProviderModal] = useState<AddProviderModal>(
+    { visible: false, product: undefined },
+  );
+
   const [isLoading, setLoading] = useState(false);
   const [
     products, setProducts,
@@ -66,6 +80,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const shouldShowCancelOffer = SHOW_CANCEL_OFFER_BTN && (
     isProvider || isAdmin
   );
+  const shouldShowAddProvider = SHOW_ADD_PROVIDER_TO_PRODUCT && isAdmin;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -193,6 +208,20 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 onClick={() => (
                   history.push(`/productos/${product.id}/modificar`)
                 )}
+              />
+            </Tooltip>
+          ) : null}
+          {shouldShowAddProvider ? (
+            <Tooltip title="Agregar proveedor">
+              <Button
+                style={{ marginRight: '1em' }}
+                shape="circle"
+                icon={<UserAddOutlined />}
+                onClick={() => (
+                  setAddProviderModal({
+                    visible: true,
+                    product,
+                  }))}
               />
             </Tooltip>
           ) : null}
@@ -356,6 +385,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       fetchProducts();
     }
     setOfferModal({ ...offerModal, visible: false });
+    setAddProviderModal({ ...addProviderModal, visible: false });
   };
 
   const onFilterAny = (
@@ -453,6 +483,15 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 visible={offerModal.visible}
                 onClose={onCloseModal}
                 product={offerModal.provider}
+              />
+            ) : null}
+          { shouldShowAddProvider
+           && addProviderModal.product
+            ? (
+              <AddProviderToProductModal
+                visible={addProviderModal.visible}
+                onClose={onCloseModal}
+                product={addProviderModal.product}
               />
             ) : null}
         </>

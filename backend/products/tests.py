@@ -639,3 +639,52 @@ class RequestProductPriceChange(BaseTestCase):
         )
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+
+class AddProviderToProduct(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.provider = ProviderFactory.create()
+        self.target_product = ProductFactory.create()
+        self.other_lab = LaboratoryFactory.create()
+        self.valid_price = 20.50
+        self.valid_iva = 0.2
+        self.valid_payload = {
+            'provider': self.provider.pk,
+            'price': self.valid_price,
+            'iva': self.valid_iva,
+            'laboratory': self.other_lab.pk,
+        }
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("add_provider", kwargs={'pk': self.target_product.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin(self) -> None:
+        response = self.provider_client.post(
+            reverse("add_provider", kwargs={'pk': self.target_product.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        response = self.service_client.post(
+            reverse("add_provider", kwargs={'pk': self.target_product.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_valid_add_provider_to_product_request_should_succeed(
+        self,
+    ) -> None:
+        response = self.admin_client.post(
+            reverse("add_provider", kwargs={'pk': self.target_product.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertGreater(len(self.target_product.providers), 0)

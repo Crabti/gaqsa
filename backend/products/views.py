@@ -30,6 +30,7 @@ from providers.models import Provider
 
 from products.serializers.product import (
     AcceptProductSerializer,
+    AddProviderToProductSerializer,
     CreateProductSerializer,
     ListProductSerializer, ListProviderProductsSerializer,
     ProductSerializer,
@@ -342,3 +343,33 @@ class CreateCategoryView(generics.CreateAPIView):
 class ListCategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = ListCategorySerializer
+
+
+class AddProviderToProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        data = request.data
+        target = Product.objects.get(pk=kwargs.get('pk'))
+        if not target:
+            return Response(
+                data={"code": "TARGET_PRODUCT_NOT_FOUND"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = AddProviderToProductSerializer(
+            data={
+                **data,
+                'product': target.pk,
+            }
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer.save()
+        return Response(
+            data={'code': 'PROVIDER_ADDED'},
+            status=status.HTTP_201_CREATED,
+        )
