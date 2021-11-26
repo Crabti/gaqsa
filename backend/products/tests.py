@@ -678,6 +678,14 @@ class AddProviderToProduct(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
+    def test_return_404_on_invalid_product(self) -> None:
+        response = self.admin_client.post(
+            reverse("add_provider", kwargs={'pk': 9999}),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
     def test_valid_add_provider_to_product_request_should_succeed(
         self,
     ) -> None:
@@ -688,3 +696,71 @@ class AddProviderToProduct(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertGreater(len(self.target_product.providers), 0)
+
+
+class RemoveProviderFromProduct(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        provider = ProviderFactory.create()
+        product = ProductFactory.create()
+        self.product_provider = ProductProviderFactory.create(
+            provider=provider,
+            product=product
+        )
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.delete(
+            reverse(
+                "delete_product_provider",
+                kwargs={
+                    'pk': self.product_provider.pk,
+                }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin(self) -> None:
+        response = self.provider_client.delete(
+            reverse(
+                "delete_product_provider",
+                kwargs={
+                    'pk': self.product_provider.pk,
+                }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        response = self.service_client.delete(
+            reverse(
+                "delete_product_provider",
+                kwargs={
+                    'pk': self.product_provider.pk,
+                }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_return_404_on_invalid_productprovider(self) -> None:
+        response = self.admin_client.delete(
+            reverse(
+                "delete_product_provider",
+                kwargs={
+                    'pk': 9999,
+                }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_remove_provider_from_product_should_succeed(
+        self,
+    ) -> None:
+        response = self.admin_client.delete(
+            reverse(
+                "delete_product_provider",
+                kwargs={
+                    'pk': self.product_provider.pk,
+                }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        with self.assertRaises(ProductProvider.DoesNotExist):
+            ProductProvider.objects.get(pk=self.product_provider.pk)

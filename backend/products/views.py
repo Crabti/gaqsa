@@ -350,13 +350,7 @@ class AddProviderToProductView(APIView):
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         data = request.data
-        target = Product.objects.get(pk=kwargs.get('pk'))
-        if not target:
-            return Response(
-                data={"code": "TARGET_PRODUCT_NOT_FOUND"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+        target = generics.get_object_or_404(Product, pk=kwargs.get('pk'))
         serializer = AddProviderToProductSerializer(
             data={
                 **data,
@@ -372,4 +366,19 @@ class AddProviderToProductView(APIView):
         return Response(
             data={'code': 'PROVIDER_ADDED'},
             status=status.HTTP_201_CREATED,
+        )
+
+
+class RemoveProviderFromProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def delete(self, request: Request, *args, **kwargs) -> Response:
+        target = generics.get_object_or_404(
+            ProductProvider,
+            pk=kwargs.get('pk'),
+        )
+        target.delete()
+        return Response(
+            data={'code': 'PROVIDER_REMOVED'},
+            status=status.HTTP_200_OK,
         )

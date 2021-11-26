@@ -18,7 +18,7 @@ import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import {
   EditOutlined, PlusOutlined,
   SearchOutlined, StopOutlined,
-  ShoppingCartOutlined, TagOutlined, UserAddOutlined,
+  ShoppingCartOutlined, TagOutlined, UserAddOutlined, MinusCircleOutlined,
 } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import useShoppingCart from 'hooks/shoppingCart';
@@ -28,6 +28,7 @@ import {
   SHOW_ADD_TO_CART_BTN,
   SHOW_CANCEL_OFFER_BTN,
   SHOW_EDIT_PRODUCT,
+  SHOW_REMOVE_PROVIDER_FROM_PRODUCT,
 } from 'constants/featureFlags';
 import CreateProductOfferModal from 'components/Modals/CreateProductOfferModal';
 import DiscountText from 'components/DiscountText';
@@ -81,6 +82,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     isProvider || isAdmin
   );
   const shouldShowAddProvider = SHOW_ADD_PROVIDER_TO_PRODUCT && isAdmin;
+  const shouldShowRemoveProvider = SHOW_REMOVE_PROVIDER_FROM_PRODUCT && isAdmin;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -119,6 +121,29 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     notification.success({
       message: 'Se ha cancelado la oferta exitosamente.',
       description: 'El producto ha regresado a su precio original',
+    });
+    fetchProducts();
+  };
+
+  const onRemoveProvider = async (
+    pk: number,
+  ) : Promise<void> => {
+    setLoading(true);
+    const [result, error] = await backend.products.delete(
+      `/productproviders/${pk}`,
+    );
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al desagrupar al proveedor!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+
+    notification.success({
+      message: 'Se ha desagrupado al proveedor del producto exitosamente.',
     });
     fetchProducts();
   };
@@ -289,6 +314,26 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                     shape="circle"
                     icon={<StopOutlined />}
                     disabled={provider.offer === null}
+                  />
+                </Popconfirm>
+              </Tooltip>
+              )}
+            </Col>
+            <Col>
+              {shouldShowRemoveProvider && (
+              <Tooltip title="Desagrupar proveedor de producto">
+                <Popconfirm
+                  title={'¿Está seguro que desea desagrupar al proveedor '
+                  + `${provider.provider} del producto: ${product.name}?`}
+                  onConfirm={
+                    () => onRemoveProvider(
+                      provider.id,
+                    )
+                  }
+                >
+                  <Button
+                    shape="circle"
+                    icon={<MinusCircleOutlined />}
                   />
                 </Popconfirm>
               </Tooltip>

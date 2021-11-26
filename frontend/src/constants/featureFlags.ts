@@ -10,3 +10,4 @@ export const SHOW_CREATE_USER = false;
 export const SHOW_USERS_LIST = true;
 export const SHOW_CANCEL_OFFER_BTN = true;
 export const SHOW_ADD_PROVIDER_TO_PRODUCT = true;
+export const SHOW_REMOVE_PROVIDER_FROM_PRODUCT = true;
