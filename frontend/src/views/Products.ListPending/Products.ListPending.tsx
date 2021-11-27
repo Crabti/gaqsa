@@ -5,6 +5,7 @@ import {
   notification,
   InputNumber,
   Select,
+  Input,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -44,10 +45,15 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
   );
+
   const [
     selected,
     setSelected,
   ] = useState([]);
+
+  const resetSelected = useCallback(
+    () => setSelected([]), [selected],
+  );
 
   const [rejectModalVisible, setRejectModalVisible] = useState<boolean>(false);
   const [groupModal, setGroupModal] = useState<GroupProductModal>(
@@ -126,6 +132,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       price: product.provider.price,
       iva: product.provider.iva,
       laboratory: product.provider.laboratory.id,
+      name: product.name,
     }));
 
     const [, error] = await backend.products.post(
@@ -145,7 +152,8 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       message: '¡Producto(s) aceptado(s) exitosamente!',
     });
     setLoading(false);
-    history.push('/productos');
+    // Refresh
+    history.go(0);
   };
 
   const onRejectSelected = (value: boolean) : void => {
@@ -169,6 +177,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       fetchLabs();
     }
     resetFiltered();
+    resetSelected();
   }, [history, fetchProducts, resetFiltered]);
 
   const onUpdatePrice = (
@@ -187,6 +196,16 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
     const updatedProducts = products;
     if (updatedProducts) {
       updatedProducts[key].provider.iva = value;
+      setProducts(updatedProducts);
+    }
+  };
+
+  const onUpdateName = (
+    key: number, value: string,
+  ) : any => {
+    const updatedProducts = products;
+    if (updatedProducts) {
+      updatedProducts[key].name = value;
       setProducts(updatedProducts);
     }
   };
@@ -224,6 +243,16 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       title: 'Nombre',
       dataIndex: 'name',
       key: 'name',
+      render: (_: string, data: any, index: number) => (
+        <Input
+          defaultValue={data.name}
+          onChange={
+            (value) => onUpdateName(
+              index, value.target.value,
+            )
+          }
+        />
+      ),
     },
     {
       title: 'Categoria',

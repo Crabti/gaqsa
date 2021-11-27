@@ -217,6 +217,7 @@ class AcceptProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             "status",
+            "name",
         )
 
 
