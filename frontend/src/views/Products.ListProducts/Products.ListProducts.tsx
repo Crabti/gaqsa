@@ -11,6 +11,7 @@ import { useBackend } from 'integrations';
 import {
   ProductGroup,
   ProductProvider,
+  Provider,
 } from '@types';
 import Table from 'components/Table';
 import AddToCart from 'components/TableCellActions/AddToCart';
@@ -195,7 +196,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     providers: ProductProvider[],
   ) : any => providers.map((provider) => (
     <Row key={provider.id}>
-      {provider.provider}
+      {(provider.provider as Provider).name}
     </Row>
   ));
 
@@ -457,7 +458,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
       ),
     ))
     || (product.providers.find(
-      (provider) => (provider.provider as string).toLowerCase().includes(
+      (provider) => (provider.provider as Provider).name.toLowerCase().includes(
         value.toLowerCase(),
       ),
     ))
