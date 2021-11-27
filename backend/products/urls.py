@@ -50,5 +50,15 @@ urlpatterns = [
         "category/create",
         views.CreateCategoryView.as_view(),
         name="create_category"
+    ),
+    path(
+        "<int:pk>/providers",
+        views.AddProviderToProductView.as_view(),
+        name="add_provider"
+    ),
+    path(
+        "productproviders/<int:pk>",
+        views.RemoveProviderFromProductView.as_view(),
+        name="delete_product_provider"
     )
 ]

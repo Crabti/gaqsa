@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Typography, Row, Col, Divider, Card,
+  Typography, Row, Col, Card,
 } from 'antd';
 import moment from 'moment';
 import { Props } from './OrderSummary.type';
@@ -23,7 +23,6 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
           { value }
         </Text>
       </Col>
-      <Divider />
     </Row>
   );
 
@@ -50,7 +49,6 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
     <Card style={{
       marginRight: '15em',
       marginLeft: '15em',
-      marginBottom: '3em',
     }}
     >
       <Row justify="center">

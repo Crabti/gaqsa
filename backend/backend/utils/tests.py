@@ -1,3 +1,4 @@
+import logging
 from backend.utils.constants import ADMIN_GROUP, CLIENT_GROUP, PROVIDER_GROUP
 from users.factories.user import UserFactory
 from django.test import TestCase
@@ -10,6 +11,7 @@ class BaseTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
+        logging.disable(logging.WARNING)
 
         cls.provider_user = UserFactory.create()
         provider_group = Group.objects.get(name=PROVIDER_GROUP)

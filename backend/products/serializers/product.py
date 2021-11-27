@@ -15,6 +15,12 @@ class CreateProductProviderSerializer(serializers.ModelSerializer):
         exclude = ('id', 'product')
 
 
+class AddProviderToProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductProvider
+        exclude = ('id', )
+
+
 class UpdateProductProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductProvider
