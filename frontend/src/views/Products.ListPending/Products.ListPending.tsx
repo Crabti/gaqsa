@@ -12,7 +12,7 @@ import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
   Laboratory,
-  Product, ProductGroup,
+  Product, ProductGroup, Provider,
 } from '@types';
 import Table from 'components/Table';
 import moment from 'moment';
@@ -381,7 +381,8 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
               key: product.key,
               name: product.name,
               category: product.category,
-              provider: product.provider.provider,
+              provider: `${(product.provider.provider as Provider).name}
+               - ${(product.provider.provider as Provider).nav_key}`,
               presentation: product.presentation,
               iva: product.provider.iva,
               price: product.provider.price,
