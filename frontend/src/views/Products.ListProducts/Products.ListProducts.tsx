@@ -148,13 +148,6 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     fetchProducts();
   };
 
-  const onOrderFailed = () : void => {
-    notification.error({
-      message: '¡Ocurrió un error al intentar generar la orden de compra!',
-      description: 'Intentalo después.',
-    });
-  };
-
   const createOrder = async () : Promise<void> => {
     setLoading(true);
     if (productsSh.length > 0) {
