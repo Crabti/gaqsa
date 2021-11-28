@@ -69,7 +69,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   ] = useState<ProductGroup[] | undefined>(undefined);
   const [filtered, setFiltered] = useState<ProductGroup[]>([]);
   const {
-    clear, productsSh,
+    productsSh,
   } = useShoppingCart();
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
@@ -158,28 +158,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const createOrder = async () : Promise<void> => {
     setLoading(true);
     if (productsSh.length > 0) {
-      const [, error] = await backend.orders.createOne({
-        productsSh,
-      });
-      if (error) {
-        onOrderFailed();
-        history.replace('/productos/');
-      } else {
-        notification.success({
-          message: '¡Petición de orden creado exitosamente!',
-          description: 'Su orden de compra ha sido recibida y será procesada.'
-            + 'El proveedor le informará lo mas pronto posible '
-            + 'el estatus de su solicitud.',
-        });
-        history.replace('/pedidos/cliente');
-      }
-    } else {
-      notification.error({
-        message: '¡Carrito de compras vacío!',
-        description: 'Inserte alguna cantidad en algún producto que requiera',
-      });
+      history.push('/pedidos');
     }
-    clear();
     setLoading(false);
   };
 
