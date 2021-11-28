@@ -129,6 +129,24 @@ const CreateProductOfferModal: React.FC<Props> = ({
           newPrice: newPrice * 0.5,
         }}
       >
+        {' '}
+        <Form.Item
+          style={{ marginTop: '1.75rem' }}
+          name="newPrice"
+          label="Nuevo precio"
+          required
+        >
+          <InputNumber
+            style={{ width: '100%' }}
+            min={0.01}
+            max={product.price - 0.01}
+            onChange={handleNewPriceUpdate}
+            formatter={
+          (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        }
+            precision={2}
+          />
+        </Form.Item>
         <Form.Item
           style={{ marginTop: '1.75rem' }}
           name="discount_percentage"
@@ -143,23 +161,7 @@ const CreateProductOfferModal: React.FC<Props> = ({
             onChange={handleDiscountUpdate}
           />
         </Form.Item>
-        <Form.Item
-          style={{ marginTop: '1.75rem' }}
-          name="newPrice"
-          label="Nuevo precio"
-          required
-        >
-          <InputNumber
-            style={{ width: '100%' }}
-            min={0.01}
-            max={product.price - 0.01}
-            onChange={handleNewPriceUpdate}
-            formatter={
-              (value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-            }
-            precision={2}
-          />
-        </Form.Item>
+
         <Form.Item
           name="ending_at"
           label="Fecha limite"

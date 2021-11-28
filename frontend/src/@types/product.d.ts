@@ -40,7 +40,7 @@ export interface CreateProductProviderForm {
 
 export interface CreateProductForm {
   name: string;
-  provider: CreateProductProviderForm;
+  provider?: CreateProductProviderForm;
   ieps: number;
   more_info: string;
   category: number;
