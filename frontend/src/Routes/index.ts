@@ -15,12 +15,10 @@ import ListLaboratory from 'views/Laboratory.ListLaboratory';
 import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
 import ProductsDetail from 'views/Products.Detail';
-import ListClientOrderDetail from 'views/Orders.ListClientOrderDetail';
-import ListClientOrder from 'views/Order.ListClientOrder/Order.ListClientOrder';
-import ListProviderOrders from 'views/Order.ListProviderOrders';
+import ListOrders from 'views/Order.ListOrders/Order.ListOrders';
 import PriceChange from 'views/Products.PriceChange';
 import OrderUpdate from 'views/Orders.Update';
-import OrderListOrderProviderDetail from 'views/Order.ListOrderProviderDetail';
+import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 
 import {
@@ -97,39 +95,25 @@ export const productRoutes: Routes = {
 };
 
 const ordersRoutes: Routes = {
-  listOrderClientDetail: {
-    path: '/pedidos/cliente/:id',
-    view: ListClientOrderDetail,
-    verboseName: 'Detalle de orden',
+  orderDetail: {
+    path: '/pedidos/:id',
+    view: OrderDetail,
+    verboseName: 'Detalle de pedido',
     showInMenu: false,
-    hasAccess: ((auth) => auth.isClient),
+    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
   listOrder: {
-    path: '/pedidos/cliente',
-    view: ListClientOrder,
+    path: '/pedidos',
+    view: ListOrders,
     verboseName: 'Historial de pedidos',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient),
+    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
   updateOrder: {
-    path: '/pedidos/proveedor/:id/modificar',
+    path: '/pedidos/:id/modificar',
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
     hasAccess: (auth) => auth.isProvider || auth.isAdmin,
-  },
-  listOrderProvider: {
-    path: '/pedidos/proveedor',
-    view: ListProviderOrders,
-    verboseName: 'Historial de pedidos',
-    showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
-  },
-  listOrderProviderDetailed: {
-    path: '/pedidos/proveedor/:id',
-    view: OrderListOrderProviderDetail,
-    verboseName: 'Pedido detallado',
-    showInMenu: false,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
   },
 };
 

@@ -19,6 +19,7 @@ export interface Order extends CommonType {
     requisitions: Requisition[];
     provider: string | Provider;
     status: string;
+    total?: number;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

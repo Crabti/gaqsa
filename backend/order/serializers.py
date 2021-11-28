@@ -61,6 +61,7 @@ class ListOrderSerializer(serializers.ModelSerializer):
     )
 
     status = serializers.ReadOnlyField()
+    total = serializers.ReadOnlyField()
 
     class Meta:
         model = Order
@@ -70,7 +71,8 @@ class ListOrderSerializer(serializers.ModelSerializer):
             'status',
             'user',
             'created_at',
-            'provider'
+            'provider',
+            'total'
         )
 
 

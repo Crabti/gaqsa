@@ -2,6 +2,7 @@ from django.db import models
 from users.models import User
 from products.models import Product
 from providers.models import Provider
+from django.db.models import Sum
 
 
 class Requisition(models.Model):
@@ -42,6 +43,13 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cancelled = models.BooleanField(default=False)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+
+    @property
+    def total(self):
+        queryset = self.requisition_set.all().aggregate(
+            total_price=Sum('price')
+        )
+        return queryset['total_price']
 
     @property
     def requisitions(self):
