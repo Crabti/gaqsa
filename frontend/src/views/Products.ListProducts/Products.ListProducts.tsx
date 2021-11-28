@@ -111,7 +111,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   const createOrder = async () : Promise<void> => {
     setLoading(true);
     if (productsSh.length > 0) {
-      history.replace('/pedidos');
+      history.push('/pedidos');
     }
     setLoading(false);
   };
