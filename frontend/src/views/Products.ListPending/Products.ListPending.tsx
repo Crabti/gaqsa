@@ -153,7 +153,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
     });
     setLoading(false);
     // Refresh
-    history.go(0);
+    fetchProducts();
   };
 
   const onRejectSelected = (value: boolean) : void => {
