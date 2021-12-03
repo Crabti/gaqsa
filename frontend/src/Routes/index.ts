@@ -28,6 +28,7 @@ import {
   SHOW_USERS_LIST,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
+import OrderCreateOrder from 'views/Order.CreateOrder';
 
 export interface RoutesType {
   path: string;
@@ -114,6 +115,13 @@ const ordersRoutes: Routes = {
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
     hasAccess: (auth) => auth.isProvider || auth.isAdmin,
+  },
+  createOrder: {
+    path: '/pedidos',
+    view: OrderCreateOrder,
+    verboseName: 'Resumen de Orden',
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isClient),
   },
 };
 
