@@ -30,6 +30,7 @@ from providers.models import Provider
 
 from products.serializers.product import (
     AcceptProductSerializer,
+    AddProviderToProductSerializer,
     CreateProductSerializer,
     ListProductSerializer, ListProviderProductsSerializer,
     ProductSerializer,
@@ -342,3 +343,42 @@ class CreateCategoryView(generics.CreateAPIView):
 class ListCategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = ListCategorySerializer
+
+
+class AddProviderToProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        data = request.data
+        target = generics.get_object_or_404(Product, pk=kwargs.get('pk'))
+        serializer = AddProviderToProductSerializer(
+            data={
+                **data,
+                'product': target.pk,
+            }
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer.save()
+        return Response(
+            data={'code': 'PROVIDER_ADDED'},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class RemoveProviderFromProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def delete(self, request: Request, *args, **kwargs) -> Response:
+        target = generics.get_object_or_404(
+            ProductProvider,
+            pk=kwargs.get('pk'),
+        )
+        target.delete()
+        return Response(
+            data={'code': 'PROVIDER_REMOVED'},
+            status=status.HTTP_200_OK,
+        )
