@@ -2,7 +2,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
   Button,
+  Col,
   notification,
+  Row,
   Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
@@ -14,17 +16,20 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
-import { SHOW_BUTTON_CANCEL_ORDER } from 'constants/featureFlags';
-import {
-  Actions,
-} from 'views/Products.ListProducts/Products.ListProducts.styled';
-import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
 
-const ListClientOrder: React.VC = ({ verboseName, parentName }) => {
+import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
+import OrderStatusTag from 'components/OrderStatusTag';
+import { EditOutlined } from '@ant-design/icons';
+import useAuth from 'hooks/useAuth';
+
+const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [orders, setOrders] = useState<Order[] | undefined>(undefined);
+  const { isClient } = useAuth();
+
+  const shouldShowModifyOrder = !isClient;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -67,28 +72,59 @@ const ListClientOrder: React.VC = ({ verboseName, parentName }) => {
       },
     },
     {
+      title: 'Cliente',
+      dataIndex: 'user',
+      key: 'user',
+    },
+    {
       title: 'Proveedor',
       dataIndex: 'provider',
       key: 'provider',
+    },
+    {
+      title: 'Estado',
+      dataIndex: 'status',
+      key: 'status,',
+      render: (status: string) => <OrderStatusTag status={status} />,
+    },
+    {
+      title: 'Total',
+      dataIndex: 'total',
+      key: 'total,',
     },
     {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
       render: (_: number, order: Order) => (
-        <Actions>
-          { !SHOW_BUTTON_CANCEL_ORDER && (
-          <Tooltip title="Ver detalles">
-            <Button
-              shape="circle"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                history.push(`/pedidos/cliente/${order.id}`);
-              }}
-            />
-          </Tooltip>
-          )}
-        </Actions>
+        <Row gutter={10} justify="center">
+          <Col>
+            <Tooltip title="Ver detalles">
+              <Button
+                shape="circle"
+                icon={<SearchOutlined />}
+                onClick={() => {
+                  history.push(`/pedidos/${order.id}`);
+                }}
+              />
+            </Tooltip>
+          </Col>
+          {shouldShowModifyOrder
+            ? (
+              <Col>
+                <Tooltip title="Modificar pedido">
+                  <Button
+                    shape="circle"
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      history.push(`/pedidos/${order.id}/modificar`);
+                    }}
+                  />
+                </Tooltip>
+              </Col>
+            )
+            : null}
+        </Row>
       ),
     },
   ];
@@ -105,8 +141,11 @@ const ListClientOrder: React.VC = ({ verboseName, parentName }) => {
         data={
           orders.map((order) => ({
             id: order.id,
+            user: order.user,
             created_at: moment(order.created_at).format('YYYY-mm-DD hh:mm'),
+            status: order.status,
             provider: order.provider,
+            total: `$${order.total?.toFixed(2)}`,
           }))
       }
         columns={columns}
@@ -115,4 +154,4 @@ const ListClientOrder: React.VC = ({ verboseName, parentName }) => {
   );
 };
 
-export default ListClientOrder;
+export default ListOrders;

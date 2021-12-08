@@ -7,6 +7,7 @@ from products.models import (
 )
 from products.serializers.laboratory import LaboratorySerializer
 from providers.models import Provider
+from providers.serializers.providers import ProviderSerializer
 
 
 class CreateProductProviderSerializer(serializers.ModelSerializer):
@@ -28,10 +29,7 @@ class UpdateProductProviderSerializer(serializers.ModelSerializer):
 
 
 class ProductProviderSerializer(serializers.ModelSerializer):
-    provider = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name",
-    )
+    provider = ProviderSerializer()
 
     laboratory = LaboratorySerializer()
 
@@ -223,6 +221,7 @@ class AcceptProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = (
             "status",
+            "name",
         )
 
 

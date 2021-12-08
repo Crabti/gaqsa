@@ -13,8 +13,9 @@ import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import RequisitionStatusTag from 'components/RequisitionStatusTag';
 import OrderSummary from 'components/OrderSummary';
+import useAuth from 'hooks/useAuth';
 
-const OrderListOrderProviderDetail: React.VC = (
+const OrderDetail: React.VC = (
   { verboseName, parentName },
 ) => {
   const backend = useBackend();
@@ -22,6 +23,10 @@ const OrderListOrderProviderDetail: React.VC = (
   const { id: orderId } = useParams<{ id: string; }>();
   const [isLoading, setLoading] = useState(true);
   const [order, setOrders] = useState<Order | undefined>(undefined);
+
+  const { isClient } = useAuth();
+
+  const shouldShowModifyOrder = !isClient;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -103,8 +108,9 @@ const OrderListOrderProviderDetail: React.VC = (
           {
             text: 'Modificar',
             action: () => history.push(
-              `/pedidos/proveedor/${orderId}/modificar`,
+              `/pedidos/${orderId}/modificar`,
             ),
+            hidden: !shouldShowModifyOrder,
           },
         ]}
         columns={columns}
@@ -113,4 +119,4 @@ const OrderListOrderProviderDetail: React.VC = (
   );
 };
 
-export default OrderListOrderProviderDetail;
+export default OrderDetail;

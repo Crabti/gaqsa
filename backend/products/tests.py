@@ -146,7 +146,7 @@ class AcceptProductRequestAsNew(BaseTestCase):
 
         self.new_price = 20
         self.new_iva = 0.5
-
+        self.new_name = 'New product name'
         for product in self.products:
             ProductProviderFactory.create(
                 product=product,
@@ -158,6 +158,7 @@ class AcceptProductRequestAsNew(BaseTestCase):
         self.valid_payload = [
             {
                 'id': product.id,
+                'name': self.new_name,
                 'price': self.new_price,
                 'iva': self.new_iva,
                 'laboratory': laboratory.id
@@ -191,8 +192,9 @@ class AcceptProductRequestAsNew(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         for product in self.products:
-            product.refresh_from_db(fields=["status"])
+            product.refresh_from_db(fields=["status", "name"])
             self.assertEqual(product.status, Product.ACCEPTED)
+            self.assertEqual(product.name, self.new_name)
             providers = product.providers.all()
             for provider in providers:
                 self.assertEqual(provider.price, self.new_price)

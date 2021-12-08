@@ -19,11 +19,6 @@ import useAuth from 'hooks/useAuth';
 
 const INITIAL_STATE : CreateProductForm = {
   name: '',
-  provider: {
-    price: 0.50,
-    iva: 16.00,
-    laboratory: 1,
-  },
   ieps: 0.00,
   more_info: '',
   category: 1,

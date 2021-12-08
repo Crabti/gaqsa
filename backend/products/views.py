@@ -147,6 +147,7 @@ class AcceptProductAsNew(APIView):
                 instance=request,
                 data={
                     'status': Product.ACCEPTED,
+                    'name': data['name'],
                 },
                 partial=True
             )
