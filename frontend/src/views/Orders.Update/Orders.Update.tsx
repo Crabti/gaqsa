@@ -74,7 +74,7 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
         <>
           <Form.Item
             name={['requisitions', index, 'quantity_accepted']}
-            initialValue={data.quantity_accepted}
+            initialValue={data.quantity_requested}
           >
             <InputNumber
               max={data.quantity_requested}

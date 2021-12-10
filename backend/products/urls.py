@@ -60,5 +60,10 @@ urlpatterns = [
         "productproviders/<int:pk>",
         views.RemoveProviderFromProductView.as_view(),
         name="delete_product_provider"
+    ),
+    path(
+        "productproviders/<int:pk>/active",
+        views.ToggleProductProviderActiveView.as_view(),
+        name="toggle_provider_product"
     )
 ]

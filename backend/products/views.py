@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime
 
 from backend.utils.groups import is_admin, is_provider
-from backend.utils.permissions import IsAdmin, IsProvider
+from backend.utils.permissions import IsAdmin, IsOwnProviderOrAdmin, IsProvider
 from backend.utils.product_key import create_product_key
 
 from rest_framework.request import Request
@@ -34,7 +34,8 @@ from products.serializers.product import (
     CreateProductSerializer,
     ListProductSerializer, ListProviderProductsSerializer,
     ProductSerializer,
-    RejectProductSerializer, UpdateProductPrice,
+    RejectProductSerializer,
+    ToggleProductProviderActiveSerializer, UpdateProductPrice,
     UpdateProductProviderSerializer,
     UpdateProductSerializer,
 )
@@ -49,7 +50,9 @@ class ListProductView(generics.ListAPIView):
 
     def get_queryset(self):
         if is_provider(self.request.user):
-            provider = Provider.objects.get(user=self.request.user)
+            provider = Provider.objects.get(
+                user=self.request.user
+            )
             return Product.objects.filter(
                 productprovider__provider=provider
             )
@@ -210,9 +213,8 @@ class GroupProductsView(APIView):
             # Change relation to target
             instance = serializer.save()
 
-            # Change state of old product instance
-            instance.product.status = Product.INACTIVE
-            instance.product.save()
+            # Delte old product request
+            instance.product.delete()
             instance.product = target
             instance.save()
 
@@ -382,3 +384,9 @@ class RemoveProviderFromProductView(APIView):
             data={'code': 'PROVIDER_REMOVED'},
             status=status.HTTP_200_OK,
         )
+
+
+class ToggleProductProviderActiveView(generics.UpdateAPIView):
+    permission_classes = (IsOwnProviderOrAdmin, )
+    queryset = ProductProvider.objects.all()
+    serializer_class = ToggleProductProviderActiveSerializer
