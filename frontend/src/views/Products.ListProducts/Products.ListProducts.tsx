@@ -84,7 +84,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   );
   const shouldShowAddProvider = SHOW_ADD_PROVIDER_TO_PRODUCT && isAdmin;
   const shouldShowRemoveProvider = SHOW_REMOVE_PROVIDER_FROM_PRODUCT && isAdmin;
-  const shouldShowToggleProductProviderActive = isAdmin || isClient;
+  const shouldShowToggleProductProviderActive = isAdmin || isProvider;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
