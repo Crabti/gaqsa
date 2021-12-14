@@ -22,7 +22,7 @@ import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 
 import {
-  LIST_PROVIDERS,
+  LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
   SHOW_CREATE_USER,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
@@ -36,8 +36,9 @@ export interface RoutesType {
   verboseName: string;
   showInMenu?: boolean;
   isPublic?: boolean;
-  hasAccess?(auth: AuthType): boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
+
+  hasAccess?(auth: AuthType): boolean;
 }
 
 export interface Routes {
@@ -50,7 +51,7 @@ export interface RegisteredGroup {
     showInMenu?: boolean;
     icon?: React.FC;
     verboseName?: string;
-  }
+  };
 }
 
 export const productRoutes: Routes = {
@@ -176,6 +177,13 @@ const catalogsRoutes: Routes = {
     view: ListLaboratory,
     verboseName: 'Lista de laboratorios',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAnnouncements: {
+    path: '/circulares/nuevo',
+    view: CreateUser,
+    verboseName: 'Lista de circulares',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };
