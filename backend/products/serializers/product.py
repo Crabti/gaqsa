@@ -159,6 +159,7 @@ class ListProviderProductsSerializer(serializers.ModelSerializer):
             "presentation",
             "category",
             "ieps",
+            "status",
             "more_info",
             "created_at",
             "updated_at",
@@ -231,4 +232,12 @@ class RejectProductSerializer(serializers.ModelSerializer):
         fields = (
             "status",
             "reject_reason",
+        )
+
+
+class ToggleProductProviderActiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductProvider
+        fields = (
+            "active",
         )

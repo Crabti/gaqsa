@@ -9,6 +9,7 @@ export interface ProductProvider extends CommonType {
   iva: number;
   laboratory: string | Laboratory;
   offer?: Offer;
+  active?: boolean;
 }
 
 interface BaseProduct extends CommonType {
