@@ -2,6 +2,8 @@ import {
   AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
+import AnnouncementsCreate from 'views/Announcements.Create';
+import AnnouncementsList from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
 import ProductsCreateForm from 'views/Products.CreateForm';
@@ -23,7 +25,7 @@ import ListProviders from 'views/Providers.ListProviders';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
-  SHOW_CREATE_USER,
+  SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
 } from 'constants/featureFlags';
@@ -150,7 +152,7 @@ export const otherRoutes: Routes = {
   },
 };
 
-const catalogsRoutes: Routes = {
+export const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
@@ -180,9 +182,16 @@ const catalogsRoutes: Routes = {
     hasAccess: ((auth) => auth.isAdmin),
   },
   listAnnouncements: {
-    path: '/circulares/nuevo',
-    view: CreateUser,
+    path: '/circulares',
+    view: AnnouncementsList,
     verboseName: 'Lista de circulares',
+    showInMenu: SHOW_LIST_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
     showInMenu: SHOW_CREATE_ANNOUNCEMENT,
     hasAccess: ((auth) => auth.isAdmin),
   },
