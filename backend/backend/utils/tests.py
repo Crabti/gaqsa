@@ -5,12 +5,16 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core import mail
 
 
 class BaseTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
+        # Clean mail outbox
+        mail.outbox = []
+
         logging.disable(logging.WARNING)
 
         cls.provider_user = UserFactory.create()
