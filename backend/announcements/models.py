@@ -1,8 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from users.models import Profile
-
 
 class Announcement(models.Model):
     PROVIDERS = "providers"
