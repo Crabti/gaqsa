@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from backend.utils.groups import is_admin, is_provider
+from backend.utils.groups import is_provider
 from backend.utils.permissions import IsAdmin, IsOwnProviderOrAdmin, IsProvider
 from backend.utils.product_key import create_product_key
 

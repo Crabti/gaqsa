@@ -78,6 +78,7 @@ class CreateProductSerializer(serializers.ModelSerializer):
         ProductProvider.objects.create(product=product, **provider_data)
         return product
 
+
 class CreateProductMultipleProvidersSerializer(serializers.ModelSerializer):
     provider = CreateProductProviderSerializer(write_only=True, many=True)
 
@@ -106,6 +107,7 @@ class CreateProductMultipleProvidersSerializer(serializers.ModelSerializer):
         for provider in providers:
             ProductProvider.objects.create(product=product, **provider)
         return product
+
 
 class UpdateProductSerializer(serializers.ModelSerializer):
     class Meta:

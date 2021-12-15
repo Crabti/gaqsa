@@ -4,7 +4,6 @@ from http import HTTPStatus
 
 from django.urls import reverse
 from django.core import mail
-from backend.utils.emails import get_admin_emails
 
 from products.factories.product import (
     ProductFactory, ProductProviderFactory
