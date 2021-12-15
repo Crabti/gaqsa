@@ -3,6 +3,7 @@ from users.models import User
 from products.models import Product
 from providers.models import Provider
 from django.db.models import Sum
+from auditlog.registry import auditlog
 
 
 class Requisition(models.Model):
@@ -80,3 +81,7 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.created_at} - {self.user} \
          - {self.updated_at} - {self.status}"
+
+
+auditlog.register(Order)
+auditlog.register(Requisition)
