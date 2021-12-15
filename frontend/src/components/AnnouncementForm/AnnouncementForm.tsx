@@ -40,9 +40,10 @@ const AnnouncementForm: React.FC = () => {
     formData.append('file', fileToUpload);
     formData.append('title', data.title);
     formData.append('content', data.content);
+    formData.append('addressee', data.addressee);
     setIsLoading(false);
     const result = await backend.announcements.post(
-      `${backend.rootEndpoint}${ANNOUNCEMENT_ROOT}`,
+      `${backend.rootEndpoint}${ANNOUNCEMENT_ROOT}/`,
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
     );
