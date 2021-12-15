@@ -1,6 +1,7 @@
 import { InboxOutlined } from '@ant-design/icons';
+import { AddresseeTypes } from '@types';
 import {
-  Button, Form, Input, Upload,
+  Button, Form, Input, Select, Upload,
 } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { UploadProps } from 'antd/lib/upload/interface';
@@ -27,7 +28,7 @@ const AnnouncementForm: React.FC = () => {
   };
 
   const handleSubmit = async (
-    data: { title: string; content: string; },
+    data: { title: string; content: string; addressee: string; },
   ): Promise<void> => {
     setIsLoading(true);
     if (!fileToUpload) {
@@ -45,7 +46,7 @@ const AnnouncementForm: React.FC = () => {
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
     );
-    console.log(result, formData.get('file'));
+    console.log(result, data, formData.get('file'));
   };
 
   return (
@@ -77,6 +78,15 @@ const AnnouncementForm: React.FC = () => {
             Solo se aceptan archivos PNG, JPG y PDF.
           </p>
         </Upload.Dragger>
+      </Form.Item>
+      <Form.Item name="addressee" label="Enviar a">
+        <Select placeholder="Selecciona a quien enviar la circular...">
+          {AddresseeTypes.map((el) => (
+            <Select.Option key={el.key} value={el.key}>
+              {el.value}
+            </Select.Option>
+          ))}
+        </Select>
       </Form.Item>
 
       <Form.Item wrapperCol={{

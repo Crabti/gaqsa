@@ -1,4 +1,8 @@
-import { Announcement, CreateAnnouncement } from './announcement';
+import {
+  AddresseeTypes,
+  Announcement,
+  CreateAnnouncement,
+} from './announcement';
 import {
   CreateProductForm,
   Product,
@@ -27,6 +31,8 @@ import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
 
 export type Maybe<T> = T | undefined;
+
+export { AddresseeTypes };
 
 export type {
   AnimalGroup,
