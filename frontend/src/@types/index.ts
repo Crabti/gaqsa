@@ -1,3 +1,4 @@
+import { Announcement, CreateAnnouncement } from './announcement';
 import {
   CreateProductForm,
   Product,
@@ -29,6 +30,8 @@ export type Maybe<T> = T | undefined;
 
 export type {
   AnimalGroup,
+  Announcement,
+  CreateAnnouncement,
   Category,
   CommonType,
   CreateCategoryForm,

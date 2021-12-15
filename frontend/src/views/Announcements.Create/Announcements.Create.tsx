@@ -1,3 +1,4 @@
+import AnnouncementForm from 'components/AnnouncementForm';
 import React from 'react';
 
 interface Props {
@@ -5,7 +6,7 @@ interface Props {
 }
 
 const AnnouncementsCreate: React.FC<Props> = () => (
-  <div>Nuevo</div>
+  <AnnouncementForm />
 );
 
 export default AnnouncementsCreate;
