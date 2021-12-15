@@ -31,6 +31,7 @@ from providers.models import Provider
 from products.serializers.product import (
     AcceptProductSerializer,
     AddProviderToProductSerializer,
+    CreateProductMultipleProvidersSerializer,
     CreateProductSerializer,
     ListProductSerializer, ListProviderProductsSerializer,
     ProductSerializer,
@@ -81,26 +82,26 @@ class CreateProductView(generics.CreateAPIView):
                 user=self.request.user
             )
             data['provider']['provider'] = provider.id
+            product_status = Product.PENDING
+            serializer = CreateProductSerializer(
+                data=data,
+            )
         else:
-            provider = Provider.objects.get(pk=data['provider']['provider'])
-        serializer = CreateProductSerializer(
-            data=data,
-        )
+            product_status = Product.ACCEPTED
+            serializer = CreateProductMultipleProvidersSerializer(
+                data=data,
+            )
         if not serializer.is_valid():
             return Response(
                 data=serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if is_admin(self.request.user):
-            product = serializer.save(key=key, status=Product.ACCEPTED)
-        else:
-            product = serializer.save(key=key)
-        product_provider = ProductProvider.objects.filter(
-            provider=provider, product=product
-        ).last()
-        send_mail_on_create_product_request(product_provider)
+        product = serializer.save(key=key, status=product_status)
+        for product_provider in product.providers:
+            send_mail_on_create_product_request(product_provider)
         return Response(
-            data=serializer.data, status=status.HTTP_201_CREATED
+            data=serializer.data,
+            status=status.HTTP_201_CREATED
         )
 
 

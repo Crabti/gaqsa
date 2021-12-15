@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 from django.urls import reverse
 from django.core import mail
+from backend.utils.emails import get_admin_emails
 
 from products.factories.product import (
     ProductFactory, ProductProviderFactory
@@ -70,6 +71,7 @@ class RegisterRequestToCreateProduct(BaseTestCase):
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
+
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         # Creates product - provider relation
         product_providers = ProductProvider.objects.all().count()
@@ -79,34 +81,36 @@ class RegisterRequestToCreateProduct(BaseTestCase):
             provider=self.provider
         )
         self.assertNotEqual(product_provider, None)
-        result = json.loads(json.dumps(response.data))
-        self.assertEqual(result['status'], Product.PENDING)
+        self.assertEqual(len(mail.outbox), 1)
 
 
 class RegisterRequestToCreateProductAsAdmin(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
-        provider = ProviderFactory.create(user=user)
+        providers = ProviderFactory.create_batch(5)
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
         animal_groups = AnimalGroupFactory.create_batch(5)
-        product = ProductFactory.build(
+        self.product = ProductFactory.build(
             category=category
         )
-        provider = ProductProviderFactory.build(
-            laboratory=laboratory,
-            provider=provider
-        )
-        provider_payload = CreateProductProviderSerializer(
-            provider
+        product_providers = [
+            ProductProviderFactory.build(
+                laboratory=laboratory,
+                provider=provider
+            )
+            for provider in providers
+        ]
+        product_provider_payload = CreateProductProviderSerializer(
+            product_providers,
+            many=True
         ).data
 
         self.valid_payload = ProductSerializer(
-            product,
+            self.product,
         ).data
 
-        self.valid_payload['provider'] = provider_payload
+        self.valid_payload['provider'] = product_provider_payload
 
         # Override serializer field to add m2m objects
         self.valid_payload["animal_groups"] = [
@@ -130,8 +134,9 @@ class RegisterRequestToCreateProductAsAdmin(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
-        result = json.loads(json.dumps(response.data))
-        self.assertEqual(result['status'], Product.ACCEPTED)
+        product = Product.objects.get(name=self.product.name)
+        self.assertEqual(product.providers.count(), 5)
+        self.assertEqual(len(mail.outbox), 5)
 
 
 class AcceptProductRequestAsNew(BaseTestCase):
