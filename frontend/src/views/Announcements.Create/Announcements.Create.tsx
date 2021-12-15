@@ -1,11 +1,7 @@
 import AnnouncementForm from 'components/AnnouncementForm';
 import React from 'react';
 
-interface Props {
-  handleSubmit(data: any): void;
-}
-
-const AnnouncementsCreate: React.FC<Props> = () => (
+const AnnouncementsCreate: React.FC = () => (
   <AnnouncementForm />
 );
 

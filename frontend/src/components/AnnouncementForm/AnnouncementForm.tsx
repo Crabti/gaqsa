@@ -1,7 +1,7 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { AddresseeTypes } from '@types';
 import {
-  Button, Form, Input, Select, Upload,
+  Button, Form, Input, notification, Select, Upload,
 } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { UploadProps } from 'antd/lib/upload/interface';
@@ -33,6 +33,7 @@ const AnnouncementForm: React.FC = () => {
     setIsLoading(true);
     if (!fileToUpload) {
       setIsLoading(false);
+      notification.error({ message: 'Necesitas seleccionar un archivo' });
       return;
     }
     // We manually create the data to be uploaded
@@ -41,13 +42,21 @@ const AnnouncementForm: React.FC = () => {
     formData.append('title', data.title);
     formData.append('content', data.content);
     formData.append('addressee', data.addressee);
-    setIsLoading(false);
-    const result = await backend.announcements.post(
+
+    const [result, err] = await backend.announcements.post(
       `${backend.rootEndpoint}${ANNOUNCEMENT_ROOT}/`,
       formData,
       { headers: { 'Content-Type': 'multipart/form-data' } },
     );
-    console.log(result, data, formData.get('file'));
+
+    if (!result || !result.data || err) {
+      setIsLoading(false);
+      notification.error({ message: 'Error al enviar la circular' });
+      return;
+    }
+
+    setIsLoading(false);
+    notification.success({ message: 'Circular enviada exitosamente' });
   };
 
   return (

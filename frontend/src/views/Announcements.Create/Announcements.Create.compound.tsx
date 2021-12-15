@@ -1,4 +1,4 @@
-import { Content } from 'antd/es/layout/layout';
+import { Layout } from 'antd';
 import Title from 'components/Title';
 import React from 'react';
 import AnnouncementsCreateComp from './Announcements.Create';
@@ -6,22 +6,14 @@ import AnnouncementsCreateComp from './Announcements.Create';
 const AnnouncementsCreate: React.VC = ({
   verboseName,
   parentName,
-}) => {
-  const handleSubmit = (data: any): void => {
-    console.log(data);
-  };
-
-  return (
-    <Content>
-      <Title
-        viewName={verboseName}
-        parentName={parentName}
-      />
-      <AnnouncementsCreateComp
-        handleSubmit={handleSubmit}
-      />
-    </Content>
-  );
-};
+}) => (
+  <Layout.Content>
+    <Title
+      viewName={verboseName}
+      parentName={parentName}
+    />
+    <AnnouncementsCreateComp />
+  </Layout.Content>
+);
 
 export default AnnouncementsCreate;
