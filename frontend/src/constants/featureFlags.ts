@@ -13,3 +13,4 @@ export const SHOW_ADD_PROVIDER_TO_PRODUCT = true;
 export const SHOW_REMOVE_PROVIDER_FROM_PRODUCT = true;
 export const SHOW_LIST_ANNOUNCEMENT = true;
 export const SHOW_CREATE_ANNOUNCEMENT = false;
+export const SHOW_AUDIT_LOG = true;

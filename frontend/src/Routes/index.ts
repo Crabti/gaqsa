@@ -22,12 +22,14 @@ import PriceChange from 'views/Products.PriceChange';
 import OrderUpdate from 'views/Orders.Update';
 import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
+import ListAuditLog from 'views/AuditLog.ListAuditLog';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
   SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
+  SHOW_AUDIT_LOG,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
 import OrderCreateOrder from 'views/Order.CreateOrder';
@@ -210,6 +212,13 @@ export const usersRoutes: Routes = {
     view: ListUsers,
     verboseName: 'Lista de Usuarios',
     showInMenu: SHOW_USERS_LIST,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAuditLog: {
+    path: '/bitacora',
+    view: ListAuditLog,
+    verboseName: 'Bitácora de acciones',
+    showInMenu: SHOW_AUDIT_LOG,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };

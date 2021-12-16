@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import React, { useEffect } from 'react';
 import FormButton from 'components/FormButton';
+import { CreateProductForm } from '@types';
 import Props from './ProductForm.type';
 
 const { Option } = Select;
@@ -29,13 +30,29 @@ const ProductForm: React.FC<Props> = ({
     form.setFieldsValue({ ...initialState });
   }, [form, initialState]);
 
+  const onSubmit = () : void => {
+    const values = form.getFieldsValue();
+
+    if (isAdmin && values.providers) {
+      const result : CreateProductForm = {
+        ...values,
+        provider: values.providers.map((id: number) => ({
+          provider: id,
+          ...values.provider,
+        })),
+      };
+      onFinish(result);
+    } else {
+      onFinish(values);
+    }
+  };
   return (
     <Form
       {...layout}
       form={form}
       name="productForm"
       initialValues={initialState}
-      onFinish={onFinish}
+      onFinish={onSubmit}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
     >
@@ -43,14 +60,15 @@ const ProductForm: React.FC<Props> = ({
       <>
         <Col span={24}>
           <Form.Item
-            name={['provider', 'provider']}
-            label="Proveedor"
+            name="providers"
+            label="Proveedores"
             rules={[{ required: true }]}
           >
             <Select
               showSearch
               placeholder="Buscar proveedor"
               optionFilterProp="children"
+              mode="multiple"
               filterOption={(input, option) => (option === undefined
                 ? false : option.children
                   .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
@@ -179,9 +197,8 @@ const ProductForm: React.FC<Props> = ({
                 name={['provider', 'iva']}
                 label="IVA (%)"
                 rules={[{ required: true }]}
-
               >
-                <Select defaultValue="16">
+                <Select>
                   <Option value="0" key="0"> 0.00 %</Option>
                   <Option value="16" key="16"> 16.00 %</Option>
                 </Select>

@@ -1,7 +1,7 @@
 from django.urls import path
 
 from users.views import (
-    CreateUser, CustomTokenObtainPairView,
+    CreateUser, CustomTokenObtainPairView, ListAuditLogView,
     UpdateUserActiveView, ListUserView, RetrieveUserView,
 )
 from rest_framework_simplejwt.views import (
@@ -17,4 +17,6 @@ urlpatterns = [
     path('<int:pk>/active', UpdateUserActiveView.as_view(),
          name='user-active'),
     path('<int:pk>', RetrieveUserView.as_view(), name="retrieve_user"),
+    path('audit', ListAuditLogView.as_view(), name='list_audit_log'),
+
 ]

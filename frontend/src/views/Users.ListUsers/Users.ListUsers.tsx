@@ -112,7 +112,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
       defaultSortOrder: 'ascend',
     },
     {
-      title: 'Ultimo inicio de sesion',
+      title: 'Último inicio de sesión',
       dataIndex: 'last_login',
       key: 'last_login',
       sorter: (a: any, b: any) => moment(
@@ -145,10 +145,10 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
           : `Activar usuario ${data.username}`;
 
         const content = active
-          ? 'Se desabilitara el acceso al usuario y no'
-          + ' podra ingresar al sistema nuevamente.'
-          : 'Se habilitara el acceso al usuario y'
-            + ' podra ingresar nuevamente';
+          ? 'Se deshabilitará el acceso al usuario y no'
+          + ' podrá ingresar al sistema nuevamente.'
+          : 'Se habilitará el acceso al usuario y'
+            + ' podrá ingresar nuevamente';
 
         const isMe = auth.user?.id === data.id;
         const toolTipTitle = active ? 'Desactivar usuario' : 'Activar usuario';
@@ -162,7 +162,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
             >
               <Button
                 shape="circle"
-                icon={active ? <StopOutlined /> : <CheckCircleOutlined />}
+                icon={active ? <CheckCircleOutlined /> : <StopOutlined />}
                 disabled={auth.user?.id === data.id}
                 onClick={() => {
                   confirm({

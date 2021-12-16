@@ -79,6 +79,36 @@ class CreateProductSerializer(serializers.ModelSerializer):
         return product
 
 
+class CreateProductMultipleProvidersSerializer(serializers.ModelSerializer):
+    provider = CreateProductProviderSerializer(write_only=True, many=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            "name",
+            "presentation",
+            "category",
+            "ieps",
+            "more_info",
+            "animal_groups",
+            "active_substance",
+            "provider",
+            "status"
+        )
+
+    def create(self, validated_data):
+        providers = validated_data.pop('provider')
+        animal_groups = validated_data.pop('animal_groups')
+        product = Product.objects.create(**validated_data)
+        if animal_groups:
+            for group in animal_groups:
+                product.animal_groups.add(group)
+
+        for provider in providers:
+            ProductProvider.objects.create(product=product, **provider)
+        return product
+
+
 class UpdateProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -159,6 +189,7 @@ class ListProviderProductsSerializer(serializers.ModelSerializer):
             "presentation",
             "category",
             "ieps",
+            "status",
             "more_info",
             "created_at",
             "updated_at",
@@ -231,4 +262,12 @@ class RejectProductSerializer(serializers.ModelSerializer):
         fields = (
             "status",
             "reject_reason",
+        )
+
+
+class ToggleProductProviderActiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductProvider
+        fields = (
+            "active",
         )

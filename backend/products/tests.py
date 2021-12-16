@@ -19,6 +19,8 @@ from products.serializers.product import (
     UpdateProductSerializer
 )
 from providers.factories.provider import ProviderFactory
+from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import RefreshToken
 from users.factories.user import UserFactory
 
 from backend.utils.tests import BaseTestCase
@@ -68,6 +70,7 @@ class RegisterRequestToCreateProduct(BaseTestCase):
             data=json.dumps(self.valid_payload),
             content_type="application/json",
         )
+
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         # Creates product - provider relation
         product_providers = ProductProvider.objects.all().count()
@@ -77,34 +80,36 @@ class RegisterRequestToCreateProduct(BaseTestCase):
             provider=self.provider
         )
         self.assertNotEqual(product_provider, None)
-        result = json.loads(json.dumps(response.data))
-        self.assertEqual(result['status'], Product.PENDING)
+        self.assertEqual(len(mail.outbox), 1)
 
 
 class RegisterRequestToCreateProductAsAdmin(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
-        user = UserFactory.create()
-        provider = ProviderFactory.create(user=user)
+        providers = ProviderFactory.create_batch(5)
         category = CategoryFactory.create()
         laboratory = LaboratoryFactory.create()
         animal_groups = AnimalGroupFactory.create_batch(5)
-        product = ProductFactory.build(
+        self.product = ProductFactory.build(
             category=category
         )
-        provider = ProductProviderFactory.build(
-            laboratory=laboratory,
-            provider=provider
-        )
-        provider_payload = CreateProductProviderSerializer(
-            provider
+        product_providers = [
+            ProductProviderFactory.build(
+                laboratory=laboratory,
+                provider=provider
+            )
+            for provider in providers
+        ]
+        product_provider_payload = CreateProductProviderSerializer(
+            product_providers,
+            many=True
         ).data
 
         self.valid_payload = ProductSerializer(
-            product,
+            self.product,
         ).data
 
-        self.valid_payload['provider'] = provider_payload
+        self.valid_payload['provider'] = product_provider_payload
 
         # Override serializer field to add m2m objects
         self.valid_payload["animal_groups"] = [
@@ -128,8 +133,9 @@ class RegisterRequestToCreateProductAsAdmin(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
-        result = json.loads(json.dumps(response.data))
-        self.assertEqual(result['status'], Product.ACCEPTED)
+        product = Product.objects.get(name=self.product.name)
+        self.assertEqual(product.providers.count(), 5)
+        self.assertEqual(len(mail.outbox), 5)
 
 
 class AcceptProductRequestAsNew(BaseTestCase):
@@ -766,3 +772,92 @@ class RemoveProviderFromProduct(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         with self.assertRaises(ProductProvider.DoesNotExist):
             ProductProvider.objects.get(pk=self.product_provider.pk)
+
+
+class ToggleProductProviderActive(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.provider = ProviderFactory.create(
+            user=self.provider_user
+        )
+        self.target_product = ProductFactory.create()
+        self.product_provider = ProductProviderFactory.create(
+            provider=self.provider,
+            product=self.target_product,
+        )
+        self.active_payload = {
+            'active': True
+        }
+        self.unactive_payload = {
+            'active': False
+        }
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': self.product_provider.pk
+            }),
+            data=json.dumps(self.active_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin_or_own_provider(self) -> None:
+        response = self.service_client.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': self.product_provider.pk
+            }),
+            data=json.dumps(self.active_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        # Test other provider
+        other_provider_client = APIClient()
+        access = RefreshToken.for_user(UserFactory.create()).access_token
+        other_provider_client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + str(access)
+        )
+        response = other_provider_client.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': self.product_provider.pk
+            }),
+            data=json.dumps(self.active_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_return_404_on_invalid_product_provider(self) -> None:
+        response = self.admin_client.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': 99999
+            }),
+            data=json.dumps(self.active_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+    def test_valid_payload_should_succeed(
+        self,
+    ) -> None:
+        response = self.provider_client.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': self.product_provider.pk
+            }),
+            data=json.dumps(self.active_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.product_provider.refresh_from_db(fields=["active"])
+        self.assertEqual(self.product_provider.active, True)
+
+        response = self.provider_client.patch(
+            reverse("toggle_provider_product", kwargs={
+                'pk': self.product_provider.pk
+            }),
+            data=json.dumps(self.unactive_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.product_provider.refresh_from_db(fields=["active"])
+        self.assertEqual(self.product_provider.active, False)

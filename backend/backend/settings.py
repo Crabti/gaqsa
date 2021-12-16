@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'auditlog',
     'backend',
     'users',
     'products',
@@ -82,6 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middlewares.error_handler.ErrorHandlerMiddleware',
+    'backend.middlewares.audit_log.RestFrameworkAuditLogMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

@@ -3,7 +3,7 @@ from django.db import models
 from providers.models import Provider
 from random import sample
 from string import ascii_uppercase
-
+from auditlog.registry import auditlog
 KEY_LEN = 20
 
 
@@ -139,8 +139,10 @@ class ProductProvider(models.Model):
         Laboratory, on_delete=models.PROTECT
     )
 
+    active = models.BooleanField(default=True)
+
     def __str__(self) -> str:
-        return f"${self.product} - {self.provider} - {self.price}"
+        return f"{self.product} - {self.provider} - {self.price}"
 
 
 class ChangePriceRequest(models.Model):
@@ -168,3 +170,10 @@ class ChangePriceRequest(models.Model):
 
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+
+auditlog.register(ProductProvider)
+auditlog.register(AnimalGroup)
+auditlog.register(Product)
+auditlog.register(Category)
+auditlog.register(Laboratory)
