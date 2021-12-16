@@ -2,6 +2,8 @@ import {
   AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
+import AnnouncementsCreate from 'views/Announcements.Create';
+import AnnouncementsList from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
 import ProductsCreateForm from 'views/Products.CreateForm';
@@ -23,8 +25,8 @@ import ListProviders from 'views/Providers.ListProviders';
 import ListAuditLog from 'views/AuditLog.ListAuditLog';
 
 import {
-  LIST_PROVIDERS,
-  SHOW_CREATE_USER,
+  LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
+  SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
   SHOW_AUDIT_LOG,
@@ -38,8 +40,9 @@ export interface RoutesType {
   verboseName: string;
   showInMenu?: boolean;
   isPublic?: boolean;
-  hasAccess?(auth: AuthType): boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
+
+  hasAccess?(auth: AuthType): boolean;
 }
 
 export interface Routes {
@@ -52,7 +55,7 @@ export interface RegisteredGroup {
     showInMenu?: boolean;
     icon?: React.FC;
     verboseName?: string;
-  }
+  };
 }
 
 export const productRoutes: Routes = {
@@ -151,7 +154,7 @@ export const otherRoutes: Routes = {
   },
 };
 
-const catalogsRoutes: Routes = {
+export const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
@@ -178,6 +181,20 @@ const catalogsRoutes: Routes = {
     view: ListLaboratory,
     verboseName: 'Lista de laboratorios',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAnnouncements: {
+    path: '/circulares',
+    view: AnnouncementsList,
+    verboseName: 'Lista de circulares',
+    showInMenu: SHOW_LIST_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };

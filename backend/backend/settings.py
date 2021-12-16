@@ -69,7 +69,8 @@ INSTALLED_APPS = [
     'providers',
     'order',
     'offers',
-    'clients'
+    'clients',
+    'announcements',
 ]
 
 MIDDLEWARE = [
@@ -278,3 +279,5 @@ LOGGING = {
 SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
