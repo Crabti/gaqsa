@@ -18,8 +18,6 @@ const AnnouncementForm: React.FC = () => {
 
   const uploadProps: UploadProps = {
     name: 'file',
-    multiple: true,
-    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
     beforeUpload(file) {
       setFileToUpload(file);
       return false;
