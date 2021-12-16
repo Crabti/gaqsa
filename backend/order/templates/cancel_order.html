@@ -1,0 +1,11 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h3>Estimado: {{ provider }}</h3>
+  </div>
+  <h5>Te informamos que el socio {{ client }} ha cancelado el número de orden {{pk}}.</h5>
+  </table>
+{% endblock %}

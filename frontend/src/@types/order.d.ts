@@ -20,6 +20,7 @@ export interface Order extends CommonType {
     provider: string | Provider;
     status: string;
     total?: number;
+    cancelled: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
