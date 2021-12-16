@@ -5,6 +5,7 @@ import {
   Modal,
   notification,
   Table as AntTable,
+  Tooltip,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -15,6 +16,7 @@ import {
 } from '@types';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
+import { SearchOutlined } from '@ant-design/icons';
 
 const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -33,30 +35,37 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
       ),
     );
     Modal.info({
-      title: `Detalle - ${auditLog.timestamp}`,
+      title: `Detalle - ${auditLog.object_repr} - ${auditLog.action}
+       - ${auditLog.timestamp}`,
+      closable: true,
+      width: 800,
+      okButtonProps: { style: { display: 'none' } },
       content: (
-        <AntTable
-          rowKey={(row) => `${row.field}`}
-          dataSource={data}
-          pagination={false}
-          columns={[
-            {
-              title: 'Campo',
-              dataIndex: 'field',
-              key: 'field',
-            },
-            {
-              title: 'Antes',
-              dataIndex: 'before',
-              key: 'before',
-            },
-            {
-              title: 'Despues',
-              dataIndex: 'after',
-              key: 'after',
-            },
-          ]}
-        />
+        <Content>
+          <AntTable
+            scroll={{ x: true }}
+            rowKey={(row) => `${row.field}`}
+            dataSource={data}
+            pagination={false}
+            columns={[
+              {
+                title: 'Campo',
+                dataIndex: 'field',
+                key: 'field',
+              },
+              {
+                title: 'Antes',
+                dataIndex: 'before',
+                key: 'before',
+              },
+              {
+                title: 'Despues',
+                dataIndex: 'after',
+                key: 'after',
+              },
+            ]}
+          />
+        </Content>
       ),
     });
   };
@@ -115,9 +124,13 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
       render: (
         _: number, log: AuditLog,
       ) => (
-        <Button type="primary" onClick={() => showModal(log)}>
-          Ver detalle
-        </Button>
+        <Tooltip title="Ver detalles">
+          <Button
+            shape="circle"
+            icon={<SearchOutlined />}
+            onClick={() => showModal(log)}
+          />
+        </Tooltip>
       ),
     },
   ];
