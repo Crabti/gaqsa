@@ -1,6 +1,8 @@
 from auditlog.middleware import AuditlogMiddleware
 import threading
 import time
+import sys
+
 from functools import partial
 from django.apps import apps
 from django.conf import settings
@@ -12,6 +14,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 threadlocal = threading.local()
 
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 class RestFrameworkAuditLogMiddleware(AuditlogMiddleware):
     def process_request(self, request):
@@ -20,6 +23,10 @@ class RestFrameworkAuditLogMiddleware(AuditlogMiddleware):
         connects a signal receiver with the user already
         attached to it.
         """
+
+        if TESTING:
+            return
+
         # Initialize thread local storage
         threadlocal.auditlog = {
             "signal_duid": (self.__class__, time.time()),
