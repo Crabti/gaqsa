@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from invoices.models import Invoice
+from invoices.serializers.invoice import NewInvoiceSerialier
+from rest_framework import generics
 
-# Create your views here.
+
+class CreateInvoice(generics.CreateAPIView):
+    serializer_class = NewInvoiceSerialier
+    queryset = Invoice.objects.all()
