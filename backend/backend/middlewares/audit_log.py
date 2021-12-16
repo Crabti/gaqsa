@@ -16,6 +16,7 @@ threadlocal = threading.local()
 
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
+
 class RestFrameworkAuditLogMiddleware(AuditlogMiddleware):
     def process_request(self, request):
         """
