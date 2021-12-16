@@ -1,7 +1,9 @@
 from http import HTTPStatus
+from auditlog.models import LogEntry
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, User
 from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP
+from users.serializers.audit_log import AuditLogSerializer
 from users.serializers.user_emails import CreateUserEmailSerializer
 from providers.serializers.providers import CreateProviderSerializer
 from clients.serializers.ranch import CreateRanchSerializer
@@ -193,3 +195,9 @@ class CreateUser(APIView):
                     str(e),
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+
+class ListAuditLogView(generics.ListAPIView):
+    permission_classes = [IsAdmin]
+    queryset = LogEntry.objects.all()
+    serializer_class = AuditLogSerializer

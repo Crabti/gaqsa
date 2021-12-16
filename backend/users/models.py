@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator, RegexValidator
+from auditlog.registry import auditlog
 
 
 class Profile(models.Model):
@@ -58,3 +59,8 @@ class Business(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.rfc}'
+
+
+auditlog.register(User)
+auditlog.register(Profile)
+auditlog.register(UserEmail)
