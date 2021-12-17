@@ -73,6 +73,7 @@ def send_mail_on_create_order_user(order, products):
 
 
 def send_main_on_cancel_order(order):
+    print(order.pk)
     title = f"Cancelación orden de compra - {order.pk} - Socio { order.user } "
     subject = f"GAQSA - {title}"
     provider = Provider.objects.get(pk=order.provider.pk)

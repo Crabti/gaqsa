@@ -17,8 +17,8 @@ urlpatterns = [
         name="update_order"
     ),
     path(
-        "orders/<int:pk>/active",
+        "orders/<int:pk>/cancelled",
         views.CancelOrderClient.as_view(),
-        name="toggle_provider_product"
+        name="cancel_order_cliente"
     )
 ]

@@ -130,5 +130,5 @@ class CancelOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
-            "active",
+            "cancelled",
         )
