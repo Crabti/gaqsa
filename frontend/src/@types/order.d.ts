@@ -13,7 +13,7 @@ export interface Requisition {
 }
 
 export interface Order extends CommonType {
-    id: number;
+    id: number | string;
     user: number | string;
     created_at: Date;
     requisitions: Requisition[];
