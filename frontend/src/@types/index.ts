@@ -24,6 +24,7 @@ import {
 } from './user';
 import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
+import { Invoice, UploadInvoiceForm } from './invoice';
 
 export type Maybe<T> = T | undefined;
 
@@ -57,4 +58,6 @@ export type {
   ChangePriceForm,
   ProductProvider,
   ProductGroup,
+  Invoice,
+  UploadInvoiceForm,
 };
