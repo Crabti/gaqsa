@@ -1,5 +1,20 @@
+import uuid
+import os
+
 from django.db import models
+from backend.settings import INVOICE_FILE_ROOT
+from invoices.mails import send_mail_on_create_invoice
 from order.models import Order
+from django.core.validators import FileExtensionValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from backend.utils.files import parse_invoice_xml
+
+
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join(INVOICE_FILE_ROOT, filename)
 
 
 class Invoice(models.Model):
@@ -20,9 +35,21 @@ class Invoice(models.Model):
     )
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     delivery_date = models.DateTimeField(verbose_name="Fecha Entrega")
-    xml_file = models.FileField(upload_to='invoices/', unique=True)
-    invoice_file = models.FileField(upload_to='invoices/', unique=True)
-    extra_file = models.FileField(upload_to='invoices/', unique=True)
+    xml_file = models.FileField(
+        upload_to=get_file_path,
+        unique=True,
+        validators=[FileExtensionValidator(allowed_extensions=['xml'])]
+    )
+    invoice_file = models.FileField(
+        upload_to=get_file_path,
+        unique=True,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
+    )
+    extra_file = models.FileField(
+        upload_to=get_file_path,
+        unique=True,
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
+    )
     ACCEPTED = "Aceptado"
     PENDING = "Pendiente"
     REJECTED = "Rechazada"
@@ -37,3 +64,19 @@ class Invoice(models.Model):
         verbose_name="Estado de Factura",
         max_length=30
     )
+
+    def __str__(self) -> str:
+        return f"{self.client} - {self.invoice_folio} - {self.status}"
+
+    def save(self, *args, **kwargs):
+        print(type(self.xml_file))
+        parsed_attributes = parse_invoice_xml(self.xml_file)
+        for attr, value in parsed_attributes.items():
+            setattr(self, attr, value)
+        super(Invoice, self).save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Invoice)
+def send_mail_on_create(sender, instance=None, created=False, **kwargs):
+    if created:
+        send_mail_on_create_invoice(instance)

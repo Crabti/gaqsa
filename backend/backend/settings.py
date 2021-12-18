@@ -277,3 +277,5 @@ LOGGING = {
 SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
+MEDIA_URL = 'media/'
+INVOICE_FILE_ROOT = MEDIA_URL + 'invoices'

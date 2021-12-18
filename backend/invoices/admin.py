@@ -1,3 +1,14 @@
 from django.contrib import admin
+from invoices.models import Invoice
 
-# Register your models here.
+
+class InvoiceAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        'invoice_folio',
+        'amount',
+        'invoice_date',
+        'client',
+    )
+
+
+admin.site.register(Invoice, InvoiceAdmin)
