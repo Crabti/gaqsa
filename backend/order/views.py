@@ -163,9 +163,4 @@ class CancelOrderClient(generics.UpdateAPIView):
                 )
             serializer.save()
             send_main_on_cancel_order(order)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-            #order = Order.objects.filter(pk=self.kwargs['pk']).last()
-            #return Response(data={}, status=status.HTTP_200_OK)
-            
+            return Response(serializer.data, status=status.HTTP_200_OK)            
