@@ -1,7 +1,10 @@
 # from django.http import request
 from backend.utils.permissions import IsOwnProviderOrAdmin, IsOwnUserOrAdmin
 from order.mails import (
-    send_mail_on_create_order, send_mail_on_create_order_user, send_main_on_cancel_order)
+    send_mail_on_create_order,
+    send_mail_on_create_order_user,
+    send_main_on_cancel_order
+)
 from products.models import ProductProvider
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
