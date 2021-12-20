@@ -145,10 +145,27 @@ class UpdateOrderRequisitionsView(generics.UpdateAPIView):
 
 
 class CancelOrderClient(generics.UpdateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = CancelOrderSerializer
+        queryset = Order.objects.all()
+        serializer_class = CancelOrderSerializer
 
-    def update(self, request: Request, *args, **kwargs) -> Response:
-        order = Order.objects.filter(pk=self.kwargs['pk']).last()
-        send_main_on_cancel_order(order)
-        return Response(status=status.HTTP_200_OK)
+        def update(self, request: Request, *args, **kwargs) -> Response:
+            self.get_object()
+            order : Order = Order.objects.get(pk=self.kwargs['pk'])
+            serializer = self.get_serializer(
+                order,
+                data=request.data,
+                partial=True
+            )
+            if not serializer.is_valid():
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer.save()
+            send_main_on_cancel_order(order)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+            #order = Order.objects.filter(pk=self.kwargs['pk']).last()
+            #return Response(data={}, status=status.HTTP_200_OK)
+            
