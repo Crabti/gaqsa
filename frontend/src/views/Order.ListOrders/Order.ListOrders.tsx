@@ -58,11 +58,11 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     id: number,
   ) : Promise<void> => {
     setLoading(true);
-    const cancel = true;
+    const cancelled = true;
     const [result, error] = await backend.orders.patch(
-      `/orders/${id}/active`,
+      `/orders/${id}/cancelled`,
       {
-        cancel,
+        cancelled,
       },
     );
     if (error || !result) {
@@ -75,6 +75,7 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     }
     setLoading(false);
 
+    console.log(result);
     notification.success({
       message: 'Se ha cancelado la orden exitosamente',
     });
