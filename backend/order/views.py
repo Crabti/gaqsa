@@ -154,7 +154,7 @@ class CancelOrderClient(generics.UpdateAPIView):
 
         def update(self, request: Request, *args, **kwargs) -> Response:
             self.get_object()
-            order : Order = Order.objects.get(pk=self.kwargs['pk'])
+            order: Order = Order.objects.get(pk=self.kwargs['pk'])
             serializer = self.get_serializer(
                 order,
                 data=request.data,
@@ -167,4 +167,4 @@ class CancelOrderClient(generics.UpdateAPIView):
                 )
             serializer.save()
             send_main_on_cancel_order(order)
-            return Response(serializer.data, status=status.HTTP_200_OK)            
+            return Response(serializer.data, status=status.HTTP_200_OK)    
