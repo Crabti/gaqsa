@@ -1,5 +1,5 @@
 # from django.http import request
-from backend.utils.permissions import IsOwnProviderOrAdmin, IsOwnUserOrAdmin
+from backend.utils.permissions import IsOwnProviderOrAdmin, IsOwnerOrAdmin
 from order.mails import (
     send_mail_on_create_order,
     send_mail_on_create_order_user,
@@ -148,7 +148,7 @@ class UpdateOrderRequisitionsView(generics.UpdateAPIView):
 
 
 class CancelOrderClient(generics.UpdateAPIView):
-    permission_classes = [IsOwnUserOrAdmin]
+    permission_classes = [IsOwnerOrAdmin]
     queryset = Order.objects.all()
     serializer_class = CancelOrderSerializer
 
