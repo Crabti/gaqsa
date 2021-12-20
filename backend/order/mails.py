@@ -90,7 +90,9 @@ def send_main_on_cancel_order(order):
     ).values_list('email', flat=True))
     from_email = "noreply@gaqsa.com"
     # TODO: Cambiar correo de admin
-    to_emails = provider_emails + ["temp@temp.com"]
+from backend.utils.emails import get_admin_emails
+    admin_emails = get_admin_emails()
+    to_emails = provider_emails + admin_emails
     html_message = render_to_string(
         "cancel_order.html",
         context
