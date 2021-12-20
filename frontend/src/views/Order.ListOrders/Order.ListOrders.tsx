@@ -4,6 +4,7 @@ import {
   Button,
   Col,
   notification,
+  Popconfirm,
   Row,
   Tooltip,
 } from 'antd';
@@ -19,7 +20,7 @@ import moment from 'moment';
 
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
 import OrderStatusTag from 'components/OrderStatusTag';
-import { EditOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 
 const ListOrders: React.VC = ({ verboseName, parentName }) => {
@@ -30,6 +31,7 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const { isClient } = useAuth();
 
   const shouldShowModifyOrder = !isClient;
+  const shouldShowCancelOrder = isClient;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -51,6 +53,33 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
   useEffect(() => {
     fetchOrders();
   }, [history, fetchOrders]);
+
+  const onCancelOrder = async (
+    id: number,
+  ) : Promise<void> => {
+    setLoading(true);
+    const cancelled = true;
+    const [result, error] = await backend.orders.patch(
+      `/orders/${id}/cancelled`,
+      {
+        cancelled,
+      },
+    );
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al cambiar el estado del producto!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+
+    notification.success({
+      message: 'Se ha cancelado la orden exitosamente',
+    });
+    fetchOrders();
+  };
 
   const columns = [
     {
@@ -120,6 +149,26 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
                       history.push(`/pedidos/${order.id}/modificar`);
                     }}
                   />
+                </Tooltip>
+              </Col>
+            )
+            : null}
+          {shouldShowCancelOrder && order.status === 'Pendiente'
+          && !order.cancelled
+            ? (
+              <Col>
+                <Tooltip title="Cancelar orden">
+                  <Popconfirm
+                    title="¿Estás seguro de cancelar esta orden?"
+                    onConfirm={() => onCancelOrder(
+                      order.id,
+                    )}
+                  >
+                    <Button
+                      shape="circle"
+                      icon={<CloseOutlined />}
+                    />
+                  </Popconfirm>
                 </Tooltip>
               </Col>
             )
