@@ -145,6 +145,7 @@ class UpdateOrderRequisitionsView(generics.UpdateAPIView):
 
 
 class CancelOrderClient(generics.UpdateAPIView):
+        permission_classes = [IsOwnUserOrAdmin]
         queryset = Order.objects.all()
         serializer_class = CancelOrderSerializer
 
