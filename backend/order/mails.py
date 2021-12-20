@@ -4,6 +4,7 @@ from django.utils.html import strip_tags
 from providers.models import Provider
 
 from users.models import UserEmail
+from backend.utils.emails import get_admin_emails
 
 
 def send_mail_on_create_order(order, products):
@@ -90,7 +91,6 @@ def send_main_on_cancel_order(order):
     ).values_list('email', flat=True))
     from_email = "noreply@gaqsa.com"
     # TODO: Cambiar correo de admin
-from backend.utils.emails import get_admin_emails
     admin_emails = get_admin_emails()
     to_emails = provider_emails + admin_emails
     html_message = render_to_string(
