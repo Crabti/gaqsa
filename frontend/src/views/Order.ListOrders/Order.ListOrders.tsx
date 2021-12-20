@@ -75,7 +75,6 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     }
     setLoading(false);
 
-    console.log(result);
     notification.success({
       message: 'Se ha cancelado la orden exitosamente',
     });
