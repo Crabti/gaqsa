@@ -2,18 +2,22 @@ from django.test import TestCase
 from django.core import mail
 
 import os
+import json
 from datetime import datetime
 from django.conf import settings
 import tempfile
 from http import HTTPStatus
 
 from django.urls import reverse
+from factory import django
 
 from backend.utils.files import parse_invoice_xml
 from backend.utils.tests import BaseTestCase
-from order.factories.order import OrderFactory
+from invoices.factories.invoice import InvoiceFactory
+from order.factories.order import OrderFactory, RequisitionFactory
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
+from order.models import Order
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -59,10 +63,15 @@ class InvoiceUpload(BaseTestCase):
         provider = ProviderFactory.create(
             user=user
         )
-        order = OrderFactory.create(
+        self.order = OrderFactory.create(
             provider=provider,
             user=user
         )
+        RequisitionFactory.create(
+            price=INVOICE_EXPECTED_TEST_ARRAY[0]["expected"]["amount"],
+            order=self.order
+        )
+
         xml_file_data = File(open(os.path.join(
             THIS_DIR, 'test_files/xml/sample1.xml'), 'rb'))
         xml_file = SimpleUploadedFile(
@@ -85,7 +94,7 @@ class InvoiceUpload(BaseTestCase):
             content_type="multipart/form-data"
         )
         self.valid_payload = {
-            "order": order.pk,
+            "order": self.order.pk,
             "xml_file": xml_file,
             "delivery_date": datetime.now(),
             "invoice_file": invoice_file,
@@ -120,3 +129,56 @@ class InvoiceUpload(BaseTestCase):
         )
         self.assertEqual(dir_files_count, 3)
         self.assertGreater(len(mail.outbox), 0)
+        self.assertEqual(self.order.invoice_status, Order.INVOICE_PENDING)
+
+
+class ListInvoice(BaseTestCase):
+    def setUp(self) -> None:
+        self.invoice_amount = 5
+        InvoiceFactory.create_batch(
+            self.invoice_amount,
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+        )
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin(self) -> None:
+        response = self.service_client.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        response = self.provider_client.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_list_valid(self) -> None:
+        response = self.admin_client.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), self.invoice_amount)

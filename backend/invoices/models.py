@@ -37,18 +37,32 @@ class Invoice(models.Model):
     delivery_date = models.DateTimeField(verbose_name="Fecha Entrega")
     xml_file = models.FileField(
         upload_to=get_file_path,
-        unique=True,
         validators=[FileExtensionValidator(allowed_extensions=['xml'])]
     )
     invoice_file = models.FileField(
         upload_to=get_file_path,
-        unique=True,
-        validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=[
+                    'pdf',
+                    'png',
+                    'jpg'
+                ]
+            )
+        ]
     )
     extra_file = models.FileField(
         upload_to=get_file_path,
-        unique=True,
-        validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
+        null=True,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=[
+                    'pdf',
+                    'png',
+                    'jpg'
+                ]
+            )
+        ]
     )
     ACCEPTED = "Aceptado"
     PENDING = "Pendiente"
@@ -69,7 +83,6 @@ class Invoice(models.Model):
         return f"{self.client} - {self.invoice_folio} - {self.status}"
 
     def save(self, *args, **kwargs):
-        print(type(self.xml_file))
         parsed_attributes = parse_invoice_xml(self.xml_file)
         for attr, value in parsed_attributes.items():
             setattr(self, attr, value)

@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from users.models import User
 from products.models import Product
@@ -38,6 +39,11 @@ class Order(models.Model):
     INCOMPLETE = 'Incompleto'
     PENDING = 'Pendiente'
 
+    INVOICE_PENDING = 'Pendiente'
+    INVOICE_REJECTED = 'Rechazado'
+    INVOICE_PARTIAL = 'Parcialmente facturado'
+    INVOICE_COMPLETE = 'Facturado'
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -76,6 +82,23 @@ class Order(models.Model):
                 return Order.DELIVERED
         else:
             return Order.PENDING
+
+    @property
+    def invoice_status(self):
+        Invoice = apps.get_model("invoices.Invoice")
+        invoice = Invoice.objects.filter(
+            order=self.pk
+        ).last()
+        if invoice:
+            if invoice.status == Invoice.REJECTED:
+                return Order.INVOICE_REJECTED
+            if invoice.status == Invoice.ACCEPTED:
+                if invoice.amount >= self.total:
+                    return Order.INVOICE_COMPLETE
+                return Order.INVOICE_PARTIAL
+            return Order.INVOICE_PENDING
+        else:
+            return None
 
     def __str__(self):
         return f"{self.created_at} - {self.user} \

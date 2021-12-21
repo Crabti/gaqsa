@@ -34,7 +34,6 @@ const UploadInvoiceModal: React.FC<Props> = ({
     fileList: fileToUpload ? [fileToUpload] : [],
   };
 
-  console.log(props);
   return (
     <Modal
       visible={visible}

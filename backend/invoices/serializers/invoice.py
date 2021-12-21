@@ -13,3 +13,8 @@ class NewInvoiceSerialier(serializers.ModelSerializer):
             "extra_file",
         )
 
+
+class ListInvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Invoice
+        fields = "__all__"

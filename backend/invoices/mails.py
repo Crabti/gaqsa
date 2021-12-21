@@ -33,5 +33,6 @@ def send_mail_on_create_invoice(invoice) -> None:
     email.attach_alternative(html_message, "text/html")
     email.attach_file(invoice.xml_file.path)
     email.attach_file(invoice.invoice_file.path)
-    email.attach_file(invoice.extra_file.path)
+    if invoice.extra_file:
+        email.attach_file(invoice.extra_file.path)
     email.send(fail_silently=True)
