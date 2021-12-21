@@ -188,7 +188,9 @@ export const catalogsRoutes: Routes = {
     view: AnnouncementsListCompound,
     verboseName: 'Lista de circulares',
     showInMenu: SHOW_LIST_ANNOUNCEMENT,
-    hasAccess: ((auth) => auth.isAdmin),
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isProvider || auth.isClient
+    ),
   },
   createAnnouncement: {
     path: '/circulares/nueva',
