@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import AnnouncementsCreate from 'views/Announcements.Create';
-import AnnouncementsList from 'views/Announcements.List';
+import AnnouncementsListCompound from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
 import ProductsCreateForm from 'views/Products.CreateForm';
@@ -185,7 +185,7 @@ export const catalogsRoutes: Routes = {
   },
   listAnnouncements: {
     path: '/circulares',
-    view: AnnouncementsList,
+    view: AnnouncementsListCompound,
     verboseName: 'Lista de circulares',
     showInMenu: SHOW_LIST_ANNOUNCEMENT,
     hasAccess: ((auth) => auth.isAdmin),
