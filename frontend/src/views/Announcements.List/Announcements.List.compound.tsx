@@ -2,6 +2,7 @@ import { Announcement } from '@types';
 import { Button } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import Title from 'components/Title';
+import useAuth from 'hooks/useAuth';
 import { useBackend } from 'integrations';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -14,6 +15,7 @@ const AnnouncementsListCompound: React.VC = ({
 }) => {
   const history = useHistory();
   const backend = useBackend();
+  const user = useAuth();
   const [announs, setAnnouns] = useState<Announcement[]>([]);
 
   const onExtraClick = (): void => {
@@ -41,7 +43,7 @@ const AnnouncementsListCompound: React.VC = ({
         parentName={parentName}
         extra={
           [
-            (
+            user.isAdmin && (
               <Button type="primary" onClick={onExtraClick}>
                 Crear circular
               </Button>

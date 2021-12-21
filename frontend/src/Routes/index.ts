@@ -3,6 +3,7 @@ import {
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import AnnouncementsCreate from 'views/Announcements.Create';
+import AnnouncementsDetailCompound from 'views/Announcements.Detail';
 import AnnouncementsListCompound from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
@@ -29,7 +30,7 @@ import {
   SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
-  SHOW_AUDIT_LOG,
+  SHOW_AUDIT_LOG, SHOW_DETAIL_ANNOUNCEMENT,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
 import OrderCreateOrder from 'views/Order.CreateOrder';
@@ -188,6 +189,15 @@ export const catalogsRoutes: Routes = {
     view: AnnouncementsListCompound,
     verboseName: 'Lista de circulares',
     showInMenu: SHOW_LIST_ANNOUNCEMENT,
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isProvider || auth.isClient
+    ),
+  },
+  detailAnnouncements: {
+    path: '/circulares/:id',
+    view: AnnouncementsDetailCompound,
+    verboseName: 'Detalle de circulare',
+    showInMenu: SHOW_DETAIL_ANNOUNCEMENT,
     hasAccess: (
       (auth) => auth.isAdmin || auth.isProvider || auth.isClient
     ),

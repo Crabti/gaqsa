@@ -1,6 +1,8 @@
 import os.path
 from typing import Tuple
 
+from rest_framework.generics import RetrieveAPIView
+
 from announcements.models import Announcement
 from django.core.files.storage import default_storage
 from rest_framework import status
@@ -88,3 +90,8 @@ class CreateAnnouncement(APIView):
         # DOMAIN/announcements/MEDIA/UUID.pdf|png|jpg|jpeg
         url = f"{DOMAIN_URL}/announcements{MEDIA_ROOT}{file_id}.{extension}"
         return os.path.join(MEDIA_ROOT, f"{file_id}.{extension}"), url
+
+
+class AnnouncementDetail(RetrieveAPIView):
+    queryset = Announcement.objects.all()
+    serializer_class = ListAnnouncementsSerializer

@@ -36,7 +36,7 @@ const AnnouncementsList: React.FC<Props> = ({ data }) => {
         <Typography.Link
           href={announ.file_url}
         >
-          {announ.file_url}
+          Archivo adjunto
         </Typography.Link>
       ),
     },
@@ -49,7 +49,7 @@ const AnnouncementsList: React.FC<Props> = ({ data }) => {
           <Button
             shape="circle"
             icon={<SearchOutlined />}
-            onClick={() => history.push(`${announ.id}`)}
+            onClick={() => history.push(`circulares/${announ.id}`)}
           />
         </Tooltip>
       ),
