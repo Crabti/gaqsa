@@ -62,6 +62,8 @@ class ListOrderSerializer(serializers.ModelSerializer):
 
     status = serializers.ReadOnlyField()
     total = serializers.ReadOnlyField()
+    invoice_total = serializers.ReadOnlyField()
+    invoice_status = serializers.ReadOnlyField()
 
     class Meta:
         model = Order
@@ -72,7 +74,9 @@ class ListOrderSerializer(serializers.ModelSerializer):
             'user',
             'created_at',
             'provider',
-            'total'
+            'total',
+            'invoice_total',
+            'invoice_status',
         )
 
 

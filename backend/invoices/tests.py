@@ -3,7 +3,7 @@ from django.core import mail
 
 import os
 import json
-from datetime import datetime
+from datetime import date
 from django.conf import settings
 import tempfile
 from http import HTTPStatus
@@ -15,9 +15,9 @@ from backend.utils.files import parse_invoice_xml
 from backend.utils.tests import BaseTestCase
 from invoices.factories.invoice import InvoiceFactory
 from order.factories.order import OrderFactory, RequisitionFactory
+from order.models import Order
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
-from order.models import Order
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -30,6 +30,7 @@ INVOICE_EXPECTED_TEST_ARRAY = [
             "invoice_folio": "19238",
             "amount": "1940.00",
             "client": "CEGI500910I76",
+            "invoice_date": "2021-12-16 09:10:32+00:00",
         },
         "file_dir": os.path.join(THIS_DIR, 'test_files/xml/sample1.xml')
     },
@@ -38,6 +39,7 @@ INVOICE_EXPECTED_TEST_ARRAY = [
             "invoice_folio": "263",
             "amount": "0",
             "client": "PGU160210KKA",
+            "invoice_date": "2021-12-15 17:35:03+00:00",
         },
         "file_dir": os.path.join(THIS_DIR, 'test_files/xml/sample2.xml')
     }
@@ -48,8 +50,9 @@ class XMLParser(TestCase):
     def test_parse_xml(self) -> None:
         for invoice in INVOICE_EXPECTED_TEST_ARRAY:
             parsed_attributes = parse_invoice_xml(invoice["file_dir"])
-            # Ignore date field since it may change with timezone setting
-            parsed_attributes.pop("invoice_date")
+            parsed_attributes["invoice_date"] = str(
+                parsed_attributes["invoice_date"]
+            )
             self.assertEqual(parsed_attributes, invoice["expected"])
 
 
@@ -96,7 +99,7 @@ class InvoiceUpload(BaseTestCase):
         self.valid_payload = {
             "order": self.order.pk,
             "xml_file": xml_file,
-            "delivery_date": datetime.now(),
+            "delivery_date": date.today(),
             "invoice_file": invoice_file,
             "extra_file": extra_file,
         }
@@ -129,13 +132,14 @@ class InvoiceUpload(BaseTestCase):
         )
         self.assertEqual(dir_files_count, 3)
         self.assertGreater(len(mail.outbox), 0)
-        self.assertEqual(self.order.invoice_status, Order.INVOICE_PENDING)
+        # Should return None since invoice not accepted
+        self.assertEqual(self.order.invoice_status, None)
 
 
 class ListInvoice(BaseTestCase):
     def setUp(self) -> None:
         self.invoice_amount = 5
-        InvoiceFactory.create_batch(
+        self.invoices = InvoiceFactory.create_batch(
             self.invoice_amount,
             invoice_file=django.FileField(
                 from_path=os.path.join(

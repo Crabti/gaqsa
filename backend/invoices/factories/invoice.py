@@ -1,8 +1,7 @@
-from datetime import datetime
+from datetime import date
 from factory import django, LazyAttribute, SubFactory
 from invoices.models import Invoice
 from order.factories.order import OrderFactory
-from django.utils import timezone
 
 
 class InvoiceFactory(django.DjangoModelFactory):
@@ -11,7 +10,5 @@ class InvoiceFactory(django.DjangoModelFactory):
 
     order = SubFactory(OrderFactory)
     delivery_date = LazyAttribute(
-        lambda _: timezone.make_aware(
-            datetime.now(), timezone.get_current_timezone()
-        )
+        lambda _: date.today()
     )

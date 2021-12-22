@@ -20,13 +20,15 @@ import {
   Category,
   CreateCategoryForm,
   UpdateCategoryForm,
+  Invoice,
+  UploadInvoiceForm,
 } from '@types';
 
 import {
   BACKEND_MAIN_EP,
   PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT,
   REQUISITIONS_ROOT, PROVIDERS_ROOT, OFFERS_ROOT,
-  LABORATORY_ROOT, CATEGORY_ROOT,
+  LABORATORY_ROOT, CATEGORY_ROOT, INVOICE_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
@@ -50,6 +52,8 @@ export class Backend {
   laboratory: CRUD<Laboratory, CreateLaboratoryForm, UpdateLaboratoryForm>;
 
   category: CRUD<Category, CreateCategoryForm, UpdateCategoryForm>;
+
+  invoice: CRUD<Invoice, UploadInvoiceForm, any>;
 
   config?: AxiosRequestConfig;
 
@@ -81,6 +85,9 @@ export class Backend {
     );
     this.category = new CRUD(
       `${this.rootEndpoint}${CATEGORY_ROOT}`, config,
+    );
+    this.invoice = new CRUD(
+      `${this.rootEndpoint}${INVOICE_ROOT}`, config,
     );
   }
 }

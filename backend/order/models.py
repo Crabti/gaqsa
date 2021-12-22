@@ -58,6 +58,17 @@ class Order(models.Model):
         return queryset['total_price']
 
     @property
+    def invoice_total(self):
+        Invoice = apps.get_model("invoices.Invoice")
+        queryset = Invoice.objects.filter(
+            order=self.pk,
+            status=Invoice.ACCEPTED,
+        ).aggregate(
+            total_amount=Sum('amount')
+        )
+        return queryset['total_amount']
+
+    @property
     def requisitions(self):
         return self.requisition_set.all()
 
@@ -83,20 +94,21 @@ class Order(models.Model):
         else:
             return Order.PENDING
 
+    # Returns None if no invoice has been submitted, or none of the
+    # invoices have been accepted
     @property
     def invoice_status(self):
         Invoice = apps.get_model("invoices.Invoice")
-        invoice = Invoice.objects.filter(
+        invoices = Invoice.objects.filter(
             order=self.pk
-        ).last()
-        if invoice:
-            if invoice.status == Invoice.REJECTED:
-                return Order.INVOICE_REJECTED
-            if invoice.status == Invoice.ACCEPTED:
-                if invoice.amount >= self.total:
-                    return Order.INVOICE_COMPLETE
-                return Order.INVOICE_PARTIAL
-            return Order.INVOICE_PENDING
+        )
+        if invoices:
+            invoice_total = self.invoice_total
+            if invoice_total is None:
+                return None
+            if invoice_total >= self.total:
+                return Order.INVOICE_COMPLETE
+            return Order.INVOICE_PARTIAL
         else:
             return None
 
