@@ -15,7 +15,6 @@ from backend.utils.files import parse_invoice_xml
 from backend.utils.tests import BaseTestCase
 from invoices.factories.invoice import InvoiceFactory
 from order.factories.order import OrderFactory, RequisitionFactory
-from order.models import Order
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
 from django.core.files import File
