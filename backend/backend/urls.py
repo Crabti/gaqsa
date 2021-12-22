@@ -33,6 +33,7 @@ urlpatterns = [
     path('providers/', include("providers.urls")),
     path('offers/', include("offers.urls")),
     path('invoices/', include("invoices.urls")),
+    path('announcements/', include("announcements.urls")),
     path('', hello)
 ]
 

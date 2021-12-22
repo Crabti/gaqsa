@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'auditlog',
     'backend',
     'users',
     'products',
@@ -69,7 +70,8 @@ INSTALLED_APPS = [
     'order',
     'offers',
     'clients',
-    'invoices'
+    'invoices',
+    'announcements',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middlewares.error_handler.ErrorHandlerMiddleware',
+    'backend.middlewares.audit_log.RestFrameworkAuditLogMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -277,5 +280,7 @@ LOGGING = {
 SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
+
 MEDIA_URL = 'media/'
-INVOICE_FILE_ROOT = MEDIA_URL + 'invoices'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+INVOICE_FILE_ROOT = 'invoices/'

@@ -2,6 +2,8 @@ import {
   AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
+import AnnouncementsCreate from 'views/Announcements.Create';
+import AnnouncementsList from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
 import ProductsCreateForm from 'views/Products.CreateForm';
@@ -20,12 +22,14 @@ import PriceChange from 'views/Products.PriceChange';
 import OrderUpdate from 'views/Orders.Update';
 import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
+import ListAuditLog from 'views/AuditLog.ListAuditLog';
 
 import {
-  LIST_PROVIDERS,
-  SHOW_CREATE_USER,
+  LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
+  SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
+  SHOW_AUDIT_LOG,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
 import OrderCreateOrder from 'views/Order.CreateOrder';
@@ -36,8 +40,9 @@ export interface RoutesType {
   verboseName: string;
   showInMenu?: boolean;
   isPublic?: boolean;
-  hasAccess?(auth: AuthType): boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
+
+  hasAccess?(auth: AuthType): boolean;
 }
 
 export interface Routes {
@@ -50,7 +55,7 @@ export interface RegisteredGroup {
     showInMenu?: boolean;
     icon?: React.FC;
     verboseName?: string;
-  }
+  };
 }
 
 export const productRoutes: Routes = {
@@ -149,7 +154,7 @@ export const otherRoutes: Routes = {
   },
 };
 
-const catalogsRoutes: Routes = {
+export const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
@@ -178,6 +183,20 @@ const catalogsRoutes: Routes = {
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
   },
+  listAnnouncements: {
+    path: '/circulares',
+    view: AnnouncementsList,
+    verboseName: 'Lista de circulares',
+    showInMenu: SHOW_LIST_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
 };
 
 export const usersRoutes: Routes = {
@@ -193,6 +212,13 @@ export const usersRoutes: Routes = {
     view: ListUsers,
     verboseName: 'Lista de Usuarios',
     showInMenu: SHOW_USERS_LIST,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAuditLog: {
+    path: '/bitacora',
+    view: ListAuditLog,
+    verboseName: 'Bitácora de acciones',
+    showInMenu: SHOW_AUDIT_LOG,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };

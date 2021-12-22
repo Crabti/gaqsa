@@ -35,13 +35,13 @@ export interface Product extends BaseProduct {
 export interface CreateProductProviderForm {
   iva: number;
   price: number;
-  provider?: number;
   laboratory: number;
+  provider?: number;
 }
 
 export interface CreateProductForm {
   name: string;
-  provider?: CreateProductProviderForm;
+  provider?: CreateProductProviderForm | CreateProductProviderForm[];
   ieps: number;
   more_info: string;
   category: number;

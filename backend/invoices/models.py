@@ -10,6 +10,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from backend.utils.files import parse_invoice_xml
 from rest_framework import serializers
+from auditlog.registry import auditlog
 
 
 def get_file_path(instance, filename):
@@ -98,3 +99,6 @@ class Invoice(models.Model):
 def send_mail_on_create(sender, instance=None, created=False, **kwargs):
     if created:
         send_mail_on_create_invoice(instance)
+
+
+auditlog.register(Invoice)

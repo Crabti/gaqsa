@@ -128,3 +128,11 @@ class UpdateOrderQuantitySerializer(serializers.ModelSerializer):
             'quantity_accepted',
             'sent'
         )
+
+
+class CancelOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = (
+            "cancelled",
+        )

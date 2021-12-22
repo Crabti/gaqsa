@@ -15,5 +15,10 @@ urlpatterns = [
         '<int:pk>/update',
         views.UpdateOrderRequisitionsView.as_view(),
         name="update_order"
+    ),
+    path(
+        "orders/<int:pk>/cancelled",
+        views.CancelOrderClient.as_view(),
+        name="cancel_order_cliente"
     )
 ]

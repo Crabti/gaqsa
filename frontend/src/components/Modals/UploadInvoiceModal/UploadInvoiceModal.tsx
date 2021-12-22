@@ -97,7 +97,7 @@ const UploadInvoiceModal: React.FC<Props> = ({
       'delivery_date',
       moment(data.delivery_date).format('YYYY-MM-DD'),
     );
-    formData.append('order', (order?.id as string));
+    formData.append('order', `${order?.id}`);
 
     const [response, error] = await backend.invoice.post(
       '/create',

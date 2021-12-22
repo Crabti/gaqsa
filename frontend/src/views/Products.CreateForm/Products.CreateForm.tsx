@@ -89,7 +89,6 @@ const CreateForm: React.VC = ({ verboseName, parentName }) => {
     values: CreateProductForm,
   ) : Promise<void> => {
     setLoading(true);
-
     const [, error] = await backend.products.createOne({
       ...values,
     });

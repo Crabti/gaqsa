@@ -13,13 +13,14 @@ export interface Requisition {
 }
 
 export interface Order extends CommonType {
-    id: number | string;
+    id: number;
     user: number | string;
     created_at: Date;
     requisitions: Requisition[];
     provider: string | Provider;
     status: string;
     total?: number;
+    cancelled: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -1,14 +1,17 @@
 # from django.http import request
-from backend.utils.permissions import IsOwnProviderOrAdmin
+from backend.utils.permissions import IsOwnProviderOrAdmin, IsOwnerOrAdmin
 from order.mails import (
-    send_mail_on_create_order, send_mail_on_create_order_user)
+    send_mail_on_create_order,
+    send_mail_on_create_order_user,
+    send_main_on_cancel_order
+)
 from products.models import ProductProvider
 from providers.models import Provider
 from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
-    ListRequisitionSerializer, OrderSerializer,
+    CancelOrderSerializer, ListRequisitionSerializer, OrderSerializer,
     ListOrderSerializer, CreateRequisitionSerializer,
     RetrieveOrderSerializer, UpdateOrderQuantitySerializer
 )
@@ -141,4 +144,27 @@ class UpdateOrderRequisitionsView(generics.UpdateAPIView):
                 )
 
             serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CancelOrderClient(generics.UpdateAPIView):
+    permission_classes = [IsOwnerOrAdmin]
+    queryset = Order.objects.all()
+    serializer_class = CancelOrderSerializer
+
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        self.get_object()
+        order: Order = Order.objects.get(pk=self.kwargs['pk'])
+        serializer = self.get_serializer(
+            order,
+            data=request.data,
+            partial=True
+        )
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer.save()
+        send_main_on_cancel_order(order)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -3,6 +3,7 @@ from string import ascii_uppercase
 from django.db import models
 
 from users.models import Business
+from auditlog.registry import auditlog
 
 TOKEN_LEN = 8
 
@@ -34,3 +35,6 @@ class Provider(Business):
         max_length=100,
         default=""
     )
+
+
+auditlog.register(Provider)

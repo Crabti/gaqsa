@@ -49,8 +49,8 @@ def send_mail_on_create_product_request(product_provider):
         "title": title
     }
     from_email = "noreply@gaqsa.com"
-    # TODO: Cambiar correo de admin
-    to_emails = [product_provider.provider.user.email, "admin@temp.com"]
+
+    to_emails = [product_provider.provider.user.email] + get_admin_emails()
     html_message = render_to_string(
         "product_created.html",
         context

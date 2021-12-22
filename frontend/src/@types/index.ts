@@ -1,4 +1,9 @@
 import {
+  AddresseeTypes,
+  Announcement,
+  CreateAnnouncement,
+} from './announcement';
+import {
   CreateProductForm,
   Product,
   ProductOptions,
@@ -25,11 +30,16 @@ import {
 import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
 import { Invoice, UploadInvoiceForm } from './invoice';
+import { AuditLog } from './auditLog';
 
 export type Maybe<T> = T | undefined;
 
+export { AddresseeTypes };
+
 export type {
   AnimalGroup,
+  Announcement,
+  CreateAnnouncement,
   Category,
   CommonType,
   CreateCategoryForm,
@@ -60,4 +70,5 @@ export type {
   ProductGroup,
   Invoice,
   UploadInvoiceForm,
+  AuditLog,
 };

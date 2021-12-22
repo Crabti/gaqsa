@@ -2,26 +2,28 @@
 import React, { useMemo } from 'react';
 import { AxiosRequestConfig } from 'axios';
 import {
-  Product,
-  CreateProductForm,
-  UpdateProductForm,
-  Order,
-  CreateOrderForm,
-  UpdateOrderForm,
-  Requisition,
-  CreateRequisitionForm,
-  UpdateRequisitionForm,
-  Provider,
-  Offer,
-  CreateOfferForm,
-  Laboratory,
-  CreateLaboratoryForm,
-  UpdateLaboratoryForm,
+  Announcement,
   Category,
+  CreateAnnouncement,
   CreateCategoryForm,
+  CreateLaboratoryForm,
+  CreateOfferForm,
+  CreateOrderForm,
+  CreateProductForm,
+  CreateRequisitionForm,
+  Laboratory,
+  Offer,
+  Order,
+  Product,
+  Provider,
+  Requisition,
   UpdateCategoryForm,
   Invoice,
   UploadInvoiceForm,
+  UpdateOrderForm,
+  UpdateLaboratoryForm,
+  UpdateProductForm,
+  UpdateRequisitionForm,
 } from '@types';
 
 import {
@@ -29,6 +31,7 @@ import {
   PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT,
   REQUISITIONS_ROOT, PROVIDERS_ROOT, OFFERS_ROOT,
   LABORATORY_ROOT, CATEGORY_ROOT, INVOICE_ROOT,
+  ANNOUNCEMENT_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
@@ -42,6 +45,8 @@ export class Backend {
   orders: CRUD<Order, CreateOrderForm, UpdateOrderForm>;
 
   requisitions: CRUD<Requisition, CreateRequisitionForm, UpdateRequisitionForm>;
+
+  announcements: CRUD<Announcement, CreateAnnouncement, any>;
 
   users: CRUD<any, any, any>;
 
@@ -89,14 +94,20 @@ export class Backend {
     this.invoice = new CRUD(
       `${this.rootEndpoint}${INVOICE_ROOT}`, config,
     );
+    this.announcements = new CRUD(
+      `${this.rootEndpoint}${ANNOUNCEMENT_ROOT}`, config,
+    );
   }
 }
 
 export const BackendContext = React.createContext<Backend>(undefined!);
 
 export const BackendProvider: React.FC = ({ children }) => {
-  const { access, refresh } = useAuth();
-  const config : BackendConfig = useMemo(() => ({
+  const {
+    access,
+    refresh,
+  } = useAuth();
+  const config: BackendConfig = useMemo(() => ({
     headers: { Authorization: `Bearer ${access}` },
     refresh,
   }), [access, refresh]);
@@ -112,6 +123,6 @@ export const BackendProvider: React.FC = ({ children }) => {
   );
 };
 
-export const useBackend = () : Backend => React.useContext(BackendContext);
+export const useBackend = (): Backend => React.useContext(BackendContext);
 
 export default BackendContext;
