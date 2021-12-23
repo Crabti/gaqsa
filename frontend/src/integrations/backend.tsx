@@ -18,6 +18,8 @@ import {
   Provider,
   Requisition,
   UpdateCategoryForm,
+  Invoice,
+  UploadInvoiceForm,
   UpdateOrderForm,
   UpdateLaboratoryForm,
   UpdateProductForm,
@@ -28,7 +30,8 @@ import {
   BACKEND_MAIN_EP,
   PRODUCTS_ROOT, USERS_ROOT, ORDERS_ROOT,
   REQUISITIONS_ROOT, PROVIDERS_ROOT, OFFERS_ROOT,
-  LABORATORY_ROOT, CATEGORY_ROOT, ANNOUNCEMENT_ROOT,
+  LABORATORY_ROOT, CATEGORY_ROOT, INVOICE_ROOT,
+  ANNOUNCEMENT_ROOT,
 } from 'settings';
 import useAuth from 'hooks/useAuth';
 import CRUD from './crud';
@@ -54,6 +57,8 @@ export class Backend {
   laboratory: CRUD<Laboratory, CreateLaboratoryForm, UpdateLaboratoryForm>;
 
   category: CRUD<Category, CreateCategoryForm, UpdateCategoryForm>;
+
+  invoice: CRUD<Invoice, UploadInvoiceForm, any>;
 
   config?: AxiosRequestConfig;
 
@@ -85,6 +90,9 @@ export class Backend {
     );
     this.category = new CRUD(
       `${this.rootEndpoint}${CATEGORY_ROOT}`, config,
+    );
+    this.invoice = new CRUD(
+      `${this.rootEndpoint}${INVOICE_ROOT}`, config,
     );
     this.announcements = new CRUD(
       `${this.rootEndpoint}${ANNOUNCEMENT_ROOT}`, config,

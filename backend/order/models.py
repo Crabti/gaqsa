@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 from users.models import User
 from products.models import Product
@@ -39,6 +40,11 @@ class Order(models.Model):
     INCOMPLETE = 'Incompleto'
     PENDING = 'Pendiente'
 
+    INVOICE_PENDING = 'Pendiente'
+    INVOICE_REJECTED = 'Rechazado'
+    INVOICE_PARTIAL = 'Parcialmente facturado'
+    INVOICE_COMPLETE = 'Facturado'
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -51,6 +57,17 @@ class Order(models.Model):
             total_price=Sum('price')
         )
         return queryset['total_price']
+
+    @property
+    def invoice_total(self):
+        Invoice = apps.get_model("invoices.Invoice")
+        queryset = Invoice.objects.filter(
+            order=self.pk,
+            status=Invoice.ACCEPTED,
+        ).aggregate(
+            total_amount=Sum('amount')
+        )
+        return queryset['total_amount']
 
     @property
     def requisitions(self):
@@ -77,6 +94,24 @@ class Order(models.Model):
                 return Order.DELIVERED
         else:
             return Order.PENDING
+
+    # Returns None if no invoice has been submitted, or none of the
+    # invoices have been accepted
+    @property
+    def invoice_status(self):
+        Invoice = apps.get_model("invoices.Invoice")
+        invoices = Invoice.objects.filter(
+            order=self.pk
+        )
+        if invoices:
+            invoice_total = self.invoice_total
+            if invoice_total is None:
+                return None
+            if invoice_total >= self.total:
+                return Order.INVOICE_COMPLETE
+            return Order.INVOICE_PARTIAL
+        else:
+            return None
 
     def __str__(self):
         return f"{self.created_at} - {self.user} \

@@ -1,0 +1,42 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h4>{{ provider.name}}</h4>
+    <h4>RFC: {{ provider.rfc }}</h4>
+  </div>
+  <h4>Se ha dado de alta la siguiente factura:</h4>
+  <table style="width:100%">
+    <tr>
+      <th>
+        Atributo
+      </th>
+      <th>
+        Valor
+      </th>
+    </tr>
+    <tr>
+      <td>Folio</td>
+      <td>{{ invoice.invoice_folio }}</td>
+    </tr>
+    <tr>
+      <td>Fecha</td>
+      <td>{{ invoice.invoice_date }}</td>
+    </tr>
+    <tr>
+      <td>Total</td>
+      <td>$ {{ invoice.amount }}</td>
+    </tr>
+    <tr>    
+      <td>Pedido</td>
+      <td>{{ invoice.order}}</td>
+    </tr>
+    <tr>
+      <td>Fecha de entrega</td>
+      <td>{{ invoice.delivery_date }}</td>
+    </tr>
+  </table>
+{% endblock %}
+

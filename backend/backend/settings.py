@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'order',
     'offers',
     'clients',
+    'invoices',
     'announcements',
 ]
 
@@ -280,5 +281,9 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
 
+MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+INVOICE_FILE_ROOT = 'invoices/'
+
 DOMAIN_URL = os.getenv('DOMAIN_URL', '')
