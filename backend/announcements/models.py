@@ -20,4 +20,4 @@ class Announcement(models.Model):
     )
     content = models.TextField(verbose_name="Contenido", blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    file_uuid = models.CharField(max_length=36, verbose_name="URL del archivo")
+    file_url = models.URLField(verbose_name="URL del archivo", default="")

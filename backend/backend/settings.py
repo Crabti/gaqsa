@@ -283,4 +283,7 @@ SIMPLE_JWT = {
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
 INVOICE_FILE_ROOT = 'invoices/'
+
+DOMAIN_URL = os.getenv('DOMAIN_URL', '')

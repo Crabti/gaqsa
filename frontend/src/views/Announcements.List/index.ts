@@ -1,1 +1,1 @@
-export { default } from './Announcements.List';
+export { default } from 'views/Announcements.List/Announcements.List.compound';
