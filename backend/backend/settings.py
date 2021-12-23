@@ -281,3 +281,4 @@ SIMPLE_JWT = {
 }
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+DOMAIN_URL = os.getenv('DOMAIN_URL', '')
