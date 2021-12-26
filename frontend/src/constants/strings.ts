@@ -11,6 +11,7 @@ export enum OrderStatus {
   RECEIVED = 'Entregado',
   INCOMPLETE = 'Incompleto',
   CANCELLED = 'Cancelado',
+  PENDING = 'Pendiente',
 }
 
 export enum RequisitionStatus {

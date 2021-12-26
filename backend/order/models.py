@@ -74,6 +74,10 @@ class Order(models.Model):
         return self.requisition_set.all()
 
     @property
+    def invoices(self):
+        return self.invoice_set.all()
+
+    @property
     def status(self):
         if self.cancelled:
             return Order.CANCELLED

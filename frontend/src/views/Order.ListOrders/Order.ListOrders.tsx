@@ -23,6 +23,7 @@ import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
 import OrderStatusTag from 'components/OrderStatusTag';
 import { CloseOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
+import { OrderStatus } from 'constants/strings';
 
 interface InvoiceModal {
   visible: boolean,
@@ -152,9 +153,12 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
           {shouldShowModifyOrder
             ? (
               <Col>
-                <Tooltip title="Modificar pedido">
+                <Tooltip title={(order.status !== OrderStatus.PENDING)
+                  ? 'Este pedido ya fue modificado' : 'Modificar pedido'}
+                >
                   <Button
                     shape="circle"
+                    disabled={order.status !== OrderStatus.PENDING}
                     icon={<EditOutlined />}
                     onClick={() => {
                       history.push(`/pedidos/${order.id}/modificar`);

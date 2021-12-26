@@ -1,5 +1,6 @@
 import {
-  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
+  AppstoreOutlined, FileOutlined, MedicineBoxOutlined,
+  TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import AnnouncementsCreate from 'views/Announcements.Create';
@@ -24,6 +25,7 @@ import OrderUpdate from 'views/Orders.Update';
 import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 import ListAuditLog from 'views/AuditLog.ListAuditLog';
+import ListInvoice from 'views/Invoice.ListInvoice';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
@@ -128,6 +130,16 @@ const ordersRoutes: Routes = {
     verboseName: 'Resumen de Orden',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+};
+
+const invoiceRoutes: Routes = {
+  listInvoice: {
+    path: '/facturas',
+    verboseName: 'Lista de facturas',
+    view: ListInvoice,
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
   },
 };
 
@@ -267,6 +279,12 @@ const routes: RegisteredGroup = {
     showInMenu: true,
     verboseName: 'Usuarios',
     icon: UserOutlined,
+  },
+  invoice: {
+    routes: invoiceRoutes,
+    showInMenu: true,
+    verboseName: 'Facturas',
+    icon: FileOutlined,
   },
 };
 
