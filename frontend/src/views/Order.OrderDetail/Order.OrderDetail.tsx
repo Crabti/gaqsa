@@ -26,9 +26,9 @@ const OrderDetail: React.VC = (
   const [isLoading, setLoading] = useState(true);
   const [order, setOrders] = useState<Order | undefined>(undefined);
 
-  const { isClient } = useAuth();
+  const { isProvider, isAdmin } = useAuth();
 
-  const shouldShowModifyOrder = !isClient;
+  const shouldShowModifyOrder = isAdmin || isProvider;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);

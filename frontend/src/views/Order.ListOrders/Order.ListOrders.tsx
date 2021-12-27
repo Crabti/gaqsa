@@ -35,9 +35,9 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [orders, setOrders] = useState<Order[] | undefined>(undefined);
-  const { isClient, isProvider } = useAuth();
+  const { isClient, isProvider, isAdmin } = useAuth();
 
-  const shouldShowModifyOrder = !isClient;
+  const shouldShowModifyOrder = isAdmin || isProvider;
   const shouldUploadInvoices = isProvider;
 
   const [invoiceModal, setInvoiceModal] = useState<InvoiceModal>(
