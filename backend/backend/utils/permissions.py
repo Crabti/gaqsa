@@ -1,6 +1,10 @@
 from django.contrib.auth.models import Group
-from backend.utils.constants import ADMIN_GROUP, PROVIDER_GROUP
-from rest_framework import permissions
+from backend.utils.constants import (
+    ADMIN_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP
+)
+from rest_framework import permissions, exceptions
+from datetime import date
+from django.conf import settings
 
 
 def _is_in_group(user, group_name):
@@ -15,6 +19,15 @@ def _is_in_group(user, group_name):
 def _has_group_permission(user, required_groups):
     return any(
         [_is_in_group(user, group_name) for group_name in required_groups])
+
+
+def available_today(weekdays_available):
+    if weekdays_available:
+        today_weekday = date.today().weekday()
+        available_weekdays = weekdays_available
+        valid = today_weekday in available_weekdays
+        return valid
+    return True
 
 
 class CustomBasePermission(permissions.BasePermission):
@@ -41,6 +54,10 @@ class IsProvider(CustomBasePermission):
     required_groups = [PROVIDER_GROUP]
 
 
+class IsInvoiceManager(CustomBasePermission):
+    required_groups = [INVOICE_MANAGER_GROUP]
+
+
 class IsOwnUserOrAdmin(permissions.BasePermission):
     """Allow only same users or admins"""
 
@@ -63,4 +80,19 @@ class IsOwnProviderOrAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user == obj.provider.user or _is_in_group(
             request.user, ADMIN_GROUP
+        )
+
+
+class IsInvoiceCheckDay(permissions.BasePermission):
+    message = {
+        'errors': ['This operation is only available on specific weekdays.'],
+        'code': 'UNAVAILABLE_WEEKDAY'
+    }
+
+    def has_object_permission(self, request, view, obj):
+        valid = available_today(settings.INVOICE_STATUS_UPDATE_WEEKDAYS)
+        if valid:
+            return True
+        raise exceptions.PermissionDenied(
+            detail=self.message
         )

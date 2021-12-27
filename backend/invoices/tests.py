@@ -4,9 +4,9 @@ from django.core import mail
 import os
 import json
 from datetime import date
-from django.conf import settings
 import tempfile
 from http import HTTPStatus
+from django.test.utils import override_settings
 
 from django.urls import reverse
 from factory import django
@@ -20,7 +20,7 @@ from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
-
+from django.conf import settings
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -217,6 +217,7 @@ class UpdateInvoiceStatus(BaseTestCase):
             "reject_reason": "...",
         }
 
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
     def test_require_authentication(self) -> None:
         response = self.anonymous.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
@@ -225,6 +226,7 @@ class UpdateInvoiceStatus(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
     def test_require_admin(self) -> None:
         response = self.service_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
@@ -240,6 +242,21 @@ class UpdateInvoiceStatus(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=[9])
+    def test_reject_on_non_valid_days(self) -> None:
+        print(settings.INVOICE_STATUS_UPDATE_WEEKDAYS)
+        yesterday = date.today().weekday() - 1
+        settings.INVOICE_STATUS_UPDATE_WEEKDAYS = [
+            yesterday
+        ]
+        response = self.provider_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
     def test_accept_on_valid(self) -> None:
         response = self.admin_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
@@ -253,6 +270,7 @@ class UpdateInvoiceStatus(BaseTestCase):
         self.assertEqual(self.invoice.status, Invoice.ACCEPTED)
         self.assertGreater(len(mail.outbox), 0)
 
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
     def test_reject_on_valid(self) -> None:
         response = self.admin_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
@@ -271,6 +289,7 @@ class UpdateInvoiceStatus(BaseTestCase):
 
         self.assertGreater(len(mail.outbox), 0)
 
+    @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
     def test_reject_on_valid_without_reason(self) -> None:
         valid_payload_reject_no_reason = self.valid_payload_reject
         valid_payload_reject_no_reason.pop("reject_reason")

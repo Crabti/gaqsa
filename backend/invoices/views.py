@@ -4,7 +4,7 @@ from invoices.serializers.invoice import (
     UpdateStatusSerializer,
 )
 from rest_framework import generics
-from backend.utils.permissions import IsAdmin, IsProvider
+from backend.utils.permissions import IsAdmin, IsInvoiceCheckDay, IsProvider
 
 
 class CreateInvoice(generics.CreateAPIView):
@@ -20,7 +20,7 @@ class ListInvoice(generics.ListAPIView):
 
 
 class UpdateInvoiceStatus(generics.UpdateAPIView):
-    permission_classes = (IsAdmin, )
+    permission_classes = [IsAdmin & IsInvoiceCheckDay]
     serializer_class = UpdateStatusSerializer
     queryset = Invoice.objects.all()
     lookup_field = 'pk'

@@ -2,7 +2,8 @@ import uuid
 import os
 
 from django.db import models
-from backend.settings import INVOICE_FILE_ROOT
+from django.conf import settings
+from backend.utils.permissions import available_today
 from invoices.mails import send_mail_on_create_invoice
 from order.models import Order
 from django.core.validators import FileExtensionValidator
@@ -16,7 +17,7 @@ from auditlog.registry import auditlog
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (uuid.uuid4(), ext)
-    return os.path.join(INVOICE_FILE_ROOT, filename)
+    return os.path.join(settings.INVOICE_FILE_ROOT, filename)
 
 
 class Invoice(models.Model):
@@ -85,6 +86,12 @@ class Invoice(models.Model):
         max_length=500,
         default="N/A"
     )
+
+    @property
+    def can_update_status(self):
+        return available_today(
+            settings.INVOICE_STATUS_UPDATE_WEEKDAYS
+        )
 
     def __str__(self) -> str:
         return f"{self.client} - {self.invoice_folio} - {self.status}"

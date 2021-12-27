@@ -15,15 +15,21 @@ import useAuth from 'hooks/useAuth';
 import RejectInvoiceModal from 'components/Modals/RejectInvoiceModal';
 import { Props } from './InvoiceTable.type';
 
+interface RejectModalProps {
+  visible: boolean;
+  invoice: Invoice | undefined;
+}
+
 const InvoiceTable: React.FC<Props> = (
   { invoices, redirectToOrderDetail, onRefresh },
 ) => {
   const backend = useBackend();
   const { isAdmin } = useAuth();
-  const [rejectModal, setRejectModal] = useState({
+  const [rejectModal, setRejectModal] = useState<RejectModalProps>({
     visible: false,
     invoice: undefined,
   });
+
   const onUpdate = async (
     invoice: number, accepted: boolean, reject_reason?: string,
   ) : Promise<boolean> => {
@@ -146,24 +152,36 @@ const InvoiceTable: React.FC<Props> = (
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
-      render: (_: number, data: any) => {
+      render: (_: number, data: Invoice) => {
+        const canUpdate = data.can_update_status;
         const isPending = data.status === InvoiceStatus.PENDING;
         const acceptModalTitle = `
         Aceptar factura con folio ${data.invoice_folio}`;
         const acceptModalContent = 'Se cambiara el estado de '
         + ' la factura a "Aceptado"';
+        let acceptTooltip;
+        if (!canUpdate) {
+          acceptTooltip = 'Esta acción no se puede realizar el día de hoy.';
+        } else if (isPending) {
+          acceptTooltip = `Aceptar factura folio ${data.invoice_folio}.`;
+        } else {
+          acceptTooltip = 'Esta factura ya ha sido sido aceptada o rechazada.';
+        }
+        let rejectTooltip;
+        if (!canUpdate) {
+          rejectTooltip = 'Esta accion no se puede realizar el dia de hoy.';
+        } else if (isPending) {
+          rejectTooltip = `Rechazar factura folio ${data.invoice_folio}.`;
+        } else {
+          rejectTooltip = acceptTooltip;
+        }
         return (
           <Row>
-            <Tooltip title={
-                isPending
-                  ? `Aceptar factura folio ${data.invoice_folio}.`
-                  : 'Esta factura ya ha sido sido aceptada o rechazada.'
-                }
-            >
+            <Tooltip title={acceptTooltip}>
               <Button
                 shape="circle"
                 icon={<CheckCircleOutlined />}
-                disabled={!isPending}
+                disabled={!canUpdate || !isPending}
                 onClick={() => {
                   confirm({
                     title: acceptModalTitle,
@@ -178,16 +196,11 @@ const InvoiceTable: React.FC<Props> = (
                 }}
               />
             </Tooltip>
-            <Tooltip title={
-                isPending
-                  ? `Rechazar factura folio ${data.invoice_folio}.`
-                  : 'Esta factura ya ha sido sido aceptada o rechazada.'
-                }
-            >
+            <Tooltip title={rejectTooltip}>
               <Button
                 shape="circle"
                 icon={<CloseCircleOutlined />}
-                disabled={!isPending}
+                disabled={!canUpdate || !isPending}
                 onClick={() => {
                   setRejectModal({
                     visible: true,
@@ -227,6 +240,7 @@ const InvoiceTable: React.FC<Props> = (
           extra_file: invoice.extra_file,
           order: invoice.order,
           status: invoice.status,
+          can_update_status: invoice.can_update_status,
           created_at: moment(
             invoice.created_at,
           ).format('YYYY-MM-DD hh:mm'),

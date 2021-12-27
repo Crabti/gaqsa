@@ -16,9 +16,12 @@ class NewInvoiceSerialier(serializers.ModelSerializer):
 
 
 class ListInvoiceSerializer(serializers.ModelSerializer):
+    can_update_status = serializers.ReadOnlyField()
+
     class Meta:
         model = Invoice
         fields = "__all__"
+        extra_fields = ['can_update_status']
 
 
 class UpdateStatusSerializer(serializers.ModelSerializer):
