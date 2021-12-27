@@ -13,6 +13,7 @@ import { useBackend } from 'integrations';
 import confirm from 'antd/lib/modal/confirm';
 import useAuth from 'hooks/useAuth';
 import RejectInvoiceModal from 'components/Modals/RejectInvoiceModal';
+import InvoiceStatusTag from 'components/InvoiceStatusTag';
 import { Props } from './InvoiceTable.type';
 
 interface RejectModalProps {
@@ -70,7 +71,7 @@ const InvoiceTable: React.FC<Props> = (
 
   const columns = [
     {
-      title: 'Folio',
+      title: 'Folio de Factura',
       dataIndex: 'invoice_folio',
       key: 'invoice_folio',
     },
@@ -89,7 +90,7 @@ const InvoiceTable: React.FC<Props> = (
       ) : `Pedido ${invoice.order}`),
     },
     {
-      title: 'Fecha de creación',
+      title: 'Fecha de Captura',
       dataIndex: 'created_at',
       key: 'created_at',
       defaultSortOrder: 'descend',
@@ -98,14 +99,19 @@ const InvoiceTable: React.FC<Props> = (
       ).unix() - moment(b.created_at).unix(),
     },
     {
-      title: 'Fecha de factura',
+      title: 'Fecha de Factura',
       dataIndex: 'invoice_date',
       key: 'invoice_date',
     },
     {
-      title: 'Fecha de entrega',
+      title: 'Fecha de Entrega',
       dataIndex: 'delivery_date',
       key: 'delivery_date',
+    },
+    {
+      title: 'Total',
+      dataIndex: 'amount',
+      key: 'amount',
     },
     {
       title: 'RFC Cliente',
@@ -113,7 +119,7 @@ const InvoiceTable: React.FC<Props> = (
       key: 'client',
     },
     {
-      title: 'Archivos XML',
+      title: 'Archivo XML',
       dataIndex: 'xml_file',
       key: 'xml_file',
       render: (_: number, invoice: Invoice) => (
@@ -123,7 +129,7 @@ const InvoiceTable: React.FC<Props> = (
       ),
     },
     {
-      title: 'Archivos adicionales',
+      title: 'Archivos Adicionales',
       dataIndex: 'extra_files',
       key: 'extra_files',
       render: (_: number, invoice: Invoice) => (
@@ -147,6 +153,7 @@ const InvoiceTable: React.FC<Props> = (
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
+      render: (status: string) => <InvoiceStatusTag status={status} />,
     },
     {
       title: 'Acciones',
@@ -235,6 +242,7 @@ const InvoiceTable: React.FC<Props> = (
           invoice_date: moment(
             invoice.invoice_date,
           ).format('YYYY-MM-DD hh:mm'),
+          amount: invoice.amount,
           xml_file: invoice.xml_file,
           invoice_file: invoice.invoice_file,
           extra_file: invoice.extra_file,
