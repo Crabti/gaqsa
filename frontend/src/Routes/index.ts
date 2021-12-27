@@ -109,14 +109,19 @@ const ordersRoutes: Routes = {
     view: OrderDetail,
     verboseName: 'Detalle de pedido',
     showInMenu: false,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+         || auth.isProvider || auth.isInvoiceManager
+    ),
   },
   listOrder: {
     path: '/pedidos',
     view: ListOrders,
     verboseName: 'Historial de pedidos',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+       || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
     path: '/pedidos/:id/modificar',
@@ -139,7 +144,7 @@ const invoiceRoutes: Routes = {
     verboseName: 'Lista de facturas',
     view: ListInvoice,
     showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin),
+    hasAccess: ((auth) => auth.isAdmin || auth.isInvoiceManager),
   },
 };
 

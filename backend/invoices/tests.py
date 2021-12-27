@@ -187,6 +187,14 @@ class ListInvoice(BaseTestCase):
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), self.invoice_amount)
 
+        response = self.invoice_client.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), self.invoice_amount)
+
 
 class UpdateInvoiceStatus(BaseTestCase):
     def setUp(self) -> None:
@@ -244,7 +252,6 @@ class UpdateInvoiceStatus(BaseTestCase):
 
     @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=[9])
     def test_reject_on_non_valid_days(self) -> None:
-        print(settings.INVOICE_STATUS_UPDATE_WEEKDAYS)
         yesterday = date.today().weekday() - 1
         settings.INVOICE_STATUS_UPDATE_WEEKDAYS = [
             yesterday
@@ -264,6 +271,14 @@ class UpdateInvoiceStatus(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        response = self.invoice_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
         self.invoice.refresh_from_db(
             fields=["status", "reject_reason"]
         )
@@ -278,6 +293,14 @@ class UpdateInvoiceStatus(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        response = self.invoice_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_reject),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
         self.invoice.refresh_from_db(
             fields=["status", "reject_reason"]
         )
@@ -293,12 +316,21 @@ class UpdateInvoiceStatus(BaseTestCase):
     def test_reject_on_valid_without_reason(self) -> None:
         valid_payload_reject_no_reason = self.valid_payload_reject
         valid_payload_reject_no_reason.pop("reject_reason")
+
         response = self.admin_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
             data=json.dumps(valid_payload_reject_no_reason),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        response = self.invoice_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(valid_payload_reject_no_reason),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
         self.invoice.refresh_from_db(
             fields=["status", "reject_reason"]
         )

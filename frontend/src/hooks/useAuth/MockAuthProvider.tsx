@@ -17,6 +17,7 @@ const MOCK_INITIAL_STATE : AuthType = {
   isAdmin: false,
   isClient: false,
   isProvider: false,
+  isInvoiceManager: false,
 };
 
 const mockSetTokens = jest.fn();

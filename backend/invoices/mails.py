@@ -1,6 +1,8 @@
 from django.core.mail import EmailMultiAlternatives
 
-from backend.utils.emails import get_admin_emails, get_user_invoice_emails
+from backend.utils.emails import (
+    get_admin_emails, get_user_invoice_emails
+)
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 

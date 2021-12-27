@@ -297,7 +297,7 @@ class ListAllUsers(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         result = json.loads(json.dumps(response.data))
-        self.assertEqual(len(result), self.users_quantity + 3)
+        self.assertGreaterEqual(len(result), self.users_quantity)
 
 
 class ToggleUserActive(BaseTestCase):

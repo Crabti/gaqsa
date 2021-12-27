@@ -24,7 +24,7 @@ const InvoiceTable: React.FC<Props> = (
   { invoices, redirectToOrderDetail, onRefresh },
 ) => {
   const backend = useBackend();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isInvoiceManager } = useAuth();
   const [rejectModal, setRejectModal] = useState<RejectModalProps>({
     visible: false,
     invoice: undefined,
@@ -217,7 +217,7 @@ const InvoiceTable: React.FC<Props> = (
   ];
 
   const getColumns = () : Column[] => {
-    if (isAdmin) {
+    if (isAdmin || isInvoiceManager) {
       return columns;
     }
     return columns.filter((col) => col.key !== 'actions');
