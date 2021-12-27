@@ -10,6 +10,7 @@ export interface Invoice extends CommonType {
     xml_file: string;
     invoice_file: string;
     extra_file?: string;
+    status: string;
 }
 
 export interface UploadInvoiceForm {

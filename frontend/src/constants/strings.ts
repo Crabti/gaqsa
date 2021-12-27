@@ -14,6 +14,12 @@ export enum OrderStatus {
   PENDING = 'Pendiente',
 }
 
+export enum InvoiceStatus {
+  ACCEPTED = 'Aceptado',
+  REJECTED = 'Rechazada',
+  PENDING = 'Pendiente',
+}
+
 export enum RequisitionStatus {
   RECEIVED = 'Entregado',
   INCOMPLETE = 'Incompleto',

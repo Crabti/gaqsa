@@ -81,6 +81,10 @@ class Invoice(models.Model):
         verbose_name="Estado de Factura",
         max_length=30
     )
+    reject_reason = models.CharField(
+        max_length=500,
+        default="N/A"
+    )
 
     def __str__(self) -> str:
         return f"{self.client} - {self.invoice_folio} - {self.status}"

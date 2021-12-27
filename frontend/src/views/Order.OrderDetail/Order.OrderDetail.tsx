@@ -131,6 +131,7 @@ const OrderDetail: React.VC = (
       </Row>
       <InvoiceTable
         invoices={order.invoices}
+        onRefresh={() => fetchOrders()}
       />
     </Content>
   );

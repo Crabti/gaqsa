@@ -47,6 +47,7 @@ const ListInvoice: React.VC = ({ verboseName, parentName }) => {
           <InvoiceTable
             invoices={invoices}
             redirectToOrderDetail
+            onRefresh={() => fetchInvoice()}
           />
         </>
       )}

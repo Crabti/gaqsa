@@ -1,0 +1,14 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div>
+    <h4>{{ provider.name}}</h4>
+    <h4>RFC: {{ provider.rfc }}</h4>
+  </div>
+  <div>
+    <h4>La factura con folio {{ invoice.invoice_folio }} ha sido aceptada.</h4>
+  </div>
+{% endblock %}
+

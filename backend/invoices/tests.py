@@ -14,6 +14,7 @@ from factory import django
 from backend.utils.files import parse_invoice_xml
 from backend.utils.tests import BaseTestCase
 from invoices.factories.invoice import InvoiceFactory
+from invoices.models import Invoice
 from order.factories.order import OrderFactory, RequisitionFactory
 from providers.factories.provider import ProviderFactory
 from users.factories.user import UserFactory
@@ -185,3 +186,107 @@ class ListInvoice(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result), self.invoice_amount)
+
+
+class UpdateInvoiceStatus(BaseTestCase):
+    def setUp(self) -> None:
+        mail.outbox = []
+        xml_file_data = File(open(os.path.join(
+            THIS_DIR, 'test_files/xml/sample1.xml'), 'rb'))
+        xml_file = SimpleUploadedFile(
+            'sample1.xml',
+            xml_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        invoice_file_data = File(open(
+            os.path.join(THIS_DIR, 'test_files/pdf/sample1.pdf'), 'rb'))
+        invoice_file = SimpleUploadedFile(
+            'sample1.pdf',
+            invoice_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        self.invoice = InvoiceFactory.create(
+            invoice_file=invoice_file,
+            xml_file=xml_file,
+        )
+        self.valid_payload_accept = {
+            "status": Invoice.ACCEPTED,
+        }
+        self.valid_payload_reject = {
+            "status": Invoice.REJECTED,
+            "reject_reason": "...",
+        }
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin(self) -> None:
+        response = self.service_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        response = self.provider_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_accept_on_valid(self) -> None:
+        response = self.admin_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.invoice.refresh_from_db(
+            fields=["status", "reject_reason"]
+        )
+        self.assertEqual(self.invoice.status, Invoice.ACCEPTED)
+        self.assertGreater(len(mail.outbox), 0)
+
+    def test_reject_on_valid(self) -> None:
+        response = self.admin_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_reject),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.invoice.refresh_from_db(
+            fields=["status", "reject_reason"]
+        )
+        self.assertEqual(self.invoice.status, Invoice.REJECTED)
+        self.assertEqual(
+            self.invoice.reject_reason,
+            self.valid_payload_reject['reject_reason']
+        )
+
+        self.assertGreater(len(mail.outbox), 0)
+
+    def test_reject_on_valid_without_reason(self) -> None:
+        valid_payload_reject_no_reason = self.valid_payload_reject
+        valid_payload_reject_no_reason.pop("reject_reason")
+        response = self.admin_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(valid_payload_reject_no_reason),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.invoice.refresh_from_db(
+            fields=["status", "reject_reason"]
+        )
+        self.assertEqual(self.invoice.status, Invoice.REJECTED)
+        self.assertEqual(
+            self.invoice.reject_reason,
+            "N/A"
+        )
+
+        self.assertGreater(len(mail.outbox), 0)
