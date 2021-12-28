@@ -25,3 +25,10 @@ export enum RequisitionStatus {
   INCOMPLETE = 'Incompleto',
   PENDING = 'Pendiente',
 }
+
+export enum OrderInvoiceStatus {
+  ACCEPTED = 'Aceptada',
+  REJECTED = 'Rechazada',
+  PENDING = 'Pendiente',
+  PARTIAL = 'Parcial',
+}

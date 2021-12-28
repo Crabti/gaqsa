@@ -24,6 +24,7 @@ import OrderStatusTag from 'components/OrderStatusTag';
 import { CloseOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import { OrderStatus } from 'constants/strings';
+import OrderInvoiceStatusTag from 'components/OrderInvoiceStatusTag';
 
 interface InvoiceModal {
   visible: boolean,
@@ -134,6 +135,12 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
       key: 'total,',
     },
     {
+      title: 'Facturación',
+      dataIndex: 'invoice_status',
+      key: 'invoice_status',
+      render: (status: string) => <OrderInvoiceStatusTag status={status} />,
+    },
+    {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
@@ -233,6 +240,7 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
             status: order.status,
             provider: order.provider,
             total: `$${order.total?.toFixed(2)}`,
+            invoice_status: order.invoice_status,
           }))
       }
         columns={columns}

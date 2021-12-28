@@ -13,10 +13,10 @@ const InvoiceStatusTag: React.FC<Props> = ({ status }) => {
       color = 'red';
       break;
     case InvoiceStatus.PENDING:
-      color = 'yellow';
+      color = 'blue';
       break;
     default:
-      color = 'blue';
+      color = 'yellow';
       break;
   }
 

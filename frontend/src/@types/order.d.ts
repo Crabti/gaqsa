@@ -23,6 +23,7 @@ export interface Order extends CommonType {
     status: string;
     total?: number;
     cancelled: boolean;
+    invoice_status: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
