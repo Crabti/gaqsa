@@ -294,7 +294,7 @@ DOMAIN_URL = os.getenv('DOMAIN_URL', '')
 # replace it with None or empty
 INVOICE_STATUS_UPDATE_WEEKDAYS = [
     # 0,  # Mondays
-    # 1,  # Tuesdays
+    1,  # Tuesdays
     2,  # Wednesdays
     # 3,  # Thursdays
     # 4,  # Fridays

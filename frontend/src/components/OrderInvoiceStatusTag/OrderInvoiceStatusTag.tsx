@@ -19,13 +19,13 @@ const OrderInvoiceStatusTag: React.FC<Props> = ({ status }) => {
       color = 'yellow';
       break;
     default:
-      color = 'black';
+      color = '';
       break;
   }
 
   return (
     <Tag key={status} color={color}>
-      {status.toUpperCase()}
+      {status?.toUpperCase()}
     </Tag>
   );
 };
