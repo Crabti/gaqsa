@@ -110,7 +110,7 @@ class Order(models.Model):
         )
         if rejected_invoices:
             return Order.INVOICE_REJECTED
-        else: 
+        else:
             invoices = Invoice.objects.filter(
                 order=self.pk
             )
