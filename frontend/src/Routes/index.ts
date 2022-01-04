@@ -26,6 +26,7 @@ import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 import ListAuditLog from 'views/AuditLog.ListAuditLog';
 import ListInvoice from 'views/Invoice.ListInvoice';
+import UploadInvoice from 'views/Invoice.UploadInvoice/Invoice.UploadInvoice';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
@@ -145,6 +146,13 @@ const invoiceRoutes: Routes = {
     view: ListInvoice,
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin || auth.isInvoiceManager),
+  },
+  uploadInvoice: {
+    path: '/facturación',
+    verboseName: 'Cargar Facturas',
+    view: UploadInvoice,
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isProvider),
   },
 };
 
@@ -277,7 +285,7 @@ const routes: RegisteredGroup = {
   catalogs: {
     routes: catalogsRoutes,
     showInMenu: true,
-    verboseName: 'Catalogos',
+    verboseName: 'Catálogos',
   },
   user: {
     routes: usersRoutes,
