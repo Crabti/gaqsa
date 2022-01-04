@@ -13,7 +13,7 @@ const OrderInvoiceStatusTag: React.FC<Props> = ({ status }) => {
       color = 'red';
       break;
     case OrderInvoiceStatus.PENDING:
-      color = 'pink';
+      color = 'blue';
       break;
     case OrderInvoiceStatus.PARTIAL:
       color = 'yellow';
