@@ -49,7 +49,7 @@ services:
     environment: 
       - BACKEND=django
     volumes:
-      - ./frontend:/app/frontend
+      - ./frontend:/app/frontend:cached
       - node-modules:/app/frontend/node_modules
     ports:
       - "3000:3000"

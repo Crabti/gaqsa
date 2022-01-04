@@ -4,11 +4,8 @@ import os
 from django.db import models
 from django.conf import settings
 from backend.utils.permissions import available_today
-from invoices.mails import send_mail_on_create_invoice
 from order.models import Order
 from django.core.validators import FileExtensionValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from backend.utils.files import parse_invoice_xml
 from rest_framework import serializers
 from auditlog.registry import auditlog
@@ -86,6 +83,9 @@ class Invoice(models.Model):
         max_length=500,
         default="N/A"
     )
+    notified = models.BooleanField(
+        default=False,
+    )
 
     @property
     def can_update_status(self):
@@ -104,12 +104,6 @@ class Invoice(models.Model):
             super(Invoice, self).save(*args, **kwargs)
         except Exception as e:
             raise serializers.ValidationError(e)
-
-
-@receiver(post_save, sender=Invoice)
-def send_mail_on_create(sender, instance=None, created=False, **kwargs):
-    if created:
-        send_mail_on_create_invoice(instance)
 
 
 auditlog.register(Invoice)

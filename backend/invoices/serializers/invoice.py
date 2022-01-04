@@ -4,9 +4,12 @@ from rest_framework import serializers
 
 
 class NewInvoiceSerialier(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Invoice
         fields = (
+            "id",
             "delivery_date",
             "order",
             "xml_file",

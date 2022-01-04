@@ -9,4 +9,9 @@ urlpatterns = [
         views.UpdateInvoiceStatus.as_view(),
         name="update_invoice_status"
     ),
+    path(
+        "notify",
+        views.NotifyInvoices.as_view(),
+        name="notify_invoice",
+    ),
 ]

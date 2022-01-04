@@ -58,7 +58,6 @@ class XMLParser(TestCase):
 
 class InvoiceUpload(BaseTestCase):
     def setUp(self) -> None:
-        mail.outbox = []
         self.temp_dir = tempfile.mkdtemp()
         settings.MEDIA_ROOT = self.temp_dir
 
@@ -131,7 +130,6 @@ class InvoiceUpload(BaseTestCase):
             [len(files) for r, d, files in os.walk(self.temp_dir)]
         )
         self.assertEqual(dir_files_count, 3)
-        self.assertGreater(len(mail.outbox), 0)
         # Should return None since invoice not accepted
         self.assertEqual(self.order.invoice_status, None)
 
@@ -198,7 +196,6 @@ class ListInvoice(BaseTestCase):
 
 class UpdateInvoiceStatus(BaseTestCase):
     def setUp(self) -> None:
-        mail.outbox = []
         xml_file_data = File(open(os.path.join(
             THIS_DIR, 'test_files/xml/sample1.xml'), 'rb'))
         xml_file = SimpleUploadedFile(
@@ -340,4 +337,112 @@ class UpdateInvoiceStatus(BaseTestCase):
             "N/A"
         )
 
+
+class NotifyInvoice(BaseTestCase):
+    def setUp(self) -> None:
+        self.invoice_amount = 5
+        self.invoices_notified = InvoiceFactory.create_batch(
+            self.invoice_amount,
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+            notified=True,
+        )
+        self.invoices_not_notified = InvoiceFactory.create_batch(
+            self.invoice_amount,
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+            notified=False,
+        )
+        self.valid_payload = {
+            "invoices": [invoice.pk for invoice in self.invoices_not_notified]
+        }
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_require_admin_or_provider(self) -> None:
+        response = self.service_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        response = self.invoice_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_return_ok_on_valid(self) -> None:
+        response = self.provider_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_notify_change_notified_value(self) -> None:
+        self.provider_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        for provider in self.invoices_not_notified:
+            provider.refresh_from_db(
+                fields=["notified"]
+            )
+            self.assertEqual(provider.notified, True)
+
+    def test_return_notified_invoices(self) -> None:
+        response = self.provider_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(
+            len(result["invoices"]),
+            len(self.invoices_not_notified)
+        )
+
+    def test_send_mail(self) -> None:
+        mail.outbox = []
+        self.provider_client.post(
+            reverse("notify_invoice"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
         self.assertGreater(len(mail.outbox), 0)

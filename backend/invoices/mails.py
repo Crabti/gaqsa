@@ -5,19 +5,31 @@ from backend.utils.emails import (
 )
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from invoices.models import Invoice
 
 
-def send_mail_on_create_invoice(invoice) -> None:
-    title = "Alta de Factura"
+def send_mail_on_notify_invoice(invoices: "list[Invoice]", user: int) -> None:
+    title = "Alta de Factura(s)"
     subject = f"GAQSA - {title}"
+    orders = [invoice.order.pk for invoice in invoices]
+    file_count = 0
+    for invoice in invoices:
+        if invoice.xml_file:
+            file_count += 1
+        if invoice.invoice_file:
+            file_count += 1
+        if invoice.extra_file:
+            file_count += 1
+
     context = {
-        "invoice": invoice,
-        "provider": invoice.order.provider,
+        "invoices_total": file_count,
+        "invoices": invoices,
+        "orders": list(set(orders)),
         "title": title
     }
     from_email = "noreply@gaqsa.com"
     user_invoice_emails = get_user_invoice_emails(
-        invoice.order.provider.user.pk
+        user
     )
     admin_emails = get_admin_emails()
     to_emails = user_invoice_emails + admin_emails
@@ -33,10 +45,11 @@ def send_mail_on_create_invoice(invoice) -> None:
         to_emails,
     )
     email.attach_alternative(html_message, "text/html")
-    email.attach_file(invoice.xml_file.path)
-    email.attach_file(invoice.invoice_file.path)
-    if invoice.extra_file:
-        email.attach_file(invoice.extra_file.path)
+    for invoice in invoices:
+        email.attach_file(invoice.xml_file.path)
+        email.attach_file(invoice.invoice_file.path)
+        if invoice.extra_file:
+            email.attach_file(invoice.extra_file.path)
     email.send(fail_silently=True)
 
 
