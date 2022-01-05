@@ -167,10 +167,6 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
-  if (isLoading || !orders) {
-    return <LoadingIndicator />;
-  }
-
   const onCloseModal = (success: boolean, invoice?: Invoice): void => {
     if (success) {
       // fetchOrders();
@@ -228,29 +224,39 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
-      <TableFilter
-        fieldsToFilter={[
-          { key: 'user', value: 'Nombre del Cliente' },
-        ]}
-        onFilter={setFiltered}
-        filterAny={onFilterAny}
-        data={orders}
-      />
-      <Table
-        rowKey={(row) => row.id}
-        data={filtered}
-        columns={columns}
-        actions={[{
-          action: notify,
-          disabled: uploadedInvoices.length === 0,
-          text: 'Notificar',
-        }]}
-      />
-      <UploadInvoiceModal
-        visible={invoiceModal.visible}
-        onClose={onCloseModal}
-        order={invoiceModal.order}
-      />
+      { (isLoading || !orders)
+        ? <LoadingIndicator />
+        : (
+          <>
+            <TableFilter
+              fieldsToFilter={[
+                { key: 'user', value: 'Nombre del Cliente' },
+              ]}
+              onFilter={setFiltered}
+              filterAny={onFilterAny}
+              data={orders}
+            />
+            <Table
+              rowKey={(row) => row.id}
+              data={filtered}
+              columns={columns}
+              actions={[{
+                action: notify,
+                disabled: uploadedInvoices.length === 0,
+                text: 'Notificar',
+                badgeProps: {
+                  count: uploadedInvoices.length,
+                  color: 'green',
+                },
+              }]}
+            />
+            <UploadInvoiceModal
+              visible={invoiceModal.visible}
+              onClose={onCloseModal}
+              order={invoiceModal.order}
+            />
+          </>
+        )}
     </Content>
   );
 };
