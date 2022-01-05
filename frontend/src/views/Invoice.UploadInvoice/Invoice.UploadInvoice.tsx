@@ -11,6 +11,7 @@ import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
+  Invoice,
   Order,
 } from '@types';
 import UploadInvoiceModal from 'components/Modals/UploadInvoiceModal';
@@ -34,6 +35,8 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [orders, setOrders] = useState<Order[] | undefined>(undefined);
+  const [uploadedInvoices, setUploadedInvoices] = useState<Invoice[]>([]);
+
   const { isProvider } = useAuth();
 
   const shouldUploadInvoices = isProvider;
@@ -168,11 +171,42 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
     return <LoadingIndicator />;
   }
 
-  const onCloseModal = (success: boolean): void => {
+  const onCloseModal = (success: boolean, invoice?: Invoice): void => {
     if (success) {
-      fetchOrders();
+      // fetchOrders();
+      if (invoice) {
+        const temp = uploadedInvoices;
+        temp.push(invoice);
+        setUploadedInvoices(temp);
+      }
     }
     setInvoiceModal({ ...invoiceModal, visible: false });
+  };
+
+  const notify = async (): Promise<void> => {
+    const payload = {
+      invoices: uploadedInvoices.map((invoice) => invoice.id),
+    };
+
+    const [result, error] = await backend.invoice.post(
+      '/notify',
+      payload,
+    );
+
+    if (error || !result) {
+      notification.error({
+        message: 'Ocurrió un error al notificar sobre las facturas subidas!',
+        description: 'Intentalo más tarde',
+      });
+      setLoading(false);
+      return;
+    }
+    notification.success({
+      message: 'Se ha notificado exitosamente',
+    });
+    setLoading(false);
+    setUploadedInvoices([]);
+    fetchOrders();
   };
 
   const onFilterAny = (
@@ -199,6 +233,11 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
         rowKey={(row) => row.id}
         data={filtered}
         columns={columns}
+        actions={[{
+          action: notify,
+          disabled: uploadedInvoices.length === 0,
+          text: 'Notificar',
+        }]}
       />
       <UploadInvoiceModal
         visible={invoiceModal.visible}

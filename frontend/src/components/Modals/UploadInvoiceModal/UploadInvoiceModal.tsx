@@ -1,4 +1,4 @@
-import { UploadInvoiceForm } from '@types';
+import { Invoice, UploadInvoiceForm } from '@types';
 import {
   Modal,
   Form,
@@ -119,9 +119,9 @@ const UploadInvoiceModal: React.FC<Props> = ({
         'Se ha guardado la factura exitosamente'
       ),
     });
-
+    const invoice : Invoice = response.data as Invoice;
     setLoading(false);
-    onClose(true);
+    onClose(true, invoice);
   };
 
   const validateForm = async (): Promise<void> => {
