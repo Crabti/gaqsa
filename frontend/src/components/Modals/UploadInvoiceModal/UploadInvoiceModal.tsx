@@ -141,6 +141,7 @@ const UploadInvoiceModal: React.FC<Props> = ({
       onCancel={() => onClose(false)}
       okText="Guardar"
       onOk={validateForm}
+      okButtonProps={{ disabled: invoiceFiles.length === 0 }}
       title={`Facturación Pedido No. ${order?.id}`}
       confirmLoading={isLoading}
     >

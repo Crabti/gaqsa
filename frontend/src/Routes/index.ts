@@ -145,7 +145,9 @@ const invoiceRoutes: Routes = {
     verboseName: 'Lista de facturas',
     view: ListInvoice,
     showInMenu: true,
-    hasAccess: ((auth) => auth.isAdmin || auth.isInvoiceManager),
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isInvoiceManager || auth.isProvider
+    ),
   },
   uploadInvoice: {
     path: '/facturación',

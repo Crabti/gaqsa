@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from invoices.mails import send_mail_on_notify_invoice
 from invoices.models import Invoice
+from backend.utils.groups import is_provider
 from invoices.serializers.invoice import (
     NewInvoiceSerialier, ListInvoiceSerializer,
     UpdateStatusSerializer,
@@ -11,6 +12,7 @@ from backend.utils.permissions import (
     IsAdmin, IsInvoiceCheckDay, IsProvider,
     IsInvoiceManager
 )
+from providers.models import Provider
 
 
 class CreateInvoice(generics.CreateAPIView):
@@ -20,9 +22,19 @@ class CreateInvoice(generics.CreateAPIView):
 
 
 class ListInvoice(generics.ListAPIView):
-    permission_classes = [IsAdmin | IsInvoiceManager]   # type: ignore
+    permission_classes = [IsAdmin
+                          | IsInvoiceManager | IsProvider]   # type: ignore
     serializer_class = ListInvoiceSerializer
-    queryset = Invoice.objects.all()
+
+    def get_queryset(self):
+        if is_provider(self.request.user):
+            provider = Provider.objects.get(
+                user=self.request.user,
+            )
+            return Invoice.objects.filter(
+                order__provider=provider,
+            )
+        return Invoice.objects.all()
 
 
 class UpdateInvoiceStatus(generics.UpdateAPIView):
@@ -36,7 +48,7 @@ class UpdateInvoiceStatus(generics.UpdateAPIView):
 
 
 class NotifyInvoices(APIView):
-    permission_classes = [IsProvider | IsAdmin]
+    permission_classes = [IsProvider | IsAdmin]    # type: ignore
 
     def post(self, request):
         invoices = request.data["invoices"]

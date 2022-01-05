@@ -163,20 +163,47 @@ class ListInvoice(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
-    def test_require_admin(self) -> None:
+    def test_require_admin_or_provider(self) -> None:
         response = self.service_client.get(
             reverse("list_invoice"),
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
+    def test_list_valid_as_provider(self) -> None:
+        invoice_amount = 5
+        InvoiceFactory.create_batch(
+            invoice_amount,
+            order=OrderFactory(
+                provider=ProviderFactory(
+                    user=self.provider_user,
+                ),
+            ),
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+        )
         response = self.provider_client.get(
             reverse("list_invoice"),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result), invoice_amount)
 
-    def test_list_valid(self) -> None:
+    def test_list_valid_as_admin(self) -> None:
         response = self.admin_client.get(
             reverse("list_invoice"),
             content_type="application/json",
