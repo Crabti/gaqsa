@@ -1,5 +1,6 @@
 import {
-  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
+  AppstoreOutlined, FileOutlined, MedicineBoxOutlined,
+  TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
 import AnnouncementsCreate from 'views/Announcements.Create';
@@ -24,6 +25,8 @@ import OrderUpdate from 'views/Orders.Update';
 import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
 import ListProviders from 'views/Providers.ListProviders';
 import ListAuditLog from 'views/AuditLog.ListAuditLog';
+import ListInvoice from 'views/Invoice.ListInvoice';
+import UploadInvoice from 'views/Invoice.UploadInvoice/Invoice.UploadInvoice';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
@@ -107,14 +110,19 @@ const ordersRoutes: Routes = {
     view: OrderDetail,
     verboseName: 'Detalle de pedido',
     showInMenu: false,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+         || auth.isProvider || auth.isInvoiceManager
+    ),
   },
   listOrder: {
     path: '/pedidos',
     view: ListOrders,
     verboseName: 'Historial de pedidos',
     showInMenu: true,
-    hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+       || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
     path: '/pedidos/:id/modificar',
@@ -128,6 +136,25 @@ const ordersRoutes: Routes = {
     verboseName: 'Resumen de Orden',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+};
+
+const invoiceRoutes: Routes = {
+  listInvoice: {
+    path: '/facturas',
+    verboseName: 'Lista de facturas',
+    view: ListInvoice,
+    showInMenu: true,
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isInvoiceManager || auth.isProvider
+    ),
+  },
+  uploadInvoice: {
+    path: '/facturación',
+    verboseName: 'Cargar Facturas',
+    view: UploadInvoice,
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isProvider),
   },
 };
 
@@ -260,13 +287,19 @@ const routes: RegisteredGroup = {
   catalogs: {
     routes: catalogsRoutes,
     showInMenu: true,
-    verboseName: 'Catalogos',
+    verboseName: 'Catálogos',
   },
   user: {
     routes: usersRoutes,
     showInMenu: true,
     verboseName: 'Usuarios',
     icon: UserOutlined,
+  },
+  invoice: {
+    routes: invoiceRoutes,
+    showInMenu: true,
+    verboseName: 'Facturas',
+    icon: FileOutlined,
   },
 };
 

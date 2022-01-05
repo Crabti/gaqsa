@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable max-len */
 import React from 'react';
 import {
+  Badge,
   Button, Col, Layout, Row, Tooltip,
 } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,15 +32,29 @@ const GenericTable: React.FC<Props> = ({
               ) ? button.disabledTooltip : button.tooltip ? button.tooltip : null
             }
             >
-              <Button
-                onClick={button.action}
-                type="primary"
-                block
-                disabled={button.disabled}
-                icon={button.icon}
-              >
-                {button.text}
-              </Button>
+              { button.badgeProps ? (
+                <Badge {...button.badgeProps}>
+                  <Button
+                    onClick={button.action}
+                    type="primary"
+                    block
+                    disabled={button.disabled}
+                    icon={button.icon}
+                  >
+                    {button.text}
+                  </Button>
+                </Badge>
+              ) : (
+                <Button
+                  onClick={button.action}
+                  type="primary"
+                  block
+                  disabled={button.disabled}
+                  icon={button.icon}
+                >
+                  {button.text}
+                </Button>
+              )}
             </Tooltip>
           </Col>
         )

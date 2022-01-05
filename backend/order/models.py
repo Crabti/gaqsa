@@ -41,9 +41,9 @@ class Order(models.Model):
     PENDING = 'Pendiente'
 
     INVOICE_PENDING = 'Pendiente'
-    INVOICE_REJECTED = 'Rechazado'
-    INVOICE_PARTIAL = 'Parcialmente facturado'
-    INVOICE_COMPLETE = 'Facturado'
+    INVOICE_REJECTED = 'Rechazada'
+    INVOICE_PARTIAL = 'Parcial'
+    INVOICE_COMPLETE = 'Aceptada'
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,6 +74,10 @@ class Order(models.Model):
         return self.requisition_set.all()
 
     @property
+    def invoices(self):
+        return self.invoice_set.all()
+
+    @property
     def status(self):
         if self.cancelled:
             return Order.CANCELLED
@@ -100,18 +104,25 @@ class Order(models.Model):
     @property
     def invoice_status(self):
         Invoice = apps.get_model("invoices.Invoice")
-        invoices = Invoice.objects.filter(
-            order=self.pk
+        rejected_invoices = Invoice.objects.filter(
+            order=self.pk,
+            status=Invoice.REJECTED,
         )
-        if invoices:
-            invoice_total = self.invoice_total
-            if invoice_total is None:
-                return None
-            if invoice_total >= self.total:
-                return Order.INVOICE_COMPLETE
-            return Order.INVOICE_PARTIAL
+        if rejected_invoices:
+            return Order.INVOICE_REJECTED
         else:
-            return None
+            invoices = Invoice.objects.filter(
+                order=self.pk
+            )
+            if invoices:
+                invoice_total = self.invoice_total
+                if invoice_total is None:
+                    return None
+                if invoice_total >= self.total:
+                    return Order.INVOICE_COMPLETE
+                return Order.INVOICE_PARTIAL
+            else:
+                return Order.INVOICE_PENDING
 
     def __str__(self):
         return f"{self.created_at} - {self.user} \

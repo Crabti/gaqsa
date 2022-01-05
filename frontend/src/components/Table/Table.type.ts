@@ -1,3 +1,4 @@
+import { BadgeProps } from 'antd';
 import React from 'react';
 
 export type Column = {
@@ -19,6 +20,7 @@ interface TableAction {
   disabled?: boolean;
   tooltip?: string;
   disabledTooltip?: string;
+  badgeProps?: BadgeProps;
 }
 
 interface Props {

@@ -2,12 +2,10 @@ import uuid
 import os
 
 from django.db import models
-from backend.settings import INVOICE_FILE_ROOT
-from invoices.mails import send_mail_on_create_invoice
+from django.conf import settings
+from backend.utils.permissions import available_today
 from order.models import Order
 from django.core.validators import FileExtensionValidator
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from backend.utils.files import parse_invoice_xml
 from rest_framework import serializers
 from auditlog.registry import auditlog
@@ -16,7 +14,7 @@ from auditlog.registry import auditlog
 def get_file_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = "%s.%s" % (uuid.uuid4(), ext)
-    return os.path.join(INVOICE_FILE_ROOT, filename)
+    return os.path.join(settings.INVOICE_FILE_ROOT, filename)
 
 
 class Invoice(models.Model):
@@ -81,6 +79,19 @@ class Invoice(models.Model):
         verbose_name="Estado de Factura",
         max_length=30
     )
+    reject_reason = models.CharField(
+        max_length=500,
+        default="N/A"
+    )
+    notified = models.BooleanField(
+        default=False,
+    )
+
+    @property
+    def can_update_status(self):
+        return available_today(
+            settings.INVOICE_STATUS_UPDATE_WEEKDAYS
+        )
 
     def __str__(self) -> str:
         return f"{self.client} - {self.invoice_folio} - {self.status}"
@@ -93,12 +104,6 @@ class Invoice(models.Model):
             super(Invoice, self).save(*args, **kwargs)
         except Exception as e:
             raise serializers.ValidationError(e)
-
-
-@receiver(post_save, sender=Invoice)
-def send_mail_on_create(sender, instance=None, created=False, **kwargs):
-    if created:
-        send_mail_on_create_invoice(instance)
 
 
 auditlog.register(Invoice)

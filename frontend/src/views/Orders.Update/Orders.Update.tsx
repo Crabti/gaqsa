@@ -112,7 +112,7 @@ const OrderUpdate: React.FC<Props> = ({ order }) => {
       notification.success({
         message: 'Se ha modificado el pedido exitosamente.',
       });
-      history.replace(`/pedidos/proveedor/${order.id}`);
+      history.replace(`/pedidos/${order.id}`);
     }
     setLoading(false);
   };

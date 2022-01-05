@@ -1,3 +1,4 @@
+from invoices.serializers.invoice import ListInvoiceSerializer
 from .models import Order, Requisition
 from rest_framework import serializers
 from products.serializers.product import ProductSerializer
@@ -106,6 +107,9 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
         slug_field='name'
     )
     requisitions = NestedRequisitionSerializer(many=True)
+    invoices = ListInvoiceSerializer(
+        many=True
+    )
 
     status = serializers.ReadOnlyField()
 
@@ -117,7 +121,8 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             'status',
             'user',
             'created_at',
-            'provider'
+            'provider',
+            'invoices',
         )
 
 

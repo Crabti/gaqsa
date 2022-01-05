@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Content } from 'antd/lib/layout/layout';
 import {
-  notification,
+  notification, Row, Typography,
 } from 'antd';
 import { useHistory, useParams } from 'react-router';
 import Title from 'components/Title';
@@ -14,6 +14,8 @@ import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import RequisitionStatusTag from 'components/RequisitionStatusTag';
 import OrderSummary from 'components/OrderSummary';
 import useAuth from 'hooks/useAuth';
+import { OrderStatus } from 'constants/strings';
+import InvoiceTable from 'components/InvoiceTable';
 
 const OrderDetail: React.VC = (
   { verboseName, parentName },
@@ -24,9 +26,9 @@ const OrderDetail: React.VC = (
   const [isLoading, setLoading] = useState(true);
   const [order, setOrders] = useState<Order | undefined>(undefined);
 
-  const { isClient } = useAuth();
+  const { isProvider, isAdmin } = useAuth();
 
-  const shouldShowModifyOrder = !isClient;
+  const shouldShowModifyOrder = isAdmin || isProvider;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -111,9 +113,25 @@ const OrderDetail: React.VC = (
               `/pedidos/${orderId}/modificar`,
             ),
             hidden: !shouldShowModifyOrder,
+            disabled: order.status !== OrderStatus.PENDING,
+            tooltip: (order.status !== OrderStatus.PENDING)
+              ? 'Este pedido ya fue modificado' : 'Modificar pedido',
           },
         ]}
         columns={columns}
+      />
+      <Row justify="center">
+
+        <Typography.Title
+          level={3}
+          style={{ marginTop: '3em' }}
+        >
+          Facturas
+        </Typography.Title>
+      </Row>
+      <InvoiceTable
+        invoices={order.invoices}
+        onRefresh={() => fetchOrders()}
       />
     </Content>
   );

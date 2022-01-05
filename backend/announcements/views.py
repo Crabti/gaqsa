@@ -45,7 +45,6 @@ class CreateAnnouncement(APIView):
             )
 
         file_path, file_url = self._build_file_path(file_extension)
-        print(file_url)
         default_storage.save(file_path, file)
         serializer = CreateAnnouncementSerializer(
             data={

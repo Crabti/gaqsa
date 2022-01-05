@@ -14,34 +14,25 @@ import { useBackend } from 'integrations';
 import {
   Order,
 } from '@types';
-import UploadInvoiceModal from 'components/Modals/UploadInvoiceModal';
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import moment from 'moment';
 
 import SearchOutlined from '@ant-design/icons/lib/icons/SearchOutlined';
 import OrderStatusTag from 'components/OrderStatusTag';
-import { CloseOutlined, EditOutlined, FileOutlined } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
-
-interface InvoiceModal {
-  visible: boolean,
-  order: Order | undefined,
-}
+import { OrderStatus } from 'constants/strings';
 
 const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
   const history = useHistory();
   const [isLoading, setLoading] = useState(true);
   const [orders, setOrders] = useState<Order[] | undefined>(undefined);
-  const { isClient, isProvider } = useAuth();
+  const { isClient, isProvider, isAdmin } = useAuth();
 
-  const shouldShowModifyOrder = !isClient;
-  const shouldUploadInvoices = isProvider;
+  const shouldShowModifyOrder = isAdmin || isProvider;
 
-  const [invoiceModal, setInvoiceModal] = useState<InvoiceModal>(
-    { visible: false, order: undefined },
-  );
   const shouldShowCancelOrder = isClient;
 
   const fetchOrders = useCallback(async () => {
@@ -94,7 +85,7 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
 
   const columns = [
     {
-      title: 'Numero de Orden',
+      title: 'Orden',
       dataIndex: 'id',
       key: 'id',
     },
@@ -152,9 +143,12 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
           {shouldShowModifyOrder
             ? (
               <Col>
-                <Tooltip title="Modificar pedido">
+                <Tooltip title={(order.status !== OrderStatus.PENDING)
+                  ? 'Este pedido ya fue modificado' : 'Modificar pedido'}
+                >
                   <Button
                     shape="circle"
+                    disabled={order.status !== OrderStatus.PENDING}
                     icon={<EditOutlined />}
                     onClick={() => {
                       history.push(`/pedidos/${order.id}/modificar`);
@@ -164,23 +158,6 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
               </Col>
             )
             : null}
-          {shouldUploadInvoices
-            ? (
-              <Col>
-                <Tooltip title="Cargar Factura">
-                  <Button
-                    shape="circle"
-                    icon={<FileOutlined />}
-                    onClick={() => (
-                      setInvoiceModal({
-                        visible: true,
-                        order,
-                      })
-                    )}
-                  />
-                </Tooltip>
-              </Col>
-            ) : null }
           {shouldShowCancelOrder && order.status === 'Pendiente'
           && !order.cancelled
             ? (
@@ -210,12 +187,6 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     return <LoadingIndicator />;
   }
 
-  const onCloseModal = (success: boolean): void => {
-    if (success) {
-      fetchOrders();
-    }
-    setInvoiceModal({ ...invoiceModal, visible: false });
-  };
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
@@ -232,11 +203,6 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
           }))
       }
         columns={columns}
-      />
-      <UploadInvoiceModal
-        visible={invoiceModal.visible}
-        onClose={onCloseModal}
-        order={invoiceModal.order}
       />
     </Content>
   );

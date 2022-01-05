@@ -287,3 +287,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 INVOICE_FILE_ROOT = 'invoices/'
 
 DOMAIN_URL = os.getenv('DOMAIN_URL', '')
+
+# Weekdays enabled where admin or invoice manager can
+# update an invoice's status. Example: 0 - Monday, 1 - Tuesday...
+# If all weekdays should be enabled, then remove this variable or
+# replace it with None or empty
+INVOICE_STATUS_UPDATE_WEEKDAYS = [
+    # 0,  # Mondays
+    1,  # Tuesdays
+    2,  # Wednesdays
+    # 3,  # Thursdays
+    # 4,  # Fridays
+    # 5,  # Saturdays
+    # 6,  # Sundays
+]
