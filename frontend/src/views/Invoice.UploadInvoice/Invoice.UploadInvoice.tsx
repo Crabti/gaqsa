@@ -184,11 +184,15 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
   };
 
   const notify = async (): Promise<void> => {
+    setLoading(true);
     const payload = {
       invoices: uploadedInvoices.map((invoice) => invoice.id),
     };
 
-    const [result, error] = await backend.invoice.post(
+    const [result, error] = await backend.invoice.post<
+    {
+      invoices: Invoice[],
+    }, any>(
       '/notify',
       payload,
     );
@@ -201,8 +205,11 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
       setLoading(false);
       return;
     }
+    const { invoices } = result.data;
     notification.success({
-      message: 'Se ha notificado exitosamente',
+      message: `${invoices.length} factura(s) subida(s) exitosamente`,
+      description: 'Se ha notificado por correo electrónico'
+      + ' el resumen de las operación realizada.',
     });
     setLoading(false);
     setUploadedInvoices([]);
