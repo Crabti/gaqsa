@@ -285,9 +285,10 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
               index, value,
             )
           }
-          filterOption={(input, option) => (option === undefined
-            ? false : option.children
-              .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+          filterOption={(input, option: any) => (
+            (option === undefined || option?.children === undefined)
+              ? false : option.children
+                .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
         >
           {labs ? Object.values(labs).map(
             (lab: Laboratory) => (

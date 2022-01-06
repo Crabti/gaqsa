@@ -138,7 +138,7 @@ const GroupProductModal: React.FC<Props> = ({
                   showSearch
                   placeholder="Buscar producto existente"
                   filterOption={
-            (input, option) => (option === undefined
+            (input, option: any) => ((option === undefined || option.children)
               ? false : option.children
                 .toLowerCase().indexOf(input.toLowerCase()) >= 0)
           }
