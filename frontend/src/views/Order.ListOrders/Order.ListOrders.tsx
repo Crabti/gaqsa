@@ -183,16 +183,14 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
-  if (isLoading || !orders) {
-    return <LoadingIndicator />;
-  }
-
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
-      <Table
-        rowKey={(row) => row.id}
-        data={
+      { (isLoading || !orders) ? <LoadingIndicator />
+        : (
+          <Table
+            rowKey={(row) => row.id}
+            data={
           orders.map((order) => ({
             id: order.id,
             user: order.user,
@@ -202,8 +200,9 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
             total: `$${order.total?.toFixed(2)}`,
           }))
       }
-        columns={columns}
-      />
+            columns={columns}
+          />
+        )}
     </Content>
   );
 };
