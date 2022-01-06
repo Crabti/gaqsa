@@ -15,7 +15,7 @@ const AddRanch: React.FC = () => (
         {(fields, { add, remove }) => (
           <>
             {fields.map(({
-              key, name, fieldKey, ...restField
+              key, name, ...restField
             }) => (
               <Space
                 key={key}
@@ -25,7 +25,6 @@ const AddRanch: React.FC = () => (
                 <Form.Item
                   {...restField}
                   name={[name, 'key']}
-                  fieldKey={[fieldKey, 'key']}
                   rules={[{
                     required: true,
                     message: 'Por favor llenar este campo.',
@@ -39,7 +38,6 @@ const AddRanch: React.FC = () => (
                 <Form.Item
                   {...restField}
                   name={[name, 'name']}
-                  fieldKey={[fieldKey, 'name']}
                   rules={[{
                     required: true,
                     message: 'Por favor llenar este campo.',
