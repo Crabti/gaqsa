@@ -183,12 +183,8 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
     fetchProducts();
   };
 
-  const createOrder = async () : Promise<void> => {
-    setLoading(true);
-    if (productsSh.length > 0) {
-      history.push('/pedidos');
-    }
-    setLoading(false);
+  const createOrder = () : void => {
+    history.push('/pedidos/resumen');
   };
 
   const renderLabs = (
@@ -561,7 +557,13 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 action: createOrder,
                 text: 'Ordenar',
                 icon: <ShoppingCartOutlined />,
+                disabled: productsSh.length === 0,
                 hidden: (isAdmin || isProvider),
+                badgeProps: {
+                  count: productsSh.length,
+                  showZero: true,
+                  color: 'green',
+                },
               },
               {
                 action: changePriceButton,
