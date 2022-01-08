@@ -27,6 +27,7 @@ import ListProviders from 'views/Providers.ListProviders';
 import ListAuditLog from 'views/AuditLog.ListAuditLog';
 import ListInvoice from 'views/Invoice.ListInvoice';
 import UploadInvoice from 'views/Invoice.UploadInvoice/Invoice.UploadInvoice';
+import OrderCreateOrder from 'views/Order.CreateOrder';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
@@ -36,7 +37,6 @@ import {
   SHOW_AUDIT_LOG, SHOW_DETAIL_ANNOUNCEMENT,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
-import OrderCreateOrder from 'views/Order.CreateOrder';
 
 export interface RoutesType {
   path: string;
@@ -70,7 +70,7 @@ export const productRoutes: Routes = {
     hasAccess: ((auth) => auth.isProvider || auth.isAdmin),
   },
   updateProduct: {
-    path: '/productos/:id/modificar',
+    path: '/productos/:id(\\d+)/modificar',
     view: ProductsUpdateForm,
     verboseName: 'Modificar producto',
     hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
@@ -90,7 +90,7 @@ export const productRoutes: Routes = {
     hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
   detailProduct: {
-    path: '/productos/:id/detalle',
+    path: '/productos/:id(\\d+)/detalle',
     view: ProductsDetail,
     verboseName: 'Modificar producto',
     showInMenu: false,
@@ -106,7 +106,7 @@ export const productRoutes: Routes = {
 
 const ordersRoutes: Routes = {
   orderDetail: {
-    path: '/pedidos/:id',
+    path: '/pedidos/:id(\\d+)',
     view: OrderDetail,
     verboseName: 'Detalle de pedido',
     showInMenu: false,
@@ -125,13 +125,13 @@ const ordersRoutes: Routes = {
        || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
-    path: '/pedidos/:id/modificar',
+    path: '/pedidos/:id(\\d+)(\\d+)/modificar',
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
     hasAccess: (auth) => auth.isProvider || auth.isAdmin,
   },
   createOrder: {
-    path: '/pedidos',
+    path: '/pedidos/resumen',
     view: OrderCreateOrder,
     verboseName: 'Resumen de Orden',
     showInMenu: true,
@@ -221,7 +221,7 @@ export const catalogsRoutes: Routes = {
     ),
   },
   detailAnnouncements: {
-    path: '/circulares/:id',
+    path: '/circulares/:id(\\d+)',
     view: AnnouncementsDetailCompound,
     verboseName: 'Detalle de circulare',
     showInMenu: SHOW_DETAIL_ANNOUNCEMENT,

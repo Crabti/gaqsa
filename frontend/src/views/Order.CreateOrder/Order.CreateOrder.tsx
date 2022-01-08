@@ -20,7 +20,6 @@ import { ProductGroup } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
-import useAuth from 'hooks/useAuth';
 import DiscountText from 'components/DiscountText';
 import Text from 'antd/lib/typography/Text';
 
@@ -48,8 +47,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   const history = useHistory();
   const [isLoading, setLoading] = useState(false);
 
-  const { user } = useAuth();
-
   const {
     productsSh, addProducts, removeProducts, clear, total, subieps, subiva,
     subtotal,
@@ -64,26 +61,24 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async () : Promise<void> => {
     setLoading(true);
-    if (user) {
-      const [, error] = await backend.orders.createOne({
-        productsSh,
-      });
+    const [, error] = await backend.orders.createOne({
+      productsSh,
+    });
 
-      if (error) {
-        onFinishFailed();
-        return;
-      }
-      clear();
-      notification.success({
-        message: '¡Petición de orden creado exitosamente!',
-        description: 'Su orden de compra ha sido recibida y será procesada'
+    if (error) {
+      onFinishFailed();
+      return;
+    }
+    clear();
+    notification.success({
+      message: '¡Petición de orden creado exitosamente!',
+      description: 'Su orden de compra ha sido recibida y será procesada'
             + 'El proveedor le informará lo mas pronto posible '
             + 'el estatus de su solicitud.',
-      });
-      history.replace('/pedidos/cliente');
+    });
+    history.replace('/pedidos');
 
-      setLoading(false);
-    }
+    setLoading(false);
   };
   const columns = [
     {
