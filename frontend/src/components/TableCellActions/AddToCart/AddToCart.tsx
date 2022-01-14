@@ -5,7 +5,7 @@ import {
   Row,
   Tooltip,
 } from 'antd';
-import { ProductGroup } from '@types';
+import { ProductGroup, Provider } from '@types';
 import useShoppingCart from 'hooks/shoppingCart';
 
 export interface Props {
@@ -44,7 +44,7 @@ const AddToCart: React.FC<Props> = ({ product }) => {
                       active_substance: product.active_substance,
                       presentation: product.presentation,
                       laboratory: rowProvider.laboratory.name,
-                      provider: (rowProvider.provider as string),
+                      provider: (rowProvider.provider as Provider),
                       originalPrice: rowProvider.price,
                       price: rowProvider.offer
                         ? (
@@ -68,7 +68,7 @@ const AddToCart: React.FC<Props> = ({ product }) => {
                       active_substance: product.active_substance,
                       presentation: product.presentation,
                       laboratory: rowProvider.laboratory.name,
-                      provider: (rowProvider.provider as string),
+                      provider: (rowProvider.provider as Provider),
                       originalPrice: rowProvider.price,
                       price: rowProvider.offer
                         ? (

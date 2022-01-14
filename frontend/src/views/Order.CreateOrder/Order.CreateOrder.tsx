@@ -16,7 +16,7 @@ import {
   MinusOutlined,
 } from '@ant-design/icons';
 import useShoppingCart from 'hooks/shoppingCart';
-import { ProductGroup } from '@types';
+import { ProductGroup, Provider } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
@@ -34,7 +34,7 @@ interface ProductCart {
   price: number;
   iva: number;
   ieps: number;
-  provider: string;
+  provider: Provider;
   originalPrice?: number;
 }
 
@@ -112,8 +112,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       key: 'price',
       render: (_: number, data: any) => (data.offer ? (
         <DiscountText
-          originalPrice={(data.price
-            + data.price * data.offer.discount_percentage).toFixed(2)}
+          originalPrice={data.originalPrice}
           discount={data.offer.discount_percentage}
         />
       ) : (
@@ -213,7 +212,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
               data={productsSh.map((product) => ({
                 id: product.product.id,
                 name: product.product.name,
-                provider: product.product.provider,
+                provider: product.product.provider.name,
                 presentation: product.product.presentation,
                 laboratory: product.product.laboratory,
                 category: product.product.category,
@@ -222,6 +221,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 ieps: product.product.ieps,
                 amount: product.amount,
                 offer: product.offer,
+                originalPrice: product.product.originalPrice,
               }))}
               columns={columns}
               rowKey={(row) => `${row.id}`}

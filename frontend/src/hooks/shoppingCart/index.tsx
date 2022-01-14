@@ -1,4 +1,4 @@
-import { Offer } from '@types';
+import { Offer, Provider } from '@types';
 import React, { useEffect, useState } from 'react';
 
 interface ProductCart {
@@ -12,7 +12,7 @@ interface ProductCart {
   price: number;
   iva: number;
   ieps: number;
-  provider: string;
+  provider: Provider;
   originalPrice?: number;
 }
 
