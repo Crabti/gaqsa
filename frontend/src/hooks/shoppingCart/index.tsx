@@ -1,7 +1,7 @@
 import { Offer, Provider } from '@types';
 import React, { useEffect, useState } from 'react';
 
-interface ProductCart {
+export interface ProductCart {
   id: number;
   name: string;
   presentation: string;

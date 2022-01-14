@@ -1,13 +1,9 @@
 import React from 'react';
 import { Button, Row, Form } from 'antd';
+import { Props } from './FormButton.type';
 
-type FormButtonProps = {
-  text: string,
-  loading: boolean,
-};
-
-const FormButton: React.FC<FormButtonProps> = (props) => {
-  const { text, loading } = props;
+const FormButton: React.FC<Props> = (props) => {
+  const { text, loading, disabled } = props;
   return (
     <Row justify="space-around" align="middle">
       <Form.Item shouldUpdate className="submit">
@@ -17,6 +13,7 @@ const FormButton: React.FC<FormButtonProps> = (props) => {
           htmlType="submit"
           style={{ marginTop: 50 }}
           loading={loading}
+          disabled={disabled}
         >
           { text }
         </Button>
