@@ -69,6 +69,36 @@ class ListOrderTest(BaseTestCase):
         self.assertEqual(len(result), len(my_orders))
 
 
+class OrderProperty(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+    def test_total_return_zero_on_no_requisition(self) -> None:
+        order = OrderFactory.create()
+        self.assertNotEqual(
+            order.total,
+            None
+        )
+        self.assertEqual(
+            order.total,
+            0.0
+        )
+
+    def test_total_return_correct(self) -> None:
+        order = OrderFactory.create()
+        total = 10.00
+        quantity = 5
+        RequisitionFactory.create_batch(
+            quantity,
+            order=order,
+            price=total,
+        )
+        self.assertEqual(
+            order.total,
+            total * quantity,
+        )
+
+
 class ListRequisitions(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
