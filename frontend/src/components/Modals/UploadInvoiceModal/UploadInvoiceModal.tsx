@@ -67,6 +67,30 @@ const UploadInvoiceModal: React.FC<Props> = ({
     accept: '.png, .jpg, .pdf',
   };
 
+  const onFinishFailed = (code?: string) : void => {
+    switch (code) {
+      case 'INVALID_RFC':
+        notification.error({
+          message: '¡Ocurrio un error al guardar la factura!',
+          description: 'El RFC de la factura no'
+          + ' coincide con el RFC del cliente.',
+        });
+        break;
+      case 'CLIENT_404':
+        notification.error({
+          message: '¡Ocurrio un error al guardar la factura!',
+          description: 'No se encontraron datos del cliente.',
+        });
+        break;
+      default:
+        notification.error({
+          message: '¡Ocurrio un error al guardar la factura!',
+          description: 'Verifique si su archivo XML es valido',
+        });
+        break;
+    }
+  };
+
   const onSubmit = async (data: any): Promise<void> => {
     setLoading(true);
     if (!xmlFile) {
@@ -105,23 +129,21 @@ const UploadInvoiceModal: React.FC<Props> = ({
       { headers: { 'Content-Type': 'multipart/form-data' } },
     );
 
-    if (error || !response || !response.data) {
-      notification.error({
-        message: '¡Ocurrio un error al guardar la factura!',
-        description: 'Verifique si su archivo XML es valido',
-      });
+    if (error) {
+      onFinishFailed(error.response?.data.code);
       setLoading(false);
       return;
     }
-
-    notification.success({
-      message: (
-        'Se ha guardado la factura exitosamente'
-      ),
-    });
-    const invoice : Invoice = response.data as Invoice;
-    setLoading(false);
-    onClose(true, invoice);
+    if (response) {
+      notification.success({
+        message: (
+          'Se ha guardado la factura exitosamente'
+        ),
+      });
+      const invoice : Invoice = response.data as Invoice;
+      setLoading(false);
+      onClose(true, invoice);
+    }
   };
 
   const validateForm = async (): Promise<void> => {
