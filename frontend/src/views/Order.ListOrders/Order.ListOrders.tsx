@@ -23,6 +23,7 @@ import OrderStatusTag from 'components/OrderStatusTag';
 import { CloseOutlined, EditOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import { OrderStatus } from 'constants/strings';
+import TableFilter from 'components/TableFilter';
 
 const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -34,6 +35,12 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
   const shouldShowModifyOrder = isAdmin || isProvider;
 
   const shouldShowCancelOrder = isClient;
+
+  const [filtered, setFiltered] = useState<Order[]>([]);
+
+  const resetFiltered = useCallback(
+    () => setFiltered(orders || []), [orders],
+  );
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -83,6 +90,48 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
     fetchOrders();
   };
 
+  const renderTotal = (
+    order: Order,
+  ) : any => (
+    <Row>
+      {`$${order.total?.toFixed(2)}`}
+    </Row>
+  );
+
+  const renderDate = (
+    order: Order,
+  ) : any => (
+    <Row>
+      {moment(order.created_at).format('YYYY-MM-DD')}
+    </Row>
+  );
+
+  useEffect(() => {
+    resetFiltered();
+  }, [orders, resetFiltered]);
+
+  const onFilterAny = (
+    data: Order[], value: string,
+  ): Order[] => data.filter((order) => (
+    (
+      typeof order.user === 'string'
+      && order.user.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+    || (
+      typeof order.provider === 'string'
+      && order.provider.toLowerCase().includes(
+        value.toLowerCase(),
+      )
+    )
+    || (
+      order.status.toLowerCase().includes(
+        value.toLocaleLowerCase(),
+      )
+    )
+  ));
+
   const columns = [
     {
       title: 'Orden',
@@ -101,6 +150,9 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
         }
         return 1;
       },
+      render: (
+        _: number, order: Order,
+      ) => renderDate(order),
     },
     {
       title: 'Cliente',
@@ -122,6 +174,9 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total,',
+      render: (
+        _: number, order: Order,
+      ) => renderTotal(order),
     },
     {
       title: 'Acciones',
@@ -188,20 +243,23 @@ const ListOrders: React.VC = ({ verboseName, parentName }) => {
       <Title viewName={verboseName} parentName={parentName} />
       { (isLoading || !orders) ? <LoadingIndicator />
         : (
-          <Table
-            rowKey={(row) => row.id}
-            data={
-          orders.map((order) => ({
-            id: order.id,
-            user: order.user,
-            created_at: moment(order.created_at).format('YYYY-mm-DD hh:mm'),
-            status: order.status,
-            provider: order.provider,
-            total: `$${order.total?.toFixed(2)}`,
-          }))
-      }
-            columns={columns}
-          />
+          <>
+            <TableFilter
+              fieldsToFilter={[
+                { key: 'user', value: 'Cliente' },
+                { key: 'provider', value: 'Proveedor' },
+                { key: 'status', value: 'Estado' },
+              ]}
+              onFilter={setFiltered}
+              filterAny={onFilterAny}
+              data={orders}
+            />
+            <Table
+              rowKey={(row) => row.id}
+              data={filtered}
+              columns={columns}
+            />
+          </>
         )}
     </Content>
   );
