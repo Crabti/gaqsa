@@ -5,6 +5,7 @@ from django.db import models
 from django.conf import settings
 from backend.utils.permissions import available_today
 from order.models import Order
+from clients.models import Client
 from django.core.validators import FileExtensionValidator
 from backend.utils.files import parse_invoice_xml
 from rest_framework import serializers
@@ -96,14 +97,36 @@ class Invoice(models.Model):
     def __str__(self) -> str:
         return f"{self.client} - {self.invoice_folio} - {self.status}"
 
+    def _validate_invoice_rfc(self, rfc):
+        client_user = self.order.user
+        try:
+            client = Client.objects.get(
+                user=client_user
+            )
+        except Client.DoesNotExist:
+            raise serializers.ValidationError(
+                {
+                    'message': 'Client data not found',
+                    'code': 'CLIENT_404',
+                },
+            )
+        if client.rfc != rfc:
+            raise serializers.ValidationError(
+                {
+                    'message': 'Invoice RFC is not equal to client RFC',
+                    'code': 'INVALID_RFC',
+                },
+            )
+
     def save(self, *args, **kwargs):
         try:
             parsed_attributes = parse_invoice_xml(self.xml_file)
-            for attr, value in parsed_attributes.items():
-                setattr(self, attr, value)
-            super(Invoice, self).save(*args, **kwargs)
         except Exception as e:
             raise serializers.ValidationError(e)
+        self._validate_invoice_rfc(parsed_attributes["client"])
+        for attr, value in parsed_attributes.items():
+            setattr(self, attr, value)
+        super(Invoice, self).save(*args, **kwargs)
 
 
 auditlog.register(Invoice)
