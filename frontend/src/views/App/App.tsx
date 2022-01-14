@@ -6,6 +6,7 @@ import {
 import esEs from 'antd/lib/locale/es_ES';
 import Header from 'components/Header';
 import SideMenu from 'components/SideMenu';
+import PrivacyNotice from 'components/PrivacyNotice';
 import useNavigation from 'hooks/navigation/useNavigation';
 import registerdGroups from 'Routes';
 import RoutesComponents from 'Routes/Routes';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
             <Content data-testid="content-container">
               <RoutesComponents groups={registerdGroups} />
             </Content>
+            <PrivacyNotice />
           </ContentLayout>
         </Layout>
       </BaseLayout>
