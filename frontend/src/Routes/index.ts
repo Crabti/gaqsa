@@ -125,7 +125,7 @@ const ordersRoutes: Routes = {
        || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
-    path: '/pedidos/:id(\\d+)(\\d+)/modificar',
+    path: '/pedidos/:id(\\d+)/modificar',
     view: OrderUpdate,
     verboseName: 'Modificar pedido',
     hasAccess: (auth) => auth.isProvider || auth.isAdmin,
