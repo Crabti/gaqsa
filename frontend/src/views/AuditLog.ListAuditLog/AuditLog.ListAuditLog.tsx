@@ -6,6 +6,7 @@ import {
   notification,
   Table as AntTable,
   Tooltip,
+  Row,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
@@ -17,6 +18,7 @@ import {
 import Table from 'components/Table';
 import LoadingIndicator from 'components/LoadingIndicator/LoadingIndicator';
 import { SearchOutlined } from '@ant-design/icons';
+import TableFilter from 'components/TableFilter';
 
 const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
   const backend = useBackend();
@@ -59,7 +61,7 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
                 key: 'before',
               },
               {
-                title: 'Despues',
+                title: 'Después',
                 dataIndex: 'after',
                 key: 'after',
               },
@@ -78,7 +80,7 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
     if (error || !result) {
       notification.error({
         message: '',
-        description: 'Intentalo más tarde',
+        description: 'Inténtalo más tarde',
       });
       setLoading(false);
       return;
@@ -91,31 +93,110 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
     fetchAuditLog();
   }, [history, fetchAuditLog]);
 
+  const actionMap: Record<number, string> = {
+    0: 'Creación',
+    1: 'Modificación',
+    2: 'Eliminación',
+  };
+
+  const [filtered, setFiltered] = useState<AuditLog[]>([]);
+
+  const resetFiltered = useCallback(
+    () => setFiltered(auditlog || []), [auditlog],
+  );
+
+  useEffect(() => {
+    resetFiltered();
+  }, [auditlog, resetFiltered]);
+
+  const onFilterAny = (
+    data: AuditLog[], value: string,
+  ): AuditLog[] => data.filter((log) => (
+    log.actor.toLowerCase().includes(
+      value.toLocaleLowerCase(),
+    )
+  ));
+
+  const renderActor = (
+    log: AuditLog,
+  ) : any => (
+    <Row>
+      {log.actor ?? 'Sistema'}
+    </Row>
+  );
+
+  const renderDate = (
+    log: AuditLog,
+  ) : any => (
+    <Row>
+      {moment(log.timestamp).format('YYYY-MM-DD hh:mm') ?? 'N/A'}
+    </Row>
+  );
+
+  const renderIpAddress = (
+    log: AuditLog,
+  ) : any => (
+    <Row>
+      {log.remote_addr ?? 'N/A'}
+    </Row>
+  );
+
+  const renderAction = (
+    log: AuditLog,
+  ) : any => (
+    <Row>
+      {actionMap[log.action]}
+    </Row>
+  );
+
+  const renderObject = (
+    log: AuditLog,
+  ) : any => (
+    <Row>
+      {log.object_repr ?? 'N/A'}
+    </Row>
+  );
+
   const columns = [
     {
-      title: 'Uusario',
+      title: 'Usuario',
       dataIndex: 'actor',
       key: 'actor',
+      render: (
+        _: number, log: AuditLog,
+      ) => renderActor(log),
     },
     {
       title: 'Tiempo',
       dataIndex: 'timestamp',
       key: 'timestamp',
+      render: (
+        _: number, log: AuditLog,
+      ) => renderDate(log),
     },
     {
       title: 'Objeto',
       dataIndex: 'object_repr',
       key: 'object_repr',
+      render: (
+        _: number, log: AuditLog,
+      ) => renderObject(log),
     },
     {
-      title: 'Direccion IP',
+      title: 'Dirección IP',
       dataIndex: 'remote_addr',
       key: 'remote_addr',
+      render: (
+        _: number, log: AuditLog,
+      ) => renderIpAddress(log),
     },
     {
-      title: 'Accion',
+      title: 'Acción',
       dataIndex: 'action',
       key: 'action',
+      render: (
+        _: number, log: AuditLog,
+      ) => renderAction(log),
     },
     {
       title: 'Detalle',
@@ -135,32 +216,22 @@ const ListAuditLog: React.VC = ({ verboseName, parentName }) => {
     },
   ];
 
-  const actionMap: Record<number, string> = {
-    0: 'Creación',
-    1: 'Modificación',
-    2: 'Eliminación',
-  };
-
   return (
     <Content>
       <Title viewName={verboseName} parentName={parentName} />
       {isLoading || !auditlog ? <LoadingIndicator /> : (
         <>
+          <TableFilter
+            fieldsToFilter={[
+              { key: 'actor', value: 'Usuario' },
+            ]}
+            onFilter={setFiltered}
+            filterAny={onFilterAny}
+            data={auditlog}
+          />
           <Table
             rowKey={(row) => `${row.id}`}
-            data={
-              auditlog.map((log) => ({
-                id: log.pk,
-                actor: log.actor ?? 'Sistema',
-                timestamp: moment(
-                  log.timestamp,
-                ).format('YYYY-MM-DD hh:mm:ss') ?? 'N/A',
-                object_repr: log.object_repr ?? 'N/A',
-                remote_addr: log.remote_addr ?? 'N/A',
-                action: actionMap[log.action],
-                changes: log.changes,
-              }))
-            }
+            data={filtered}
             columns={columns}
           />
         </>
