@@ -110,6 +110,7 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
     invoices = ListInvoiceSerializer(
         many=True
     )
+    total = serializers.ReadOnlyField()
 
     status = serializers.ReadOnlyField()
 
@@ -123,6 +124,7 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             'created_at',
             'provider',
             'invoices',
+            'total',
         )
 
 

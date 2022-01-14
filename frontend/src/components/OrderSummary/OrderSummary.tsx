@@ -7,26 +7,34 @@ import { Props } from './OrderSummary.type';
 
 const { Title, Text } = Typography;
 
-const OrderSummary: React.FC<Props> = ({ order }) => {
-  const renderRow = (label: string, value: string) : any => (
-    <Row
-      key={label}
-      justify="space-between"
-    >
-      <Col>
-        <Text strong>
-          { label }
-        </Text>
-      </Col>
-      <Col>
-        <Text strong>
-          { value }
-        </Text>
-      </Col>
-    </Row>
-  );
+interface RowType {
+  label: string;
+  value: string | undefined;
+}
 
-  const rows = [
+const OrderSummary: React.FC<Props> = ({ order }) => {
+  const renderRow = (label: string, value?: string) : any => {
+    const valueText = value || 'Sin datos';
+    return (
+      <Row
+        key={label}
+        justify="space-between"
+      >
+        <Col>
+          <Text strong>
+            { label }
+          </Text>
+        </Col>
+        <Col>
+          <Text strong>
+            { valueText }
+          </Text>
+        </Col>
+      </Row>
+    );
+  };
+
+  const rows : RowType[] = [
     {
       label: 'Cliente',
       value: (order.user as string),
@@ -42,6 +50,10 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
     {
       label: 'Estado',
       value: order.status,
+    },
+    {
+      label: 'Total',
+      value: `$${order.total?.toFixed(2)}`,
     },
   ];
 
@@ -59,7 +71,9 @@ const OrderSummary: React.FC<Props> = ({ order }) => {
         </Title>
       </Row>
       {
-        rows.map((row) => renderRow(row.label, row.value))
+        rows.map((row) => renderRow(
+          row.label, row.value,
+        ))
       }
     </Card>
   );
