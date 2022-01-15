@@ -1,10 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable no-nested-ternary */
-/* eslint-disable max-len */
 import React from 'react';
 import {
   Badge,
-  Button, Col, Layout, Row, Tooltip,
+  Button, Col, Row, Tooltip,
 } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import Props from './Table.type';
@@ -13,7 +12,7 @@ import { Table } from './Table.styled';
 const GenericTable: React.FC<Props> = ({
   data, columns, expandedRowRender, rowKey, actions, selection,
 }) => (
-  <Layout>
+  <>
     <Row
       gutter={16}
       justify="end"
@@ -26,13 +25,11 @@ const GenericTable: React.FC<Props> = ({
       {actions?.map((button) => (
         button.hidden ? null : (
           <Col className="gutter-row" span={3} key={uuidv4()}>
-            <Tooltip title={
-              (
-                button.disabled && button.disabledTooltip
-              ) ? button.disabledTooltip : button.tooltip ? button.tooltip : null
-            }
+            <Tooltip title={(
+              button.disabled && button.disabledTooltip
+            ) ? button.disabledTooltip : button.tooltip ? button.tooltip : null}
             >
-              { button.badgeProps ? (
+              {button.badgeProps ? (
                 <Badge {...button.badgeProps}>
                   <Button
                     onClick={button.action}
@@ -71,7 +68,8 @@ const GenericTable: React.FC<Props> = ({
       defaultExpandAllRows
       rowSelection={selection}
     />
-  </Layout>
+
+  </>
 
 );
 

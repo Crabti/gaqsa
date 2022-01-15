@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Button, Col, notification, Row, Tooltip,
 } from 'antd';
@@ -14,6 +14,7 @@ import confirm from 'antd/lib/modal/confirm';
 import useAuth from 'hooks/useAuth';
 import RejectInvoiceModal from 'components/Modals/RejectInvoiceModal';
 import InvoiceStatusTag from 'components/InvoiceStatusTag';
+import TableFilter from 'components/TableFilter';
 import { Props } from './InvoiceTable.type';
 
 interface RejectModalProps {
@@ -69,6 +70,55 @@ const InvoiceTable: React.FC<Props> = (
     });
   };
 
+  const [filtered, setFiltered] = useState<Invoice[]>([]);
+
+  const resetFiltered = useCallback(
+    () => setFiltered(invoices || []), [invoices],
+  );
+
+  const onFilterAny = (
+    data: Invoice[], value: string,
+  ): Invoice[] => data.filter((invoice) => (
+    (
+      invoice.client.toLowerCase().includes(
+        value.toLocaleLowerCase(),
+      )
+    )
+    || (
+      invoice.status.toLowerCase().includes(
+        value.toLocaleLowerCase(),
+      )
+    )
+  ));
+
+  const renderTotal = (
+    invoice: Invoice,
+  ) : any => (
+    <Row>
+      {`$${invoice.amount?.toFixed(2)}`}
+    </Row>
+  );
+
+  const renderInvoiceDate = (
+    invoice: Invoice,
+  ) : any => (
+    <Row>
+      {moment(invoice.invoice_date).format('YYYY-MM-DD')}
+    </Row>
+  );
+
+  const renderCreatedDate = (
+    invoice: Invoice,
+  ) : any => (
+    <Row>
+      {moment(invoice.created_at).format('YYYY-MM-DD')}
+    </Row>
+  );
+
+  useEffect(() => {
+    resetFiltered();
+  }, [invoices, resetFiltered]);
+
   const columns = [
     {
       title: 'Folio de Factura',
@@ -83,6 +133,7 @@ const InvoiceTable: React.FC<Props> = (
         <Button
           target="_blank"
           type="link"
+          size="small"
           href={`/pedidos/${invoice.order}`}
         >
           {`Pedido ${invoice.order}`}
@@ -97,11 +148,17 @@ const InvoiceTable: React.FC<Props> = (
       sorter: (a: any, b: any) => moment(
         a.created_at,
       ).unix() - moment(b.created_at).unix(),
+      render: (
+        _: number, invoice: Invoice,
+      ) => renderCreatedDate(invoice),
     },
     {
       title: 'Fecha de Factura',
       dataIndex: 'invoice_date',
       key: 'invoice_date',
+      render: (
+        _: number, invoice: Invoice,
+      ) => renderInvoiceDate(invoice),
     },
     {
       title: 'Fecha de Entrega',
@@ -112,6 +169,9 @@ const InvoiceTable: React.FC<Props> = (
       title: 'Total',
       dataIndex: 'amount',
       key: 'amount',
+      render: (
+        _: number, invoice: Invoice,
+      ) => renderTotal(invoice),
     },
     {
       title: 'RFC Cliente',
@@ -123,7 +183,12 @@ const InvoiceTable: React.FC<Props> = (
       dataIndex: 'xml_file',
       key: 'xml_file',
       render: (_: number, invoice: Invoice) => (
-        <Button target="_blank" type="link" href={invoice.xml_file}>
+        <Button
+          target="_blank"
+          type="link"
+          size="small"
+          href={invoice.xml_file}
+        >
           Abrir archivo
         </Button>
       ),
@@ -135,13 +200,23 @@ const InvoiceTable: React.FC<Props> = (
       render: (_: number, invoice: Invoice) => (
         <Col>
           <Row>
-            <Button target="_blank" type="link" href={invoice.invoice_file}>
+            <Button
+              target="_blank"
+              type="link"
+              size="small"
+              href={invoice.invoice_file}
+            >
               Abrir archivo
             </Button>
           </Row>
           { invoice.extra_file ? (
             <Row>
-              <Button target="_blank" type="link" href={invoice.extra_file}>
+              <Button
+                target="_blank"
+                type="link"
+                size="small"
+                href={invoice.extra_file}
+              >
                 Abrir archivo
               </Button>
             </Row>
@@ -232,27 +307,19 @@ const InvoiceTable: React.FC<Props> = (
 
   return (
     <>
+      <TableFilter
+        fieldsToFilter={[
+          { key: 'client', value: 'RFC del Cliente' },
+          { key: 'status', value: 'Estado' },
+        ]}
+        onFilter={setFiltered}
+        filterAny={onFilterAny}
+        // eslint-disable-next-line
+        data={invoices!}
+      />
       <Table
         rowKey={(row) => `${row.id}`}
-        data={invoices ? invoices.map((invoice) => ({
-          id: invoice.id,
-          invoice_folio: invoice.invoice_folio,
-          delivery_date: moment(invoice.delivery_date).format('YYYY-MM-DD'),
-          client: invoice.client,
-          invoice_date: moment(
-            invoice.invoice_date,
-          ).format('YYYY-MM-DD hh:mm'),
-          amount: invoice.amount,
-          xml_file: invoice.xml_file,
-          invoice_file: invoice.invoice_file,
-          extra_file: invoice.extra_file,
-          order: invoice.order,
-          status: invoice.status,
-          can_update_status: invoice.can_update_status,
-          created_at: moment(
-            invoice.created_at,
-          ).format('YYYY-MM-DD hh:mm'),
-        })) : []}
+        data={invoices ? filtered : []}
         columns={
         getColumns()
       }

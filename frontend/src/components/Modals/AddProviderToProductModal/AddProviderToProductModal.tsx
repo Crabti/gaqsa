@@ -150,9 +150,10 @@ const AddProviderToProductModal: React.FC<Props> = ({
                 showSearch
                 placeholder="Buscar proveedor"
                 filterOption={
-                    (input, option) => (option === undefined
-                      ? false : option.children
-                        .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+                    (input, option: any) => (
+                      (option === undefined || option.children === undefined)
+                        ? false : option.children
+                          .toLowerCase().indexOf(input.toLowerCase()) >= 0)
                     }
               >
                 { Object.values(availableProviders().map(
@@ -173,9 +174,10 @@ const AddProviderToProductModal: React.FC<Props> = ({
                 showSearch
                 placeholder="Buscar laboratorio"
                 filterOption={
-                    (input, option) => (option === undefined
-                      ? false : option.children
-                        .toLowerCase().indexOf(input.toLowerCase()) >= 0)
+                    (input, option: any) => (
+                      (option === undefined || option.children === undefined)
+                        ? false : option.children
+                          .toLowerCase().indexOf(input.toLowerCase()) >= 0)
                     }
               >
                 { Object.values(labs.map(

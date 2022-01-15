@@ -69,9 +69,10 @@ const ProductForm: React.FC<Props> = ({
               placeholder="Buscar proveedor"
               optionFilterProp="children"
               mode="multiple"
-              filterOption={(input, option) => (option === undefined
-                ? false : option.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
             >
               {Object.values(providers).map(
                 (provider) => (
@@ -109,9 +110,10 @@ const ProductForm: React.FC<Props> = ({
               showSearch
               disabled={!!disabledFields?.category}
               placeholder="Buscar categoría"
-              filterOption={(input, option) => (option === undefined
-                ? false : option.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
             >
               {Object.values(options.categories).map(
                 (category) => (
@@ -175,11 +177,10 @@ const ProductForm: React.FC<Props> = ({
                 <Select
                   showSearch
                   placeholder="Buscar laboratorio"
-                  filterOption={
-                (input, option) => (option === undefined
-                  ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
+                  filterOption={(input, option: any) => (
+                    (option === undefined || option?.children === undefined)
+                      ? false : option.children
+                        .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
                 >
                   { Object.values(options.laboratories).map(
                     (lab) => (
@@ -226,11 +227,10 @@ const ProductForm: React.FC<Props> = ({
             <Select
               showSearch
               placeholder="Buscar especie"
-              filterOption={
-                (input, option) => (option === undefined
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
                   ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
               mode="multiple"
               disabled={!!disabledFields?.animal_groups}
             >
