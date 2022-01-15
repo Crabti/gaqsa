@@ -72,7 +72,7 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
   ] = useState<ProductGroup[] | undefined>(undefined);
   const [filtered, setFiltered] = useState<ProductGroup[]>([]);
   const {
-    productsSh,
+    productsCart,
   } = useShoppingCart();
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
@@ -557,10 +557,10 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
                 action: createOrder,
                 text: 'Ordenar',
                 icon: <ShoppingCartOutlined />,
-                disabled: productsSh.length === 0,
+                disabled: productsCart.length === 0,
                 hidden: (isAdmin || isProvider),
                 badgeProps: {
-                  count: productsSh.length,
+                  count: productsCart.length,
                   showZero: true,
                   color: 'green',
                 },

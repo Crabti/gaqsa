@@ -20,5 +20,10 @@ urlpatterns = [
         "orders/<int:pk>/cancelled",
         views.CancelOrderClient.as_view(),
         name="cancel_order_cliente"
-    )
+    ),
+    path(
+        "preview",
+        views.OrderPreview.as_view(),
+        name="preview_order"
+    ),
 ]

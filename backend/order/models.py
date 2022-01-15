@@ -33,6 +33,9 @@ class Requisition(models.Model):
         else:
             return Requisition.DELIVERED
 
+    def __str__(self) -> str:
+        return f"Order #{self.order.id} - {self.product.name}"
+
 
 class Order(models.Model):
     DELIVERED = 'Entregado'

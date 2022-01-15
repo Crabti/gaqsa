@@ -5,7 +5,7 @@ import {
   Row,
   Tooltip,
 } from 'antd';
-import { ProductGroup, Provider } from '@types';
+import { ProductGroup } from '@types';
 import useShoppingCart from 'hooks/shoppingCart';
 
 export interface Props {
@@ -34,51 +34,13 @@ const AddToCart: React.FC<Props> = ({ product }) => {
                 const rowProvider = product.providers[index];
                 if (Number(value) > 0) {
                   addProducts({
-                    product: {
-                      id: rowProvider.id,
-                      category: (product.category as string),
-                      key: product.key,
-                      ieps: product.ieps,
-                      iva: rowProvider.iva,
-                      name: product.name,
-                      active_substance: product.active_substance,
-                      presentation: product.presentation,
-                      laboratory: rowProvider.laboratory.name,
-                      provider: (rowProvider.provider as Provider),
-                      originalPrice: rowProvider.price,
-                      price: rowProvider.offer
-                        ? (
-                          rowProvider.price - rowProvider.price
-                        * rowProvider.offer.discount_percentage
-                        )
-                        : rowProvider.price,
-                    },
-                    amount: Number(value),
-                    offer: rowProvider.offer,
+                    id: rowProvider.id,
+                    quantity: Number(value),
                   });
                 } else {
                   removeProducts({
-                    product: {
-                      id: rowProvider.id,
-                      category: (product.category as string),
-                      key: product.key,
-                      ieps: product.ieps,
-                      iva: rowProvider.iva,
-                      name: product.name,
-                      active_substance: product.active_substance,
-                      presentation: product.presentation,
-                      laboratory: rowProvider.laboratory.name,
-                      provider: (rowProvider.provider as Provider),
-                      originalPrice: rowProvider.price,
-                      price: rowProvider.offer
-                        ? (
-                          rowProvider.price - rowProvider.price
-                        * rowProvider.offer.discount_percentage
-                        )
-                        : rowProvider.price,
-                    },
-                    offer: rowProvider.offer,
-                    amount: -1,
+                    id: rowProvider.id,
+                    quantity: -1,
                   });
                 }
               }}
