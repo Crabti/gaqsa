@@ -5,7 +5,7 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from backend.settings import DOMAIN_URL, FRONTEND_DOMAIN_URL
+from backend.settings import FRONTEND_DOMAIN_URL
 from backend.utils.constants import PROVIDER_GROUP, CLIENT_GROUP
 
 
@@ -20,10 +20,18 @@ def send_mail_on_create_announcement(announcement: Announcement) -> None:
     context = {
         "url": url,
         "title": title,
-        "addresee": "Proveedores" if addressee == Announcement.PROVIDERS else "Clientes"
+        "addresee": (
+            "Proveedores"
+            if addressee == Announcement.PROVIDERS
+            else "Clientes"
+        )
     }
 
-    group = PROVIDER_GROUP if addressee == Announcement.PROVIDERS else CLIENT_GROUP
+    group = (
+        PROVIDER_GROUP
+        if addressee == Announcement.PROVIDERS
+        else CLIENT_GROUP
+    )
 
     provider_emails = list(User.objects.filter(
         groups__name=group,
