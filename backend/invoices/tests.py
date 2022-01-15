@@ -56,6 +56,7 @@ class XMLParser(TestCase):
             self.assertEqual(parsed_attributes, invoice["expected"])
 
 
+@override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
 class InvoiceUpload(BaseTestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.mkdtemp()
@@ -67,7 +68,6 @@ class InvoiceUpload(BaseTestCase):
         )
         self.order = OrderFactory.create(
             provider=provider,
-            user=user
         )
         RequisitionFactory.create(
             price=INVOICE_EXPECTED_TEST_ARRAY[0]["expected"]["amount"],
@@ -103,6 +103,7 @@ class InvoiceUpload(BaseTestCase):
             "extra_file": extra_file,
         }
 
+    @override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
     def test_require_authentication(self) -> None:
         response = self.anonymous.post(
             reverse("create_invoice"),
@@ -111,6 +112,7 @@ class InvoiceUpload(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
+    @override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
     def test_require_admin_or_provider(self) -> None:
         response = self.service_client.post(
             reverse("create_invoice"),
@@ -119,6 +121,16 @@ class InvoiceUpload(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
+    @override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=True)
+    def test_return_bad_request_on_wrong_rfc(self) -> None:
+        response = self.admin_client.post(
+            reverse("create_invoice"),
+            data=self.valid_payload,
+            format="multipart"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    @override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
     def test_upload_on_valid_payload(self) -> None:
         response = self.admin_client.post(
             reverse("create_invoice"),
@@ -134,6 +146,7 @@ class InvoiceUpload(BaseTestCase):
         self.assertEqual(self.order.invoice_status, None)
 
 
+@override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
 class ListInvoice(BaseTestCase):
     def setUp(self) -> None:
         self.invoice_amount = 5
@@ -221,6 +234,7 @@ class ListInvoice(BaseTestCase):
         self.assertEqual(len(result), self.invoice_amount)
 
 
+@override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
 class UpdateInvoiceStatus(BaseTestCase):
     def setUp(self) -> None:
         xml_file_data = File(open(os.path.join(
@@ -365,6 +379,7 @@ class UpdateInvoiceStatus(BaseTestCase):
         )
 
 
+@override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
 class NotifyInvoice(BaseTestCase):
     def setUp(self) -> None:
         self.invoice_amount = 5

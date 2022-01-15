@@ -123,7 +123,8 @@ class Invoice(models.Model):
             parsed_attributes = parse_invoice_xml(self.xml_file)
         except Exception as e:
             raise serializers.ValidationError(e)
-        self._validate_invoice_rfc(parsed_attributes["client"])
+        if settings.VALIDATE_RFC_ON_INVOICE_UPLOAD:
+            self._validate_invoice_rfc(parsed_attributes["client"])
         for attr, value in parsed_attributes.items():
             setattr(self, attr, value)
         super(Invoice, self).save(*args, **kwargs)

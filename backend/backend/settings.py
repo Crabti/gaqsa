@@ -301,3 +301,5 @@ INVOICE_STATUS_UPDATE_WEEKDAYS = [
     # 5,  # Saturdays
     # 6,  # Sundays
 ]
+
+VALIDATE_RFC_ON_INVOICE_UPLOAD = os.getenv('VALIDATE_RFC', True)

@@ -165,7 +165,9 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
           defaultValue={product.quantity}
           min={1}
           step={1}
-          onBlur={(event) => addProducts({
+          onBlur={(event) => (
+            product.quantity !== Number(event.target.value)
+          ) && addProducts({
             id: product.id,
             quantity: Number(event.target.value),
           })}
