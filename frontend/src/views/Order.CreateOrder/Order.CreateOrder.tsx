@@ -90,9 +90,7 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
 
   const onFinish = async () : Promise<void> => {
     setLoading(true);
-    const [, error] = await backend.orders.createOne({
-      productsCart,
-    });
+    const [, error] = await backend.orders.createOne(productsCart);
 
     if (error) {
       onFinishFailed();

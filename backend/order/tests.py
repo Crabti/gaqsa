@@ -8,6 +8,7 @@ from products.factories.category import CategoryFactory
 import random
 
 from django.urls import reverse
+from django.core import mail
 
 from products.factories.product import ProductFactory, ProductProviderFactory
 from offers.factories.offer import OfferFactory
@@ -336,3 +337,81 @@ class OrderPreview(BaseTestCase):
         result = json.loads(json.dumps(response.data))
         self.assertEqual(len(result["products"]), len(self.products))
         self.products[0].calculate_total(10)
+
+
+class CreateOrder(BaseTestCase):
+    def setUp(self) -> None:
+        self.products_provider_a: list[
+            ProductProvider
+        ] = ProductProviderFactory.create_batch(
+            3,
+            provider=ProviderFactory.create()
+        )
+        self.products_provider_b: list[
+            ProductProvider
+        ] = ProductProviderFactory.create_batch(
+            3,
+            provider=ProviderFactory.create()
+        )
+
+        payload_array = []
+        for product in self.products_provider_a:
+            payload_array.append({
+                "id": product.pk,
+                "quantity": random.randint(1, 10),
+            })
+        for product in self.products_provider_b:
+            payload_array.append({
+                "id": product.pk,
+                "quantity": random.randint(1, 10),
+            })
+        self.valid_payload = payload_array
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.UNAUTHORIZED
+        )
+
+    def test_return_ok(self) -> None:
+        response = self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.CREATED,
+        )
+
+    def test_creates_order_per_provider(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        order_count = Order.objects.all().count()
+        self.assertEqual(order_count, 2)
+
+    def test_create_requisitions(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        orders = Order.objects.all()
+        for order in orders:
+            self.assertEqual(len(order.requisitions), 3)
+
+    def test_send_mail(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertGreater(len(mail.outbox), 0)

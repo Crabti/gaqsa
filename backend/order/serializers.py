@@ -37,7 +37,33 @@ class NestedRequisitionSerializer(serializers.ModelSerializer):
 class CreateRequisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisition
-        fields = '__all__'
+        fields = (
+            'product',
+            'quantity_requested',
+            'price',
+        )
+
+
+class CreateOrderSerializer(serializers.ModelSerializer):
+    requisitions = CreateRequisitionSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            'user',
+            'provider',
+            'requisitions',
+        )
+
+    def create(self, validated_data):
+        requisitions = validated_data.pop('requisitions')
+        order = Order.objects.create(**validated_data)
+        for requisition in requisitions:
+            Requisition.objects.create(
+                order=order,
+                **requisition,
+            )
+        return order
 
 
 class OrderSerializer(serializers.ModelSerializer):

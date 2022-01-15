@@ -1,8 +1,8 @@
 from http import HTTPStatus
 from backend.utils.permissions import IsOwnProviderOrAdmin, IsOwnerOrAdmin
 from order.mails import (
-    send_mail_on_create_order,
-    send_mail_on_create_order_user,
+    send_mail_to_client_on_create_order,
+    send_mail_to_provider_on_create_order,
     send_main_on_cancel_order
 )
 from products.models import ProductProvider
@@ -11,9 +11,8 @@ from backend.utils.groups import is_client, is_provider
 from order.models import Order, Requisition
 from rest_framework import generics, status
 from .serializers import (
-    CancelOrderSerializer, ListRequisitionSerializer, OrderPreviewSerializer,
-    OrderSerializer,
-    ListOrderSerializer, CreateRequisitionSerializer,
+    CancelOrderSerializer, CreateOrderSerializer, ListRequisitionSerializer,
+    OrderPreviewSerializer, ListOrderSerializer,
     RetrieveOrderSerializer, UpdateOrderQuantitySerializer
 )
 from django.shortcuts import get_object_or_404
@@ -51,7 +50,7 @@ class OrderPreview(APIView):
                 )
             except ProductProvider.DoesNotExist:
                 continue
-            quantity = product_provider["quantity"]
+            quantity = int(product_provider["quantity"])
             if quantity is None or quantity <= 0:
                 quantity = 1
             temp_total = found.calculate_total(quantity)
@@ -95,78 +94,67 @@ class OrderPreview(APIView):
 
 
 class CreateOrder(APIView):
-    def calculate_price(self, product) -> float:
-        price = float(product['price'])
-        iva = (float(product['iva']) / 100) * price
-        ieps = (float(product['iva']) / 100) * price
-        total = float(price + iva + ieps)
-        return total
+    def parse_data(self, data) -> "dict[int, list]":
+        provider_dict = {}
+        for product in data:
+            quantity = int(product["quantity"])
+            if quantity is None or quantity <= 0:
+                quantity = 1
+            try:
+                product_provider = ProductProvider.objects.get(
+                    pk=product["id"]
+                )
+            except ProductProvider.DoesNotExist:
+                continue
+            product_data = {
+                "id": product_provider.product.id,
+                "quantity": quantity,
+                "price": product_provider.calculate_total(quantity)
+            }
+            provider_id = product_provider.provider.id
+            if provider_id not in provider_dict:
+                provider_dict[provider_id] = []
+            provider_dict[provider_id].append(product_data)
+        return provider_dict
 
-    def post(self, request):
-        providers = []
-        products = request.data['productsSh']
-        print(products)
-        for product in products:
-            relation = ProductProvider.objects.get(
-                pk=product['product']['id']
+    def post(self, request: Request) -> Response:
+        data = request.data
+        if not data:
+            return Response(
+                {
+                    "detail": "No data provided",
+                    "code": "EMPTY_PAYLOAD",
+                },
+                status=HTTPStatus.BAD_REQUEST,
             )
-            provider_id = relation.provider.id
-            if provider_id not in providers:
-                providers.append(provider_id)
-
-        for provider in providers:
-            order_serializer = OrderSerializer(
+        provider_dict = self.parse_data(data)
+        orders = []
+        for provider, products in provider_dict.items():
+            requisition_data = []
+            for product in products:
+                requisition_data.append({
+                    "quantity_requested": product["quantity"],
+                    "product": product["id"],
+                    "price": product["price"],
+                })
+            order_serializer = CreateOrderSerializer(
                 data={
                     "user": request.user.pk,
-                    "provider": provider
+                    "provider": provider,
+                    "requisitions": requisition_data,
                 }
             )
             if not order_serializer.is_valid():
                 return Response(
-                    order_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                    )
-            new_order = order_serializer.save()
-
-            data = []
-            productOrder = []
-            for product in products:
-                relation = ProductProvider.objects.get(
-                    pk=product['product']['id']
+                    order_serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-                if relation.provider.id == provider:
-                    data.append({
-                        'order': new_order.pk,
-                        'product': relation.product.id,
-                        'quantity_requested': product['amount'],
-                        'price': float(self.calculate_price(
-                            product['product']
-                        ) * product['amount'])
-                    })
-                    productOrder.append({
-                        'product': product['product'],
-                        'amount': product['amount']
-                    })
-
-            requisition_serializer = CreateRequisitionSerializer(
-                data=data, many=True
-            )
-            if not requisition_serializer.is_valid():
-                return Response(
-                    requisition_serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST
-                    )
-
-            requisition_serializer.save()
-
-            send_mail_on_create_order(
-                new_order, productOrder
-            )
-            send_mail_on_create_order_user(
-                new_order, productOrder
-            )
-
+            order = order_serializer.save()
+            orders.append(order)
+        send_mail_to_client_on_create_order(orders)
+        send_mail_to_provider_on_create_order(orders)
         return Response(
-            order_serializer.data,
+            {"detail": "Order created succesfully!"},
             status=status.HTTP_201_CREATED
         )
 

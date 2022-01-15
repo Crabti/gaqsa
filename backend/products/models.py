@@ -157,7 +157,9 @@ class ProductProvider(models.Model):
     def current_price(self) -> float:
         offer = self.get_offer
         if offer:
-            return float(self.price * offer.discount_percentage)
+            return float(
+                self.price - self.price * offer.discount_percentage
+            )
         return float(self.price)
 
     @property
