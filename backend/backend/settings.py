@@ -287,6 +287,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 INVOICE_FILE_ROOT = 'invoices/'
 
 DOMAIN_URL = os.getenv('DOMAIN_URL', '')
+FRONTEND_DOMAIN_URL = os.getenv('FRONTEND_DOMAIN_URL', '')
 
 # Weekdays enabled where admin or invoice manager can
 # update an invoice's status. Example: 0 - Monday, 1 - Tuesday...
