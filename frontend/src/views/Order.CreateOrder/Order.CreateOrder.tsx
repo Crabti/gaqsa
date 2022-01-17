@@ -138,11 +138,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
       title: 'Precio',
       dataIndex: 'price',
       key: 'price',
-      render: (_: number, data: any) => (
-        <Text>
-          {`$${data.price}`}
-        </Text>
-      ),
     },
     {
       title: 'IVA',
@@ -235,13 +230,13 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 presentation: product.presentation,
                 laboratory: product.lab,
                 category: product.category,
-                price: product.price,
+                price: `$${product.price.toFixed(2)}`,
                 iva: `$${product.iva_total.toFixed(2)}`,
                 ieps: `$${product.ieps_total.toFixed(2)}`,
                 quantity: product.quantity,
                 original_price: `$${product.original_price?.toFixed(2)}`,
                 total: `$${product.total.toFixed(2)}`,
-                subtotal: `$${product.subtotal}`,
+                subtotal: `$${product.subtotal.toFixed(2)}`,
               }))}
               columns={columns}
               rowKey={(row) => `${row.id}`}
