@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from providers.models import Provider
@@ -140,6 +141,48 @@ class ProductProvider(models.Model):
     )
 
     active = models.BooleanField(default=True)
+
+    @property
+    def get_offer(self):
+        Offer = apps.get_model("offers.Offer")
+        latest_offer = Offer.objects.filter(
+            product_provider=self.pk
+        ).last()
+
+        if latest_offer and latest_offer.active:
+            return latest_offer
+        return None
+
+    @property
+    def current_price(self) -> float:
+        offer = self.get_offer
+        if offer:
+            return float(
+                self.price - self.price * offer.discount_percentage
+            )
+        return float(self.price)
+
+    @property
+    def iva_to_money(self) -> float:
+        return self.current_price * float(self.iva / 100)
+
+    @property
+    def ieps_to_money(self) -> float:
+        return self.current_price * float(self.product.ieps / 100)
+
+    def calculate_ieps(self, quantity) -> float:
+        return round(self.ieps_to_money * quantity, 2)
+
+    def calculate_iva(self, quantity) -> float:
+        return round(self.iva_to_money * quantity, 2)
+
+    def calculate_subtotal(self, quantity) -> float:
+        return round(self.current_price * quantity, 2)
+
+    def calculate_total(self, quantity) -> float:
+        return round((
+            self.current_price + self.iva_to_money + self.ieps_to_money
+        ) * quantity, 2)
 
     def __str__(self) -> str:
         return f"{self.product} - {self.provider} - {self.price}"

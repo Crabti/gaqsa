@@ -36,11 +36,8 @@ class ProductProviderSerializer(serializers.ModelSerializer):
     offer = serializers.SerializerMethodField()
 
     @staticmethod
-    def get_offer(instance):
-        latest_offer = Offer.objects.filter(
-            product_provider=instance.pk
-        ).last()
-
+    def get_offer(instance: ProductProvider):
+        latest_offer = instance.get_offer
         if latest_offer and latest_offer.active:
             return OfferSerializer(latest_offer).data
         return None

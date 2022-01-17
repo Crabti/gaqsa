@@ -33,6 +33,9 @@ class Requisition(models.Model):
         else:
             return Requisition.DELIVERED
 
+    def __str__(self) -> str:
+        return f"Order #{self.order.id} - {self.product.name}"
+
 
 class Order(models.Model):
     DELIVERED = 'Entregado'
@@ -56,7 +59,10 @@ class Order(models.Model):
         queryset = self.requisition_set.all().aggregate(
             total_price=Sum('price')
         )
-        return queryset['total_price']
+        if queryset['total_price']:
+            return queryset['total_price']
+        else:
+            return 0.00
 
     @property
     def invoice_total(self):

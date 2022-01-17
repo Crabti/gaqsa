@@ -37,7 +37,33 @@ class NestedRequisitionSerializer(serializers.ModelSerializer):
 class CreateRequisitionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Requisition
-        fields = '__all__'
+        fields = (
+            'product',
+            'quantity_requested',
+            'price',
+        )
+
+
+class CreateOrderSerializer(serializers.ModelSerializer):
+    requisitions = CreateRequisitionSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            'user',
+            'provider',
+            'requisitions',
+        )
+
+    def create(self, validated_data):
+        requisitions = validated_data.pop('requisitions')
+        order = Order.objects.create(**validated_data)
+        for requisition in requisitions:
+            Requisition.objects.create(
+                order=order,
+                **requisition,
+            )
+        return order
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -110,6 +136,7 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
     invoices = ListInvoiceSerializer(
         many=True
     )
+    total = serializers.ReadOnlyField()
 
     status = serializers.ReadOnlyField()
 
@@ -123,6 +150,7 @@ class RetrieveOrderSerializer(serializers.ModelSerializer):
             'created_at',
             'provider',
             'invoices',
+            'total',
         )
 
 
@@ -141,3 +169,27 @@ class CancelOrderSerializer(serializers.ModelSerializer):
         fields = (
             "cancelled",
         )
+
+
+class RequisitionPreviewSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    quantity = serializers.IntegerField()
+    total = serializers.FloatField()
+    subtotal = serializers.FloatField()
+    iva_total = serializers.FloatField()
+    ieps_total = serializers.FloatField()
+    price = serializers.FloatField()
+    original_price = serializers.FloatField(allow_null=True)
+    name = serializers.CharField()
+    provider = serializers.CharField()
+    presentation = serializers.CharField()
+    lab = serializers.CharField()
+    category = serializers.CharField()
+
+
+class OrderPreviewSerializer(serializers.Serializer):
+    total = serializers.FloatField()
+    subtotal = serializers.FloatField()
+    ieps_total = serializers.FloatField()
+    iva_total = serializers.FloatField()
+    products = RequisitionPreviewSerializer(many=True)

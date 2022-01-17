@@ -1,14 +1,17 @@
 from order.models import Order
+from products.models import ProductProvider
 from users.factories.user import UserFactory
 from backend.utils.tests import BaseTestCase
 import json
 from http import HTTPStatus
 from products.factories.category import CategoryFactory
+import random
 
 from django.urls import reverse
+from django.core import mail
 
-from products.factories.product import ProductFactory
-
+from products.factories.product import ProductFactory, ProductProviderFactory
+from offers.factories.offer import OfferFactory
 from order.factories.order import (
     OrderFactory,
     RequisitionFactory
@@ -67,6 +70,36 @@ class ListOrderTest(BaseTestCase):
         result = json.loads(json.dumps(response.data))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(len(result), len(my_orders))
+
+
+class OrderProperty(BaseTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+    def test_total_return_zero_on_no_requisition(self) -> None:
+        order = OrderFactory.create()
+        self.assertNotEqual(
+            order.total,
+            None
+        )
+        self.assertEqual(
+            order.total,
+            0.0
+        )
+
+    def test_total_return_correct(self) -> None:
+        order = OrderFactory.create()
+        total = 10.00
+        quantity = 5
+        RequisitionFactory.create_batch(
+            quantity,
+            order=order,
+            price=total,
+        )
+        self.assertEqual(
+            order.total,
+            total * quantity,
+        )
 
 
 class ListRequisitions(BaseTestCase):
@@ -199,3 +232,186 @@ class UpdateOrderRequisitions(BaseTestCase):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(self.order.status, Order.DELIVERED)
+
+
+class OrderPreview(BaseTestCase):
+    def setUp(self) -> None:
+        self.products: list[
+            ProductProvider
+        ] = ProductProviderFactory.create_batch(
+            3,
+        )
+
+        payload_array = []
+        for product in self.products:
+            payload_array.append({
+                "id": product.pk,
+                "quantity": random.randint(1, 10),
+            })
+        self.valid_payload = payload_array
+
+    def test_product_provider_calculate_subtotal_no_offer(self) -> None:
+        compare_product = ProductProviderFactory.create(
+            iva=40.00,
+            product=ProductFactory.create(
+                ieps=30
+            ),
+            price=200,
+        )
+        quantity = 3
+        total = 600
+        self.assertEqual(compare_product.calculate_subtotal(quantity), total)
+
+    def test_product_provider_calculate_subtotal_offer(self) -> None:
+        compare_product = ProductProviderFactory.create(
+            iva=40.00,
+            product=ProductFactory.create(
+                ieps=30
+            ),
+            price=200,
+        )
+        OfferFactory.create(
+            product_provider=compare_product,
+            discount_percentage=0.5,
+        )
+        quantity = 3
+        total = 300
+        self.assertEqual(compare_product.calculate_subtotal(quantity), total)
+
+    def test_product_provider_calculate_total_offer(self) -> None:
+        compare_product = ProductProviderFactory.create(
+            iva=40.00,
+            product=ProductFactory.create(
+                ieps=30
+            ),
+            price=200,
+        )
+        OfferFactory.create(
+            product_provider=compare_product,
+            discount_percentage=0.5,
+        )
+        quantity = 3
+        total = 510
+        self.assertEqual(compare_product.calculate_total(quantity), total)
+
+    def test_product_provider_calculate_total_no_offer(self) -> None:
+        compare_product = ProductProviderFactory.create(
+            iva=40.00,
+            product=ProductFactory.create(
+                ieps=30
+            ),
+            price=200,
+        )
+        quantity = 3
+        total = 1020
+        self.assertEqual(compare_product.calculate_total(quantity), total)
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("preview_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.UNAUTHORIZED
+        )
+
+    def test_return_ok(self) -> None:
+        response = self.service_client.post(
+            reverse("preview_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.OK,
+        )
+
+    def test_return_list(self) -> None:
+        response = self.service_client.post(
+            reverse("preview_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        result = json.loads(json.dumps(response.data))
+        self.assertEqual(len(result["products"]), len(self.products))
+        self.products[0].calculate_total(10)
+
+
+class CreateOrder(BaseTestCase):
+    def setUp(self) -> None:
+        self.products_provider_a: list[
+            ProductProvider
+        ] = ProductProviderFactory.create_batch(
+            3,
+            provider=ProviderFactory.create()
+        )
+        self.products_provider_b: list[
+            ProductProvider
+        ] = ProductProviderFactory.create_batch(
+            3,
+            provider=ProviderFactory.create()
+        )
+
+        payload_array = []
+        for product in self.products_provider_a:
+            payload_array.append({
+                "id": product.pk,
+                "quantity": random.randint(1, 10),
+            })
+        for product in self.products_provider_b:
+            payload_array.append({
+                "id": product.pk,
+                "quantity": random.randint(1, 10),
+            })
+        self.valid_payload = payload_array
+
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.UNAUTHORIZED
+        )
+
+    def test_return_ok(self) -> None:
+        response = self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(
+            response.status_code,
+            HTTPStatus.CREATED,
+        )
+
+    def test_creates_order_per_provider(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        order_count = Order.objects.all().count()
+        self.assertEqual(order_count, 2)
+
+    def test_create_requisitions(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        orders = Order.objects.all()
+        for order in orders:
+            self.assertEqual(len(order.requisitions), 3)
+
+    def test_send_mail(self) -> None:
+        self.service_client.post(
+            reverse("create_order"),
+            data=json.dumps(self.valid_payload),
+            content_type="application/json",
+        )
+        self.assertGreater(len(mail.outbox), 0)
