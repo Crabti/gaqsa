@@ -17,6 +17,14 @@ const AddToCart: React.FC<Props> = ({ product }) => {
     addProducts, removeProducts,
   } = useShoppingCart();
 
+  if (product.providers.length === 0) {
+    return (
+      <>
+        No disponible
+      </>
+    );
+  }
+
   return (
     <Col>
       {product.providers.map((provider, index) => (

@@ -1,4 +1,6 @@
-from backend.utils.constants import ADMIN_GROUP, CLIENT_GROUP, PROVIDER_GROUP
+from backend.utils.constants import (
+    ADMIN_GROUP, CLIENT_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP
+)
 
 
 def is_client(user):
@@ -11,3 +13,7 @@ def is_provider(user):
 
 def is_admin(user):
     return user.groups.filter(name=ADMIN_GROUP).exists()
+
+
+def is_invoice_manager(user):
+    return user.groups.filter(name=INVOICE_MANAGER_GROUP).exists()

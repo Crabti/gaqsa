@@ -22,6 +22,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
+
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 INVOICE_EXPECTED_TEST_ARRAY = [
@@ -146,12 +147,26 @@ class InvoiceUpload(BaseTestCase):
         self.assertEqual(self.order.invoice_status, None)
 
 
-@override_settings(VALIDATE_RFC_ON_INVOICE_UPLOAD=False)
+@override_settings(
+    VALIDATE_RFC_ON_INVOICE_UPLOAD=False,
+)
 class ListInvoice(BaseTestCase):
-    def setUp(self) -> None:
-        self.invoice_amount = 5
-        self.invoices = InvoiceFactory.create_batch(
-            self.invoice_amount,
+    def test_require_authentication(self) -> None:
+        response = self.anonymous.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    @override_settings(INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS=1)
+    def test_show_list_expired_as_invoice_manager(self) -> None:
+        invoice_amount = 3
+        # Should show in list
+        InvoiceFactory.create_batch(
+            invoice_amount,
+            order=OrderFactory.create(
+                user=self.client_user,
+            ),
             invoice_file=django.FileField(
                 from_path=os.path.join(
                     THIS_DIR, 'test_files/pdf/sample1.pdf'
@@ -168,20 +183,82 @@ class ListInvoice(BaseTestCase):
                 ),
             ),
         )
-
-    def test_require_authentication(self) -> None:
-        response = self.anonymous.get(
+        response = self.invoice_client.get(
             reverse("list_invoice"),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        # Show expired
+        self.assertEqual(len(result), 3)
 
-    def test_require_admin_or_provider(self) -> None:
+    @override_settings(INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS=None)
+    def test_hide_list_non_expired_as_invoice_manager(self) -> None:
+        invoice_amount = 3
+        # Should show in list
+        InvoiceFactory.create_batch(
+            invoice_amount,
+            order=OrderFactory.create(
+                user=self.client_user,
+            ),
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+        )
+        response = self.invoice_client.get(
+            reverse("list_invoice"),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        # Show expired
+        self.assertEqual(len(result), 0)
+
+    @override_settings(INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS=None)
+    def test_show_list_on_valid_as_client(self) -> None:
+        invoice_amount = 3
+        # Should show in list
+        InvoiceFactory.create_batch(
+            invoice_amount,
+            order=OrderFactory.create(
+                user=self.client_user,
+            ),
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
+        )
         response = self.service_client.get(
             reverse("list_invoice"),
             content_type="application/json",
         )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        result = json.loads(json.dumps(response.data))
+        # Dont show expired
+        self.assertEqual(len(result), 3)
 
     def test_list_valid_as_provider(self) -> None:
         invoice_amount = 5
@@ -217,15 +294,26 @@ class ListInvoice(BaseTestCase):
         self.assertEqual(len(result), invoice_amount)
 
     def test_list_valid_as_admin(self) -> None:
-        response = self.admin_client.get(
-            reverse("list_invoice"),
-            content_type="application/json",
+        self.invoice_amount = 5
+        self.invoices = InvoiceFactory.create_batch(
+            self.invoice_amount,
+            invoice_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample1.pdf'
+                ),
+            ),
+            extra_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/pdf/sample2.pdf'
+                ),
+            ),
+            xml_file=django.FileField(
+                from_path=os.path.join(
+                    THIS_DIR, 'test_files/xml/sample1.xml'
+                ),
+            ),
         )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        result = json.loads(json.dumps(response.data))
-        self.assertEqual(len(result), self.invoice_amount)
-
-        response = self.invoice_client.get(
+        response = self.admin_client.get(
             reverse("list_invoice"),
             content_type="application/json",
         )
@@ -273,14 +361,7 @@ class UpdateInvoiceStatus(BaseTestCase):
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=None)
-    def test_require_admin(self) -> None:
-        response = self.service_client.patch(
-            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
-            data=json.dumps(self.valid_payload_accept),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
+    def test_provider_forbidden(self) -> None:
         response = self.provider_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
             data=json.dumps(self.valid_payload_accept),
@@ -290,12 +371,88 @@ class UpdateInvoiceStatus(BaseTestCase):
 
     @override_settings(INVOICE_STATUS_UPDATE_WEEKDAYS=[9])
     def test_reject_on_non_valid_days(self) -> None:
-        yesterday = date.today().weekday() - 1
-        settings.INVOICE_STATUS_UPDATE_WEEKDAYS = [
-            yesterday
-        ]
-        response = self.provider_client.patch(
+        response = self.admin_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    @override_settings(
+        INVOICE_STATUS_UPDATE_WEEKDAYS=None,
+        INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS=None,
+    )
+    def test_client_owns_invoice_permission(self) -> None:
+        xml_file_data = File(open(os.path.join(
+            THIS_DIR, 'test_files/xml/sample1.xml'), 'rb'))
+        xml_file = SimpleUploadedFile(
+            'sample1.xml',
+            xml_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        invoice_file_data = File(open(
+            os.path.join(THIS_DIR, 'test_files/pdf/sample1.pdf'), 'rb'))
+        invoice_file = SimpleUploadedFile(
+            'sample1.pdf',
+            invoice_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        client_invoice = InvoiceFactory.create(
+            invoice_file=invoice_file,
+            xml_file=xml_file,
+            order=OrderFactory.create(
+                user=self.client_user,
+            )
+        )
+        # Forbidden if client doesnt own invoice
+        response = self.service_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+        response = self.service_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": client_invoice.pk}),
+            data=json.dumps(self.valid_payload_accept),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        client_invoice.refresh_from_db(
+            fields=["status", "reject_reason"]
+        )
+        self.assertEqual(client_invoice.status, Invoice.ACCEPTED)
+        self.assertGreater(len(mail.outbox), 0)
+
+    @override_settings(
+        INVOICE_STATUS_UPDATE_WEEKDAYS=None,
+        INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS=1,
+    )
+    def test_client_not_responsible_forbidden(self) -> None:
+        xml_file_data = File(open(os.path.join(
+            THIS_DIR, 'test_files/xml/sample1.xml'), 'rb'))
+        xml_file = SimpleUploadedFile(
+            'sample1.xml',
+            xml_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        invoice_file_data = File(open(
+            os.path.join(THIS_DIR, 'test_files/pdf/sample1.pdf'), 'rb'))
+        invoice_file = SimpleUploadedFile(
+            'sample1.pdf',
+            invoice_file_data.read(),
+            content_type="multipart/form-data"
+        )
+        client_invoice = InvoiceFactory.create(
+            invoice_file=invoice_file,
+            xml_file=xml_file,
+            order=OrderFactory.create(
+                user=self.client_user,
+            )
+        )
+
+        response = self.service_client.patch(
+            reverse("update_invoice_status", kwargs={"pk": client_invoice.pk}),
             data=json.dumps(self.valid_payload_accept),
             content_type="application/json",
         )
@@ -309,14 +466,6 @@ class UpdateInvoiceStatus(BaseTestCase):
             content_type="application/json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        response = self.invoice_client.patch(
-            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
-            data=json.dumps(self.valid_payload_accept),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
         self.invoice.refresh_from_db(
             fields=["status", "reject_reason"]
         )
@@ -356,13 +505,6 @@ class UpdateInvoiceStatus(BaseTestCase):
         valid_payload_reject_no_reason.pop("reject_reason")
 
         response = self.admin_client.patch(
-            reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
-            data=json.dumps(valid_payload_reject_no_reason),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-        response = self.invoice_client.patch(
             reverse("update_invoice_status", kwargs={"pk": self.invoice.pk}),
             data=json.dumps(valid_payload_reject_no_reason),
             content_type="application/json",

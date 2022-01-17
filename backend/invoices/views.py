@@ -1,16 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from invoices.mails import send_mail_on_notify_invoice
 from invoices.models import Invoice
-from backend.utils.groups import is_provider
+from backend.utils.groups import is_client, is_invoice_manager, is_provider
 from invoices.serializers.invoice import (
     NewInvoiceSerialier, ListInvoiceSerializer,
     UpdateStatusSerializer,
 )
 from rest_framework import generics, status
 from backend.utils.permissions import (
-    IsAdmin, IsInvoiceCheckDay, IsProvider,
-    IsInvoiceManager
+    InvoiceStatusUpdate, IsAdmin, IsInvoiceCheckDay, IsProvider,
 )
 from providers.models import Provider
 
@@ -22,24 +23,37 @@ class CreateInvoice(generics.CreateAPIView):
 
 
 class ListInvoice(generics.ListAPIView):
-    permission_classes = [IsAdmin
-                          | IsInvoiceManager | IsProvider]   # type: ignore
     serializer_class = ListInvoiceSerializer
 
     def get_queryset(self):
         if is_provider(self.request.user):
-            provider = Provider.objects.get(
-                user=self.request.user,
-            )
+            try:
+                provider = Provider.objects.get(
+                    user=self.request.user,
+                )
+            except Provider.DoesNotExist:
+                raise ValidationError(
+                    detail='Provider not found.'
+                )
             return Invoice.objects.filter(
                 order__provider=provider,
+            )
+        if is_client(self.request.user):
+            return Invoice.objects.filter(
+                order__user=self.request.user,
+                is_client_responsible=True,
+            )
+        if is_invoice_manager(self.request.user):
+            return Invoice.objects.filter(
+                is_client_responsible=False,
             )
         return Invoice.objects.all()
 
 
 class UpdateInvoiceStatus(generics.UpdateAPIView):
     permission_classes = [
-        (IsAdmin | IsInvoiceManager)   # type: ignore
+        IsAuthenticated
+        & InvoiceStatusUpdate   # type: ignore
         & IsInvoiceCheckDay
     ]
     serializer_class = UpdateStatusSerializer

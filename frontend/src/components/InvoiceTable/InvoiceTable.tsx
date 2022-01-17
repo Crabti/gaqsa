@@ -26,7 +26,7 @@ const InvoiceTable: React.FC<Props> = (
   { invoices, redirectToOrderDetail, onRefresh },
 ) => {
   const backend = useBackend();
-  const { isAdmin, isInvoiceManager } = useAuth();
+  const { isAdmin, isInvoiceManager, isClient } = useAuth();
   const [rejectModal, setRejectModal] = useState<RejectModalProps>({
     visible: false,
     invoice: undefined,
@@ -235,7 +235,7 @@ const InvoiceTable: React.FC<Props> = (
       dataIndex: 'actions',
       key: 'actions',
       render: (_: number, data: Invoice) => {
-        const canUpdate = data.can_update_status;
+        const canUpdate = data.can_update_status_today;
         const isPending = data.status === InvoiceStatus.PENDING;
         const acceptModalTitle = `
         Aceptar factura con folio ${data.invoice_folio}`;
@@ -299,7 +299,7 @@ const InvoiceTable: React.FC<Props> = (
   ];
 
   const getColumns = () : Column[] => {
-    if (isAdmin || isInvoiceManager) {
+    if (isAdmin || isInvoiceManager || isClient) {
       return columns;
     }
     return columns.filter((col) => col.key !== 'actions');
