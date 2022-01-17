@@ -55,8 +55,8 @@ class OrderPreview(APIView):
                 quantity = 1
             temp_total = found.calculate_total(quantity)
             temp_subtotal = found.calculate_subtotal(quantity)
-            temp_ieps = found.calculate_ieps(quantity)
-            temp_iva = found.calculate_iva(quantity)
+            temp_ieps = found.ieps_to_money
+            temp_iva = found.iva_to_money
 
             total += temp_total
             subtotal += temp_subtotal

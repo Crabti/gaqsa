@@ -54,8 +54,18 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   const retrieveState = (): void => {
     const stored = localStorage.getItem('shoppingCart');
     if (stored) {
-      const parsedStored = JSON.parse(stored);
-      setProductsCart(parsedStored.productsCart);
+      try {
+        const parsedStored : ShoppingCartProductType[] = JSON.parse(
+          stored,
+        ).productsCart;
+        if (parsedStored) {
+          setProductsCart(parsedStored);
+        } else {
+          setProductsCart([]);
+        }
+      } catch (e) {
+        setProductsCart([]);
+      }
     } else {
       setProductsCart([]);
     }

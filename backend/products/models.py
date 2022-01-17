@@ -170,12 +170,6 @@ class ProductProvider(models.Model):
     def ieps_to_money(self) -> float:
         return self.current_price * float(self.product.ieps / 100)
 
-    def calculate_ieps(self, quantity) -> float:
-        return round(self.ieps_to_money * quantity, 2)
-
-    def calculate_iva(self, quantity) -> float:
-        return round(self.iva_to_money * quantity, 2)
-
     def calculate_subtotal(self, quantity) -> float:
         return round(self.current_price * quantity, 2)
 
