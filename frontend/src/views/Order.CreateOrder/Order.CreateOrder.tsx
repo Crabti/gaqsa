@@ -19,7 +19,6 @@ import { ProductGroup } from '@types';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Table from 'components/Table';
 import FormButton from 'components/FormButton';
-import Text from 'antd/lib/typography/Text';
 
 export interface Props {
   product: ProductGroup;
