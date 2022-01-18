@@ -320,6 +320,13 @@ const InvoiceTable: React.FC<Props> = (
       <Table
         rowKey={(row) => `${row.id}`}
         data={invoices ? filtered : []}
+        downloadable
+        downloadProps={{
+          filename: 'Saldos.csv',
+          ignoreColumnsKeys: [
+            'actions',
+          ],
+        }}
         columns={
         getColumns()
       }
