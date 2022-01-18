@@ -10,6 +10,7 @@ import PrivacyNotice from 'components/PrivacyNotice';
 import useNavigation from 'hooks/navigation/useNavigation';
 import registerdGroups from 'Routes';
 import RoutesComponents from 'Routes/Routes';
+import Copyright from 'components/Copyright';
 import { Content, BaseLayout, ContentLayout } from './App.styled';
 
 const App: React.FC = () => {
@@ -30,6 +31,7 @@ const App: React.FC = () => {
               <RoutesComponents groups={registerdGroups} />
             </Content>
             <PrivacyNotice />
+            <Copyright />
           </ContentLayout>
         </Layout>
       </BaseLayout>
