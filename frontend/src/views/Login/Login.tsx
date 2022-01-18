@@ -72,7 +72,7 @@ const Home: React.ViewComponent = ({ verboseName }) => {
 
   return (
     <Content>
-      <Title viewName={verboseName} parentName="Iniciar Sesión" />
+      <Title viewName={verboseName} />
       <LoginFormulary
         form={form}
         onFinish={onFinish}

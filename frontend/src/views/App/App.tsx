@@ -23,7 +23,7 @@ const App: React.FC = () => {
           <ContentLayout style={{ padding: '0 24px 24px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item>Gaqsa</Breadcrumb.Item>
-              <Breadcrumb.Item>{parentName}</Breadcrumb.Item>
+              { parentName && <Breadcrumb.Item>{parentName}</Breadcrumb.Item> }
               <Breadcrumb.Item>{viewName}</Breadcrumb.Item>
             </Breadcrumb>
             <Content data-testid="content-container">
