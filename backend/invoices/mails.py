@@ -67,11 +67,14 @@ def send_mail_on_invoice_status_update(invoice) -> None:
         "title": title
     }
     from_email = "noreply@gaqsa.com"
-    user_invoice_emails = get_user_invoice_emails(
+    provider_invoice_emails = get_user_invoice_emails(
         invoice.order.provider.user.pk
     )
+    client_invoice_emails = get_user_invoice_emails(
+        invoice.order.user.pk
+    )
     admin_emails = get_admin_emails()
-    to_emails = user_invoice_emails + admin_emails
+    to_emails = client_invoice_emails + provider_invoice_emails + admin_emails
     if accepted:
         html_message = render_to_string(
             "invoice_accepted.html",

@@ -146,7 +146,7 @@ const invoiceRoutes: Routes = {
     view: ListInvoice,
     showInMenu: true,
     hasAccess: (
-      (auth) => auth.isAdmin || auth.isInvoiceManager || auth.isProvider
+      () => true
     ),
   },
   uploadInvoice: {

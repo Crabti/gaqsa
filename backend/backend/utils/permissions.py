@@ -2,6 +2,7 @@ from django.contrib.auth.models import Group
 from backend.utils.constants import (
     ADMIN_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP
 )
+from backend.utils.groups import is_admin, is_client, is_invoice_manager
 from rest_framework import permissions, exceptions
 from datetime import date
 from django.conf import settings
@@ -93,6 +94,28 @@ class IsInvoiceCheckDay(permissions.BasePermission):
         valid = available_today(settings.INVOICE_STATUS_UPDATE_WEEKDAYS)
         if valid:
             return True
+        raise exceptions.PermissionDenied(
+            detail=self.message
+        )
+
+
+class InvoiceStatusUpdate(permissions.BasePermission):
+    message = {
+        'errors': ['User is not allowed to do this action.'],
+        'code': 'NOT_ALLOWED'
+    }
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if is_client(user):
+            if obj.is_client_responsible and obj.order.user.pk == user.pk:
+                return True
+        if is_invoice_manager(user):
+            if not obj.is_client_responsible:
+                return True
+        if is_admin(user):
+            return True
+
         raise exceptions.PermissionDenied(
             detail=self.message
         )

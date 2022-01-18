@@ -11,7 +11,8 @@ export interface Invoice extends CommonType {
     invoice_file: string;
     extra_file?: string;
     status: string;
-    can_update_status?: boolean;
+    can_update_status_today?: boolean;
+    is_client_responsible?: boolean;
 }
 
 export interface UploadInvoiceForm {

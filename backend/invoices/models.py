@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import uuid
 import os
 
@@ -82,14 +83,18 @@ class Invoice(models.Model):
     )
     reject_reason = models.CharField(
         max_length=500,
-        default="N/A"
+        default="N/A",
+        blank=True,
     )
     notified = models.BooleanField(
         default=False,
     )
+    is_client_responsible = models.BooleanField(
+        default=True,
+    )
 
     @property
-    def can_update_status(self):
+    def can_update_status_today(self):
         return available_today(
             settings.INVOICE_STATUS_UPDATE_WEEKDAYS
         )
@@ -118,15 +123,28 @@ class Invoice(models.Model):
                 },
             )
 
+    def _get_is_client_responsible(self):
+        days = settings.INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS
+        if days:
+            difference: timedelta = (date.today() - self.invoice_date.date())
+            days_difference = difference.days
+            if days_difference > days:
+                return False
+            return True
+        return True
+
     def save(self, *args, **kwargs):
-        try:
-            parsed_attributes = parse_invoice_xml(self.xml_file)
-        except Exception as e:
-            raise serializers.ValidationError(e)
-        if settings.VALIDATE_RFC_ON_INVOICE_UPLOAD:
-            self._validate_invoice_rfc(parsed_attributes["client"])
-        for attr, value in parsed_attributes.items():
-            setattr(self, attr, value)
+        # Only parse on first save
+        if self.pk is None:
+            try:
+                parsed_attributes = parse_invoice_xml(self.xml_file)
+            except Exception as e:
+                raise serializers.ValidationError(e)
+            if settings.VALIDATE_RFC_ON_INVOICE_UPLOAD:
+                self._validate_invoice_rfc(parsed_attributes["client"])
+            for attr, value in parsed_attributes.items():
+                setattr(self, attr, value)
+            self.is_client_responsible = self._get_is_client_responsible()
         super(Invoice, self).save(*args, **kwargs)
 
 

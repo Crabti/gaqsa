@@ -189,38 +189,60 @@ const ListProducts: React.VC = ({ verboseName, parentName }) => {
 
   const renderLabs = (
     providers: ProductProvider[],
-  ) : any => providers.map((provider) => (
-    <Row key={provider.id}>
-      {provider.laboratory.name}
-    </Row>
-  ));
+  ) : any => {
+    if (providers.length === 0) {
+      return 'No disponible';
+    }
+    return providers.map((provider) => (
+      <Row key={provider.id}>
+        {provider.laboratory.name}
+      </Row>
+    ));
+  };
 
   const renderProviders = (
     providers: ProductProvider[],
-  ) : any => providers.map((provider) => (
-    <Row key={provider.id}>
-      {(provider.provider as Provider).name}
-    </Row>
-  ));
+  ) : any => {
+    if (providers.length === 0) {
+      return 'No disponible';
+    }
+
+    return providers.map((provider) => (
+      <Row key={provider.id}>
+        {(provider.provider as Provider).name}
+      </Row>
+    ));
+  };
 
   const renderPrices = (
     providers: ProductProvider[],
-  ) : any => providers.map((provider) => (
-    <Row key={provider.id}>
-      <DiscountText
-        originalPrice={provider.price}
-        discount={provider.offer?.discount_percentage}
-      />
-    </Row>
-  ));
+  ) : any => {
+    if (providers.length === 0) {
+      return 'No disponible';
+    }
+    return providers.map((provider) => (
+      <Row key={provider.id}>
+        <DiscountText
+          originalPrice={provider.price}
+          discount={provider.offer?.discount_percentage}
+        />
+      </Row>
+    ));
+  };
 
   const renderIVA = (
     providers: ProductProvider[],
-  ) : any => providers.map((provider) => (
-    <Row key={provider.id}>
-      {`${provider.iva} %`}
-    </Row>
-  ));
+  ) : any => {
+    if (providers.length === 0) {
+      return 'No disponible';
+    }
+
+    return (providers.map((provider) => (
+      <Row key={provider.id}>
+        {`${provider.iva} %`}
+      </Row>
+    )));
+  };
 
   const renderProductProviderActive = (
     providers: ProductProvider[],
