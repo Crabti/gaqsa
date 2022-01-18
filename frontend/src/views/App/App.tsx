@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 import React from 'react';
 import {
-  Layout, Breadcrumb, ConfigProvider,
+  Layout, Breadcrumb, ConfigProvider, Row,
 } from 'antd';
 import esEs from 'antd/lib/locale/es_ES';
 import Header from 'components/Header';
@@ -11,7 +11,9 @@ import useNavigation from 'hooks/navigation/useNavigation';
 import registerdGroups from 'Routes';
 import RoutesComponents from 'Routes/Routes';
 import Copyright from 'components/Copyright';
-import { Content, BaseLayout, ContentLayout } from './App.styled';
+import {
+  Content, BaseLayout, ContentLayout, Footer,
+} from './App.styled';
 
 const App: React.FC = () => {
   const { viewName, parentName } = useNavigation();
@@ -21,7 +23,7 @@ const App: React.FC = () => {
         <Header />
         <Layout>
           <SideMenu groups={registerdGroups} />
-          <ContentLayout style={{ padding: '0 24px 24px' }}>
+          <ContentLayout style={{ padding: '0 24px 0px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item>Gaqsa</Breadcrumb.Item>
               { parentName && <Breadcrumb.Item>{parentName}</Breadcrumb.Item> }
@@ -30,8 +32,14 @@ const App: React.FC = () => {
             <Content data-testid="content-container">
               <RoutesComponents groups={registerdGroups} />
             </Content>
-            <PrivacyNotice />
-            <Copyright />
+            <Footer>
+              <Row justify="center">
+                <PrivacyNotice />
+              </Row>
+              <Row justify="center">
+                <Copyright />
+              </Row>
+            </Footer>
           </ContentLayout>
         </Layout>
       </BaseLayout>

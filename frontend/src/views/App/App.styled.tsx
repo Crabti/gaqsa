@@ -17,3 +17,9 @@ export const ContentLayout = styled(Layout)`
   padding: 0 24px 24px;
   background-color: ${({ theme }) => theme.colors.background};
 `;
+
+export const Footer = styled(Layout.Footer)`
+  margin: 0;
+  text-align: center;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
