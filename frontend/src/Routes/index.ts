@@ -66,7 +66,7 @@ export const productRoutes: Routes = {
   createProduct: {
     path: '/productos/nuevo',
     view: ProductsCreateForm,
-    verboseName: 'Alta de Producto',
+    verboseName: 'Alta de producto',
     hasAccess: ((auth) => auth.isProvider || auth.isAdmin),
   },
   updateProduct: {
@@ -78,14 +78,14 @@ export const productRoutes: Routes = {
   listPendingProduct: {
     path: '/productos/pendientes',
     view: ProductsListPending,
-    verboseName: 'Productos Por Aprobar',
+    verboseName: 'Productos por aprobar',
     showInMenu: true,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listProducts: {
     path: '/productos/',
     view: ProductsListProducts,
-    verboseName: 'Lista de Productos',
+    verboseName: 'Lista de productos',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
@@ -112,7 +112,7 @@ const ordersRoutes: Routes = {
     showInMenu: false,
     hasAccess: (
       (auth) => auth.isClient || auth.isAdmin
-         || auth.isProvider || auth.isInvoiceManager
+        || auth.isProvider || auth.isInvoiceManager
     ),
   },
   listOrder: {
@@ -122,7 +122,7 @@ const ordersRoutes: Routes = {
     showInMenu: true,
     hasAccess: (
       (auth) => auth.isClient || auth.isAdmin
-       || auth.isProvider || auth.isInvoiceManager),
+        || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
     path: '/pedidos/:id(\\d+)/modificar',
@@ -133,7 +133,7 @@ const ordersRoutes: Routes = {
   createOrder: {
     path: '/pedidos/resumen',
     view: OrderCreateOrder,
-    verboseName: 'Resumen de Orden',
+    verboseName: 'Resumen de orden',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
   },
@@ -186,7 +186,7 @@ export const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
-    verboseName: 'Registrar Categoría',
+    verboseName: 'Registrar categoría',
     showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
@@ -200,7 +200,7 @@ export const catalogsRoutes: Routes = {
   createLaboratory: {
     path: '/laboratorios/nuevo',
     view: LaboratoryCreateForm,
-    verboseName: 'Registrar Laboratorio',
+    verboseName: 'Registrar laboratorio',
     showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
@@ -220,6 +220,13 @@ export const catalogsRoutes: Routes = {
       (auth) => auth.isAdmin || auth.isProvider || auth.isClient
     ),
   },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
   detailAnnouncements: {
     path: '/circulares/:id(\\d+)',
     view: AnnouncementsDetailCompound,
@@ -228,13 +235,6 @@ export const catalogsRoutes: Routes = {
     hasAccess: (
       (auth) => auth.isAdmin || auth.isProvider || auth.isClient
     ),
-  },
-  createAnnouncement: {
-    path: '/circulares/nueva',
-    view: AnnouncementsCreate,
-    verboseName: 'Nueva circular',
-    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
-    hasAccess: ((auth) => auth.isAdmin),
   },
 };
 
@@ -249,7 +249,7 @@ export const usersRoutes: Routes = {
   listUsers: {
     path: '/usuarios',
     view: ListUsers,
-    verboseName: 'Lista de Usuarios',
+    verboseName: 'Lista de usuarios',
     showInMenu: SHOW_USERS_LIST,
     hasAccess: ((auth) => auth.isAdmin),
   },

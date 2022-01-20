@@ -9,7 +9,11 @@ const Title: React.FC<TitleProps> = ({ viewName, parentName, extra }) => {
   const history = useHistory();
 
   useEffect(() => {
-    document.title = `Gaqsa | ${parentName} | ${viewName}`;
+    if (parentName) {
+      document.title = `Gaqsa | ${parentName} | ${viewName}`;
+    } else {
+      document.title = `Gaqsa | ${viewName}`;
+    }
     setViewName(viewName);
     setParentName(parentName);
   }, [setViewName, setParentName, viewName, parentName]);

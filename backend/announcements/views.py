@@ -3,6 +3,7 @@ from typing import Tuple
 
 from rest_framework.generics import RetrieveAPIView
 
+from announcements.mails import send_mail_on_create_announcement
 from announcements.models import Announcement
 from django.core.files.storage import default_storage
 from rest_framework import status
@@ -61,7 +62,8 @@ class CreateAnnouncement(APIView):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save()
+        new_announcement = serializer.save()
+        send_mail_on_create_announcement(new_announcement)
         return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
 
     def get(self, request: Request) -> Response:

@@ -24,5 +24,6 @@ def application(environ, start_response):
     os.environ['EMAIL_PORT'] = environ['STAGING_EMAIL_PORT']
     os.environ['EMAIL_USE_SSL'] = 'True'
     os.environ['DOMAIN_URL'] = environ['STAGING_DOMAIN_URL']
+    os.environ['FRONTEND_DOMAIN_URL'] = environ['STAGING_FRONTEND_DOMAIN_URL']
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
     return get_wsgi_application()(environ, start_response)
