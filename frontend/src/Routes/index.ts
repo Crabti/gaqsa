@@ -112,7 +112,7 @@ const ordersRoutes: Routes = {
     showInMenu: false,
     hasAccess: (
       (auth) => auth.isClient || auth.isAdmin
-         || auth.isProvider || auth.isInvoiceManager
+        || auth.isProvider || auth.isInvoiceManager
     ),
   },
   listOrder: {
@@ -122,7 +122,7 @@ const ordersRoutes: Routes = {
     showInMenu: true,
     hasAccess: (
       (auth) => auth.isClient || auth.isAdmin
-       || auth.isProvider || auth.isInvoiceManager),
+        || auth.isProvider || auth.isInvoiceManager),
   },
   updateOrder: {
     path: '/pedidos/:id(\\d+)/modificar',
@@ -220,6 +220,13 @@ export const catalogsRoutes: Routes = {
       (auth) => auth.isAdmin || auth.isProvider || auth.isClient
     ),
   },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
   detailAnnouncements: {
     path: '/circulares/:id(\\d+)',
     view: AnnouncementsDetailCompound,
@@ -228,13 +235,6 @@ export const catalogsRoutes: Routes = {
     hasAccess: (
       (auth) => auth.isAdmin || auth.isProvider || auth.isClient
     ),
-  },
-  createAnnouncement: {
-    path: '/circulares/nueva',
-    view: AnnouncementsCreate,
-    verboseName: 'Nueva circular',
-    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
-    hasAccess: ((auth) => auth.isAdmin),
   },
 };
 
