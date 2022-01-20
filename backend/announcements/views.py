@@ -2,6 +2,7 @@ import os.path
 from typing import Tuple
 
 from rest_framework.generics import RetrieveAPIView
+from django.conf import settings
 
 from announcements.mails import send_mail_on_create_announcement
 from announcements.models import Announcement
@@ -17,7 +18,6 @@ from uuid import uuid4
 from announcements.serializers.announcement import (
     CreateAnnouncementSerializer, ListAnnouncementsSerializer,
 )
-from backend.settings import MEDIA_ROOT, DOMAIN_URL
 from backend.utils.groups import is_provider, is_client, is_admin
 
 
@@ -88,9 +88,13 @@ class CreateAnnouncement(APIView):
         :returns: A tuple with the file path and the file URL.
         """
         file_id = str(uuid4())
-        # DOMAIN/announcements/MEDIA/UUID.pdf|png|jpg|jpeg
-        url = f"{DOMAIN_URL}/announcements{MEDIA_ROOT}{file_id}.{extension}"
-        return os.path.join(MEDIA_ROOT, f"{file_id}.{extension}"), url
+        # DOMAIN/media/announcements/UUID.pdf|png|jpg|jpeg
+        url = f"{settings.DOMAIN_URL}{settings.MEDIA_URL}" \
+              f"{settings.ANNOUNCEMENT_FILE_ROOT}{file_id}.{extension}"
+        return os.path.join(
+                f"{settings.MEDIA_ROOT}{settings.ANNOUNCEMENT_FILE_ROOT}",
+                f"{file_id}.{extension}"
+            ), url
 
 
 class AnnouncementDetail(RetrieveAPIView):
