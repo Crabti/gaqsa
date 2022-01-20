@@ -25,7 +25,7 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
                   component={() => (
                     <View
                       verboseName={verboseName}
-                      parentName={group.verboseName || 'Gaqsa'}
+                      parentName={group.verboseName}
                     />
                   )}
                   exact
@@ -41,7 +41,7 @@ const RoutesComponents: React.FC<{groups: RegisteredGroup}> = ({ groups }) => (
                 component={() => (
                   <View
                     verboseName={verboseName}
-                    parentName={group.verboseName || 'Gaqsa'}
+                    parentName={group.verboseName}
                   />
                 )}
                 exact
