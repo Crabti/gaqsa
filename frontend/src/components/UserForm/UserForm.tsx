@@ -27,12 +27,16 @@ const UserForm: React.FC<Props> = ({
   onFinishFailed,
   form,
   isLoading,
+  isUpdate,
+  initialRole,
 }) => {
   useEffect(() => {
     form.setFieldsValue({ ...initialState });
   }, [form, initialState]);
 
-  const [selectedRole, setSelectedRole] = useState<string>(UserGroups.PROVIDER);
+  const [selectedRole, setSelectedRole] = useState<string>(
+    initialRole || UserGroups.PROVIDER,
+  );
 
   const handleSelectRole = (role : string) : void => setSelectedRole(role);
 
@@ -67,35 +71,44 @@ const UserForm: React.FC<Props> = ({
 
   const standardFields = (
     <>
-      <Col span={12}>
-        <Form.Item
-          name="group"
-          label="Tipo de Usuario"
-          rules={[{ required: true }]}
-        >
-          <Select onChange={handleSelectRole}>
-            <Option value={UserGroups.ADMIN} key={UserGroups.ADMIN}>
-              {UserGroups.ADMIN}
-            </Option>
-            <Option value={UserGroups.PROVIDER} key={UserGroups.PROVIDER}>
-              {UserGroups.PROVIDER}
-            </Option>
-            <Option value={UserGroups.CLIENT} key={UserGroups.CLIENT}>
-              {UserGroups.CLIENT}
-            </Option>
-          </Select>
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item
-          name={['user', 'username']}
-          label="Usuario"
-          rules={[{ required: true, validator: validateUsername }]}
-          hasFeedback
-        >
-          <Input />
-        </Form.Item>
-      </Col>
+      {!isUpdate
+        && (
+        <>
+          <Col span={12}>
+            (
+            <Form.Item
+              name="group"
+              label="Tipo de Usuario"
+              rules={[{ required: true }]}
+            >
+              <Select onChange={handleSelectRole}>
+                <Option value={UserGroups.ADMIN} key={UserGroups.ADMIN}>
+                  {UserGroups.ADMIN}
+                </Option>
+                <Option value={UserGroups.PROVIDER} key={UserGroups.PROVIDER}>
+                  {UserGroups.PROVIDER}
+                </Option>
+                <Option value={UserGroups.CLIENT} key={UserGroups.CLIENT}>
+                  {UserGroups.CLIENT}
+                </Option>
+              </Select>
+            </Form.Item>
+            )
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name={['user', 'username']}
+              label="Usuario"
+              rules={[{ required: true, validator: validateUsername }]}
+              hasFeedback
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+
+        </>
+        )}
+
       <Col span={12}>
         <Form.Item
           name={['user', 'first_name']}
@@ -113,55 +126,61 @@ const UserForm: React.FC<Props> = ({
           <Input />
         </Form.Item>
       </Col>
-      <Col span={12}>
-        <Form.Item
-          name={['user', 'password']}
-          label="Contraseña"
-          dependencies={['confirmPassword']}
-          hasFeedback
-          rules={[
-            { required: true },
-            { validator: validatePassword },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value
-                  || !getFieldValue('confirmPassword')
-                  || value === getFieldValue('confirmPassword')) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(
-                  'Las contraseñas ingresadas no coinciden.',
-                ));
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-      </Col>
-      <Col span={12}>
-        <Form.Item
-          name="confirmPassword"
-          label="Confirmar contraseña"
-          dependencies={['user', 'password']}
-          hasFeedback
-          rules={[
-            { required: true },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || value === getFieldValue(['user', 'password'])) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(
-                  'Las contraseñas ingresadas no coinciden.',
-                ));
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-      </Col>
+      { !isUpdate
+      && (
+      <>
+        <Col span={12}>
+          <Form.Item
+            name={['user', 'password']}
+            label="Contraseña"
+            dependencies={['confirmPassword']}
+            hasFeedback
+            rules={[
+              { required: true },
+              { validator: validatePassword },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value
+                    || !getFieldValue('confirmPassword')
+                    || value === getFieldValue('confirmPassword')) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(
+                    'Las contraseñas ingresadas no coinciden.',
+                  ));
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="confirmPassword"
+            label="Confirmar contraseña"
+            dependencies={['user', 'password']}
+            hasFeedback
+            rules={[
+              { required: true },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || value === getFieldValue(['user', 'password'])) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(
+                    'Las contraseñas ingresadas no coinciden.',
+                  ));
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </Col>
+
+      </>
+      )}
       <Col span={12}>
         <Form.Item
           name={['profile', 'telephone']}
@@ -263,7 +282,7 @@ const UserForm: React.FC<Props> = ({
           </>
         ) : null }
       </Row>
-      { selectedRole === UserGroups.CLIENT
+      { !isUpdate && selectedRole === UserGroups.CLIENT
         ? (
           <Row justify="space-around">
             <AddMail
@@ -283,7 +302,7 @@ const UserForm: React.FC<Props> = ({
           </Row>
         )
         : null}
-      { selectedRole === UserGroups.PROVIDER
+      { !isUpdate && selectedRole === UserGroups.PROVIDER
         ? (
           <Row justify="space-around">
 
@@ -312,7 +331,7 @@ const UserForm: React.FC<Props> = ({
           </Row>
         )
         : null}
-      { selectedRole === UserGroups.CLIENT
+      { !isUpdate && selectedRole === UserGroups.CLIENT
         ? (
           <>
             <Divider />

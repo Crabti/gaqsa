@@ -25,7 +25,7 @@ import {
   Requisition, CreateRequisitionForm, UpdateRequisitionForm,
 } from './order';
 import {
-  User, CreateUserForm, BusinessForm, UserEmail,
+  User, CreateUserForm, BusinessForm, UserEmail, UpdateUserForm,
 } from './user';
 import { Provider } from './provider';
 import { Offer, CreateOfferForm } from './offer';
@@ -71,4 +71,5 @@ export type {
   Invoice,
   UploadInvoiceForm,
   AuditLog,
+  UpdateUserForm,
 };
