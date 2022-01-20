@@ -56,6 +56,8 @@ class ListUserView(generics.ListAPIView):
 
 
 class UpdateUserView(APIView):
+    permission_classes = [IsAdmin]
+
     @staticmethod
     def bad_request(message):
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
