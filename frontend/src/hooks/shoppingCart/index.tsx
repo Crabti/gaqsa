@@ -1,33 +1,12 @@
-import { Offer } from '@types';
 import React, { useEffect, useState } from 'react';
 
-interface ProductCart {
-  id: number;
-  name: string;
-  presentation: string;
-  category: string;
-  key: string;
-  active_substance: string;
-  laboratory: string;
-  price: number;
-  iva: number;
-  ieps: number;
-  provider: string;
-  originalPrice?: number;
-}
-
 export interface ShoppingCartProductType {
-  product: ProductCart;
-  offer?: Offer;
-  amount: number;
+  id: number;
+  quantity: number;
 }
 
 export interface ShoppingCartType {
-    products: ShoppingCartProductType[];
-    subtotal: number;
-    subieps: number;
-    subiva: number;
-    total: number;
+    productsCart: ShoppingCartProductType[];
     addProducts: (newProduct: ShoppingCartProductType) => void;
     removeProducts: (newProduct: ShoppingCartProductType) => void;
     clear: () => void;
@@ -42,73 +21,53 @@ export const ShoppingCartContext = (
 
 export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   const [loaded, setLoaded] = useState<boolean>(false);
-  const [products, setProducts] = useState<ShoppingCartProductType[]>([]);
-  const [total, setTotal] = useState<ShoppingCartType['total']>(0);
-  const [subtotal, setSubtotal] = useState<ShoppingCartType['subtotal']>(0);
-  const [subieps, setSubieps] = useState<ShoppingCartType['subieps']>(0);
-  const [subiva, setSubiva] = useState<ShoppingCartType['subiva']>(0);
+  const [productsCart, setProductsCart] = useState<ShoppingCartProductType[]>(
+    [],
+  );
 
   const persistProducts = (newProducts: ShoppingCartProductType[]): void => {
-    setProducts(newProducts);
-
-    let newSubtotal = 0;
-    let newIeps = 0;
-    let newIVA = 0;
-    let newTotal = 0;
-
-    newProducts.forEach((e) => {
-      const { price, iva } = e.product;
-
-      newSubtotal += (e.amount * price);
-
-      newIeps += e.amount * ((e.product.ieps / 100) * price);
-      newIVA += e.amount * ((iva / 100) * price);
-    });
-    newTotal = newSubtotal + newIVA + newIeps;
-    setSubtotal(newSubtotal);
-    setSubieps(newIeps);
-    setSubiva(newIVA);
-
-    setTotal(newTotal);
+    setProductsCart(newProducts);
 
     localStorage.setItem('shoppingCart', JSON.stringify({
-      products: newProducts,
-      total: newTotal,
-      subtotal: newSubtotal,
-      subieps: newIeps,
-      subiva: newIVA,
+      productsCart: newProducts,
     }));
   };
 
   const addProducts = (newProduct: ShoppingCartProductType): void => {
-    if (products.some((e) => e.product.id === newProduct.product.id)) {
+    if (productsCart.some((e) => e.id === newProduct.id)) {
       persistProducts(
-        products.map((e) => (e.product.id === newProduct.product.id
-          ? { ...e, amount: e.amount + newProduct.amount }
+        productsCart.map((e) => (e.id === newProduct.id
+          ? { ...e, quantity: newProduct.quantity }
           : e)),
       );
       return;
     }
-    persistProducts([...products, newProduct]);
+    persistProducts([...productsCart, newProduct]);
   };
 
   const removeProducts = (newProduct: ShoppingCartProductType): void => {
     persistProducts(
-      products.filter((e) => newProduct.product.id !== e.product.id),
+      productsCart.filter((e) => newProduct.id !== e.id),
     );
   };
 
   const retrieveState = (): void => {
     const stored = localStorage.getItem('shoppingCart');
     if (stored) {
-      const parsedStored = JSON.parse(stored);
-      setProducts(parsedStored.products);
-      setTotal(parsedStored.total);
-      setSubieps(parsedStored.subieps);
-      setSubiva(parsedStored.subiva);
-      setSubtotal(parsedStored.subtotal);
+      try {
+        const parsedStored : ShoppingCartProductType[] = JSON.parse(
+          stored,
+        ).productsCart;
+        if (parsedStored) {
+          setProductsCart(parsedStored);
+        } else {
+          setProductsCart([]);
+        }
+      } catch (e) {
+        setProductsCart([]);
+      }
     } else {
-      setProducts([]);
+      setProductsCart([]);
     }
     setLoaded(true);
   };
@@ -126,7 +85,7 @@ export const ShoppingCartContextProvider: React.FC = ({ children }) => {
   return (
     <ShoppingCartContext.Provider value={{
       // eslint-disable-next-line max-len
-      products, total, addProducts, removeProducts, clear, subieps, subiva, subtotal,
+      productsCart, addProducts, removeProducts, clear,
     }}
     >
       {children}

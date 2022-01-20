@@ -5,6 +5,7 @@ export enum UserGroups {
   ADMIN = 'Administrador',
   CLIENT = 'Cliente',
   PROVIDER = 'Proveedor',
+  INVOICE_MANAGER = 'Facturador',
 }
 
 export interface AuthType {
@@ -15,6 +16,7 @@ export interface AuthType {
   isAdmin: boolean;
   isClient: boolean;
   isProvider: boolean;
+  isInvoiceManager: boolean;
 }
 
 export const INITIAL_AUTH_STATE: AuthType = {
@@ -25,12 +27,14 @@ export const INITIAL_AUTH_STATE: AuthType = {
   isAdmin: false,
   isClient: false,
   isProvider: false,
+  isInvoiceManager: false,
 };
 
 export interface BooleanGroups {
   isAdmin: boolean;
   isClient: boolean;
   isProvider: boolean;
+  isInvoiceManager: boolean;
 }
 
 export const LOCAL_STORAGE_KEY = 'auth';
@@ -78,6 +82,7 @@ export const AuthContextProvider: React.FC = ({ children }) => {
     isAdmin: groups.includes(UserGroups.ADMIN),
     isClient: groups.includes(UserGroups.CLIENT),
     isProvider: groups.includes(UserGroups.PROVIDER),
+    isInvoiceManager: groups.includes(UserGroups.INVOICE_MANAGER),
   });
 
   const persistState = (newState: AuthType): void => {

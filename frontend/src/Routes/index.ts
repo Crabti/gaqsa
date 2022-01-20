@@ -1,17 +1,17 @@
 import {
-  AppstoreOutlined, MedicineBoxOutlined, TeamOutlined, UserOutlined,
+  AppstoreOutlined, FileOutlined, MedicineBoxOutlined,
+  TeamOutlined, UserOutlined,
 } from '@ant-design/icons';
 import { RouteProps } from 'react-router-dom';
+import AnnouncementsCreate from 'views/Announcements.Create';
+import AnnouncementsDetailCompound from 'views/Announcements.Detail';
+import AnnouncementsListCompound from 'views/Announcements.List';
 import HomeView from 'views/Home';
 import LoginView from 'views/Login';
-import OrderCreateOrder from 'views/Order.CreateOrder';
 import ProductsCreateForm from 'views/Products.CreateForm';
 import ProductsListPending from 'views/Products.ListPending';
 import ProductsListProducts from 'views/Products.ListProducts';
 import ProductsUpdateForm from 'views/Products.UpdateForm';
-import ListClientOrders from 'views/Orders.ListClientOrders';
-import ListRequisitions from 'views/Orders.ListRequisitions';
-import ListProviders from 'views/Providers.ListProviders';
 import LaboratoryCreateForm from 'views/Laboratory.CreateForm';
 import CreateUser from 'views/Users.CreateForm/Users.CreateForm';
 import ListUsers from 'views/Users.ListUsers/Users.ListUsers';
@@ -19,13 +19,23 @@ import ListLaboratory from 'views/Laboratory.ListLaboratory';
 import ListCategory from 'views/Category.ListCategory';
 import CategoryCreateForm from 'views/Category.CreateForm';
 import ProductsDetail from 'views/Products.Detail';
+import ListOrders from 'views/Order.ListOrders/Order.ListOrders';
 import PriceChange from 'views/Products.PriceChange';
+import OrderUpdate from 'views/Orders.Update';
+import OrderDetail from 'views/Order.OrderDetail/Order.OrderDetail';
+import ListProviders from 'views/Providers.ListProviders';
+import ListAuditLog from 'views/AuditLog.ListAuditLog';
+import ListInvoice from 'views/Invoice.ListInvoice';
+import UploadInvoice from 'views/Invoice.UploadInvoice/Invoice.UploadInvoice';
+import OrderCreateOrder from 'views/Order.CreateOrder';
+import UpdateUserCompound from 'views/Users.UpdateUser';
 
 import {
-  LIST_CLIENT_ORDERS, LIST_PROVIDERS, LIST_REQUISITIONS,
-  SHOW_CREATE_USER,
+  LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
+  SHOW_CREATE_USER, SHOW_LIST_ANNOUNCEMENT,
   SHOW_ORDERS_MENU,
   SHOW_USERS_LIST,
+  SHOW_AUDIT_LOG, SHOW_DETAIL_ANNOUNCEMENT,
 } from 'constants/featureFlags';
 import { AuthType } from 'hooks/useAuth';
 
@@ -35,8 +45,9 @@ export interface RoutesType {
   verboseName: string;
   showInMenu?: boolean;
   isPublic?: boolean;
-  hasAccess?(auth: AuthType): boolean;
   props?: Omit<RouteProps, 'path' | 'component'>;
+
+  hasAccess?(auth: AuthType): boolean;
 }
 
 export interface Routes {
@@ -49,7 +60,7 @@ export interface RegisteredGroup {
     showInMenu?: boolean;
     icon?: React.FC;
     verboseName?: string;
-  }
+  };
 }
 
 export const productRoutes: Routes = {
@@ -60,7 +71,7 @@ export const productRoutes: Routes = {
     hasAccess: ((auth) => auth.isProvider || auth.isAdmin),
   },
   updateProduct: {
-    path: '/productos/:id/modificar',
+    path: '/productos/:id(\\d+)/modificar',
     view: ProductsUpdateForm,
     verboseName: 'Modificar producto',
     hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
@@ -80,7 +91,7 @@ export const productRoutes: Routes = {
     hasAccess: ((auth) => auth.isClient || auth.isAdmin || auth.isProvider),
   },
   detailProduct: {
-    path: '/productos/:id/detalle',
+    path: '/productos/:id(\\d+)/detalle',
     view: ProductsDetail,
     verboseName: 'Modificar producto',
     showInMenu: false,
@@ -95,26 +106,56 @@ export const productRoutes: Routes = {
 };
 
 const ordersRoutes: Routes = {
-  listOrderHistory: {
-    path: '/pedidos/historial',
-    view: ListClientOrders,
-    verboseName: 'Historial de Pedidos',
-    showInMenu: LIST_CLIENT_ORDERS,
-    hasAccess: ((auth) => auth.isClient),
+  orderDetail: {
+    path: '/pedidos/:id(\\d+)',
+    view: OrderDetail,
+    verboseName: 'Detalle de pedido',
+    showInMenu: false,
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+         || auth.isProvider || auth.isInvoiceManager
+    ),
   },
-  listRequisitions: {
+  listOrder: {
     path: '/pedidos',
-    view: ListRequisitions,
-    verboseName: 'Pedidos Realizados',
-    showInMenu: LIST_REQUISITIONS,
-    hasAccess: ((auth) => auth.isAdmin || auth.isProvider),
+    view: ListOrders,
+    verboseName: 'Historial de pedidos',
+    showInMenu: true,
+    hasAccess: (
+      (auth) => auth.isClient || auth.isAdmin
+       || auth.isProvider || auth.isInvoiceManager),
+  },
+  updateOrder: {
+    path: '/pedidos/:id(\\d+)/modificar',
+    view: OrderUpdate,
+    verboseName: 'Modificar pedido',
+    hasAccess: (auth) => auth.isProvider || auth.isAdmin,
   },
   createOrder: {
-    path: '/pedidos/create',
+    path: '/pedidos/resumen',
     view: OrderCreateOrder,
-    verboseName: 'Realizar pedido',
+    verboseName: 'Resumen de Orden',
     showInMenu: true,
     hasAccess: ((auth) => auth.isClient),
+  },
+};
+
+const invoiceRoutes: Routes = {
+  listInvoice: {
+    path: '/facturas',
+    verboseName: 'Lista de facturas',
+    view: ListInvoice,
+    showInMenu: true,
+    hasAccess: (
+      () => true
+    ),
+  },
+  uploadInvoice: {
+    path: '/facturación',
+    verboseName: 'Cargar Facturas',
+    view: UploadInvoice,
+    showInMenu: true,
+    hasAccess: ((auth) => auth.isProvider),
   },
 };
 
@@ -142,12 +183,12 @@ export const otherRoutes: Routes = {
   },
 };
 
-const catalogsRoutes: Routes = {
+export const catalogsRoutes: Routes = {
   createCategory: {
     path: '/categorias/nuevo',
     view: CategoryCreateForm,
     verboseName: 'Registrar Categoría',
-    showInMenu: true,
+    showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listCategory: {
@@ -161,7 +202,7 @@ const catalogsRoutes: Routes = {
     path: '/laboratorios/nuevo',
     view: LaboratoryCreateForm,
     verboseName: 'Registrar Laboratorio',
-    showInMenu: true,
+    showInMenu: false,
     hasAccess: ((auth) => auth.isAdmin),
   },
   listLaboratory: {
@@ -169,6 +210,31 @@ const catalogsRoutes: Routes = {
     view: ListLaboratory,
     verboseName: 'Lista de laboratorios',
     showInMenu: true,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAnnouncements: {
+    path: '/circulares',
+    view: AnnouncementsListCompound,
+    verboseName: 'Lista de circulares',
+    showInMenu: SHOW_LIST_ANNOUNCEMENT,
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isProvider || auth.isClient
+    ),
+  },
+  detailAnnouncements: {
+    path: '/circulares/:id(\\d+)',
+    view: AnnouncementsDetailCompound,
+    verboseName: 'Detalle de circulare',
+    showInMenu: SHOW_DETAIL_ANNOUNCEMENT,
+    hasAccess: (
+      (auth) => auth.isAdmin || auth.isProvider || auth.isClient
+    ),
+  },
+  createAnnouncement: {
+    path: '/circulares/nueva',
+    view: AnnouncementsCreate,
+    verboseName: 'Nueva circular',
+    showInMenu: SHOW_CREATE_ANNOUNCEMENT,
     hasAccess: ((auth) => auth.isAdmin),
   },
 };
@@ -186,6 +252,19 @@ export const usersRoutes: Routes = {
     view: ListUsers,
     verboseName: 'Lista de Usuarios',
     showInMenu: SHOW_USERS_LIST,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  listAuditLog: {
+    path: '/bitacora',
+    view: ListAuditLog,
+    verboseName: 'Bitácora de acciones',
+    showInMenu: SHOW_AUDIT_LOG,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  editUser: {
+    path: '/usuarios/:id(\\d+)/modificar',
+    view: UpdateUserCompound,
+    verboseName: 'Modificar usuario',
     hasAccess: ((auth) => auth.isAdmin),
   },
 };
@@ -215,13 +294,19 @@ const routes: RegisteredGroup = {
   catalogs: {
     routes: catalogsRoutes,
     showInMenu: true,
-    verboseName: 'Catalogos',
+    verboseName: 'Catálogos',
   },
   user: {
     routes: usersRoutes,
     showInMenu: true,
     verboseName: 'Usuarios',
     icon: UserOutlined,
+  },
+  invoice: {
+    routes: invoiceRoutes,
+    showInMenu: true,
+    verboseName: 'Facturas',
+    icon: FileOutlined,
   },
 };
 

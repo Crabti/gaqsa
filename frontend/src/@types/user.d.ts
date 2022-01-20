@@ -2,6 +2,10 @@ import { CommonType, Provider } from '@types';
 import { CreateClientForm } from './client';
 import { CreateProviderForm } from './provider';
 
+interface Profile {
+  telephone: string;
+}
+
 export interface User extends CommonType {
   first_name: string;
   last_name: string;
@@ -9,14 +13,11 @@ export interface User extends CommonType {
   groups: string[];
   last_login?: string;
   date_joined?: string;
-  username?: string;
+  username: string;
   is_active?: boolean;
   provider?: Provider,
   client?: Client,
-}
-
-interface Profile {
-  telephone: string;
+  profile?: Profile;
 }
 
 interface Ranch {
@@ -51,4 +52,16 @@ export interface CreateUserForm {
   paymentMails?: UserEmail[],
   invoiceMails?: UserEmail[],
   priceChangeMails?: UserEmail[],
+}
+
+export interface UpdateUserForm {
+  user: {
+    first_name: string,
+    last_name: string,
+    email: string;
+  },
+  profile?: Profile,
+  business?: BusinessForm,
+  provider?: BusinessForm,
+  client?: BusinessForm,
 }

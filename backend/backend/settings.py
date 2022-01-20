@@ -62,13 +62,16 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
+    'auditlog',
     'backend',
     'users',
     'products',
     'providers',
     'order',
     'offers',
-    'clients'
+    'clients',
+    'invoices',
+    'announcements',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +84,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middlewares.error_handler.ErrorHandlerMiddleware',
+    'backend.middlewares.audit_log.RestFrameworkAuditLogMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -276,3 +280,25 @@ LOGGING = {
 SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True
 }
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+INVOICE_FILE_ROOT = 'invoices/'
+
+DOMAIN_URL = os.getenv('DOMAIN_URL', '')
+
+# Weekdays enabled where admin or invoice manager can
+# update an invoice's status. Example: 0 - Monday, 1 - Tuesday...
+# If all weekdays should be enabled, then remove this variable or
+# replace it with None or empty
+INVOICE_STATUS_UPDATE_WEEKDAYS = None
+
+# Difference between a invoice date and uploaded date to
+# switch if client or invoice manager should handle its status
+INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS = os.getenv(
+    'INVOICE_DAYS_UNTIL_INVOICE_MANAGER_ACCEPTS',
+    15,
+)
+
+VALIDATE_RFC_ON_INVOICE_UPLOAD = os.getenv('VALIDATE_RFC', True)

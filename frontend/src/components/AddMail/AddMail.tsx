@@ -38,15 +38,14 @@ const AddMail: React.FC<Props> = ({
       {(fields, { add, remove }, { errors }) => (
         <>
           {fields.map(({
-            key, name, fieldKey, ...restField
+            key, name, ...restField
           }) => (
             <Row gutter={24} justify="center" key={key}>
               <Form.Item
                 {...restField}
                 name={[name, 'email']}
-                fieldKey={[fieldKey, 'email']}
                 validateTrigger={['onChange', 'onBlur']}
-                id={`${category}-${fieldKey}`}
+                id={`${category}-${key}`}
                 rules={[
                   {
                     required: true,
@@ -64,7 +63,6 @@ const AddMail: React.FC<Props> = ({
               <Form.Item
                 {...restField}
                 name={[name, 'category']}
-                fieldKey={[fieldKey, 'category']}
                 hidden
                 initialValue={category}
               />

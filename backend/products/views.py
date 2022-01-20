@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import date, datetime
 
-from backend.utils.groups import is_admin, is_provider
-from backend.utils.permissions import IsAdmin, IsProvider
+from backend.utils.groups import is_provider
+from backend.utils.permissions import IsAdmin, IsOwnProviderOrAdmin, IsProvider
 from backend.utils.product_key import create_product_key
 
 from rest_framework.request import Request
@@ -30,10 +30,13 @@ from providers.models import Provider
 
 from products.serializers.product import (
     AcceptProductSerializer,
+    AddProviderToProductSerializer,
+    CreateProductMultipleProvidersSerializer,
     CreateProductSerializer,
     ListProductSerializer, ListProviderProductsSerializer,
     ProductSerializer,
-    RejectProductSerializer, UpdateProductPrice,
+    RejectProductSerializer,
+    ToggleProductProviderActiveSerializer, UpdateProductPrice,
     UpdateProductProviderSerializer,
     UpdateProductSerializer,
 )
@@ -48,7 +51,9 @@ class ListProductView(generics.ListAPIView):
 
     def get_queryset(self):
         if is_provider(self.request.user):
-            provider = Provider.objects.get(user=self.request.user)
+            provider = Provider.objects.get(
+                user=self.request.user
+            )
             return Product.objects.filter(
                 productprovider__provider=provider
             )
@@ -77,26 +82,26 @@ class CreateProductView(generics.CreateAPIView):
                 user=self.request.user
             )
             data['provider']['provider'] = provider.id
+            product_status = Product.PENDING
+            serializer = CreateProductSerializer(
+                data=data,
+            )
         else:
-            provider = Provider.objects.get(pk=data['provider']['provider'])
-        serializer = CreateProductSerializer(
-            data=data,
-        )
+            product_status = Product.ACCEPTED
+            serializer = CreateProductMultipleProvidersSerializer(
+                data=data,
+            )
         if not serializer.is_valid():
             return Response(
                 data=serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if is_admin(self.request.user):
-            product = serializer.save(key=key, status=Product.ACCEPTED)
-        else:
-            product = serializer.save(key=key)
-        product_provider = ProductProvider.objects.filter(
-            provider=provider, product=product
-        ).last()
-        send_mail_on_create_product_request(product_provider)
+        product = serializer.save(key=key, status=product_status)
+        for product_provider in product.providers:
+            send_mail_on_create_product_request(product_provider)
         return Response(
-            data=serializer.data, status=status.HTTP_201_CREATED
+            data=serializer.data,
+            status=status.HTTP_201_CREATED
         )
 
 
@@ -146,6 +151,7 @@ class AcceptProductAsNew(APIView):
                 instance=request,
                 data={
                     'status': Product.ACCEPTED,
+                    'name': data['name'],
                 },
                 partial=True
             )
@@ -209,9 +215,8 @@ class GroupProductsView(APIView):
             # Change relation to target
             instance = serializer.save()
 
-            # Change state of old product instance
-            instance.product.status = Product.INACTIVE
-            instance.product.save()
+            # Delte old product request
+            instance.product.delete()
             instance.product = target
             instance.save()
 
@@ -342,3 +347,48 @@ class CreateCategoryView(generics.CreateAPIView):
 class ListCategoryView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = ListCategorySerializer
+
+
+class AddProviderToProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def post(self, request: Request, *args, **kwargs) -> Response:
+        data = request.data
+        target = generics.get_object_or_404(Product, pk=kwargs.get('pk'))
+        serializer = AddProviderToProductSerializer(
+            data={
+                **data,
+                'product': target.pk,
+            }
+        )
+        if not serializer.is_valid():
+            return Response(
+                data=serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer.save()
+        return Response(
+            data={'code': 'PROVIDER_ADDED'},
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class RemoveProviderFromProductView(APIView):
+    permission_classes = (IsAdmin, )
+
+    def delete(self, request: Request, *args, **kwargs) -> Response:
+        target = generics.get_object_or_404(
+            ProductProvider,
+            pk=kwargs.get('pk'),
+        )
+        target.delete()
+        return Response(
+            data={'code': 'PROVIDER_REMOVED'},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ToggleProductProviderActiveView(generics.UpdateAPIView):
+    permission_classes = (IsOwnProviderOrAdmin, )
+    queryset = ProductProvider.objects.all()
+    serializer_class = ToggleProductProviderActiveSerializer

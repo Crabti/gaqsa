@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import React, { useEffect } from 'react';
 import FormButton from 'components/FormButton';
+import { CreateProductForm } from '@types';
 import Props from './ProductForm.type';
 
 const { Option } = Select;
@@ -29,39 +30,71 @@ const ProductForm: React.FC<Props> = ({
     form.setFieldsValue({ ...initialState });
   }, [form, initialState]);
 
+  const onSubmit = () : void => {
+    const values = form.getFieldsValue();
+
+    if (isAdmin && values.providers) {
+      const result : CreateProductForm = {
+        ...values,
+        provider: values.providers.map((id: number) => ({
+          provider: id,
+          ...values.provider,
+        })),
+      };
+      onFinish(result);
+    } else {
+      onFinish(values);
+    }
+  };
   return (
     <Form
       {...layout}
       form={form}
       name="productForm"
       initialValues={initialState}
-      onFinish={onFinish}
+      onFinish={onSubmit}
       onFinishFailed={onFinishFailed}
+      autoComplete="off"
     >
       { !isUpdate && isAdmin && providers && (
       <>
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
-            name={['provider', 'provider']}
-            label="Proveedor"
+            name="providers"
+            label="Proveedores"
             rules={[{ required: true }]}
           >
             <Select
               showSearch
               placeholder="Buscar proveedor"
               optionFilterProp="children"
-              filterOption={(input, option) => (option === undefined
-                ? false : option.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              mode="multiple"
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
             >
               {Object.values(providers).map(
                 (provider) => (
                   <Option value={provider.id} key={provider.id}>
-                    {provider.name}
+                    {`${provider.name} - ${provider.nav_key}`}
                   </Option>
                 ),
               )}
             </Select>
+          </Form.Item>
+        </Col>
+      </>
+      )}
+      {isUpdate && (
+      <>
+        <Col span={24}>
+          <Form.Item
+            name="key"
+            label="Clave"
+            rules={[{ required: true, max: 8 }]}
+          >
+            <Input disabled={!!disabledFields?.key} />
           </Form.Item>
         </Col>
       </>
@@ -77,9 +110,10 @@ const ProductForm: React.FC<Props> = ({
               showSearch
               disabled={!!disabledFields?.category}
               placeholder="Buscar categoría"
-              filterOption={(input, option) => (option === undefined
-                ? false : option.children
-                  .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
             >
               {Object.values(options.categories).map(
                 (category) => (
@@ -92,52 +126,12 @@ const ProductForm: React.FC<Props> = ({
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            name="animal_groups"
-            label="Especie"
-            rules={[{ required: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="Buscar especie"
-              filterOption={
-                (input, option) => (option === undefined
-                  ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
-              mode="multiple"
-              disabled={!!disabledFields?.animal_groups}
-            >
-              { Object.values(options.animal_groups).map(
-                (group) => (
-                  <Option value={group.id} key={group.id}>
-                    {group.name}
-                  </Option>
-                ),
-              )}
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
-      {isUpdate && (
-      <>
-        <Col span={12}>
-          <Form.Item
-            name="key"
-            label="Clave"
-            rules={[{ required: true, max: 8 }]}
-          >
-            <Input disabled={!!disabledFields?.key} />
-          </Form.Item>
-        </Col>
-      </>
-      )}
-      <Row justify="space-around">
-        <Col span={12}>
           <Form.Item name="name" label="Nombre" rules={[{ required: true }]}>
             <Input disabled={!!disabledFields?.name} />
           </Form.Item>
         </Col>
+      </Row>
+      <Row justify="space-around">
         <Col span={12}>
           <Form.Item
             name="active_substance"
@@ -183,11 +177,10 @@ const ProductForm: React.FC<Props> = ({
                 <Select
                   showSearch
                   placeholder="Buscar laboratorio"
-                  filterOption={
-                (input, option) => (option === undefined
-                  ? false : option.children
-                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-              }
+                  filterOption={(input, option: any) => (
+                    (option === undefined || option?.children === undefined)
+                      ? false : option.children
+                        .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
                 >
                   { Object.values(options.laboratories).map(
                     (lab) => (
@@ -207,8 +200,8 @@ const ProductForm: React.FC<Props> = ({
                 rules={[{ required: true }]}
               >
                 <Select>
-                  <Option value="0.00" key="0.00"> 0.00 %</Option>
-                  <Option value="16.00" key="16.00"> 16.00 %</Option>
+                  <Option value="0" key="0"> 0.00 %</Option>
+                  <Option value="16" key="16"> 16.00 %</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -223,6 +216,32 @@ const ProductForm: React.FC<Props> = ({
               formatter={(value) => `${value}%`}
               disabled={!!disabledFields?.ieps}
             />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="animal_groups"
+            label="Especie"
+            rules={[{ required: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="Buscar especie"
+              filterOption={(input, option: any) => (
+                (option === undefined || option?.children === undefined)
+                  ? false : option.children
+                    .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+              mode="multiple"
+              disabled={!!disabledFields?.animal_groups}
+            >
+              { Object.values(options.animal_groups).map(
+                (group) => (
+                  <Option value={group.id} key={group.id}>
+                    {group.name}
+                  </Option>
+                ),
+              )}
+            </Select>
           </Form.Item>
         </Col>
         <Col span={12}>

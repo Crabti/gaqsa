@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from datetime import date
 from products.models import ProductProvider
 from users.models import User
+from auditlog.registry import auditlog
 
 
 class Offer(models.Model):
@@ -33,3 +34,6 @@ class Offer(models.Model):
         return f"{self.product_provider} \
                  - ({self.created_at} - {self.ending_at}) \
                  - {self.discount_percentage * 100} %"
+
+
+auditlog.register(Offer)

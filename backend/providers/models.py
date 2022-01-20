@@ -3,6 +3,7 @@ from string import ascii_uppercase
 from django.db import models
 
 from users.models import Business
+from auditlog.registry import auditlog
 
 TOKEN_LEN = 8
 
@@ -28,9 +29,11 @@ class Provider(Business):
         null=True,
         verbose_name='Fecha de aplicación de codigo',
     )
-    # TODO: Remove default after applying migration to production
     nav_key = models.CharField(
         verbose_name="Clave Nav",
         max_length=100,
         default=""
     )
+
+
+auditlog.register(Provider)

@@ -25,6 +25,9 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
   const auth = useAuth();
   const [isLoading, setLoading] = useState(true);
   const [users, setUsers] = useState<User[] | undefined>(undefined);
+  const { isAdmin } = useAuth();
+
+  const shouldAllowModifyUser = isAdmin;
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -110,7 +113,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
       defaultSortOrder: 'ascend',
     },
     {
-      title: 'Ultimo inicio de sesion',
+      title: 'Último inicio de sesión',
       dataIndex: 'last_login',
       key: 'last_login',
       sorter: (a: any, b: any) => moment(
@@ -143,13 +146,14 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
           : `Activar usuario ${data.username}`;
 
         const content = active
-          ? 'Se desabilitara el acceso al usuario y no'
-          + ' podra ingresar al sistema nuevamente.'
-          : 'Se habilitara el acceso al usuario y'
-          + ' podra ingresar nuevamente';
+          ? 'Se deshabilitará el acceso al usuario y no'
+          + ' podrá ingresar al sistema nuevamente.'
+          : 'Se habilitará el acceso al usuario y'
+            + ' podrá ingresar nuevamente';
 
         const isMe = auth.user?.id === data.id;
         const toolTipTitle = active ? 'Desactivar usuario' : 'Activar usuario';
+
         return (
           <Actions>
             <Tooltip title={
@@ -160,7 +164,7 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
             >
               <Button
                 shape="circle"
-                icon={active ? <StopOutlined /> : <CheckCircleOutlined />}
+                icon={active ? <CheckCircleOutlined /> : <StopOutlined />}
                 disabled={auth.user?.id === data.id}
                 onClick={() => {
                   confirm({
@@ -177,13 +181,17 @@ const ListUsers: React.VC = ({ verboseName, parentName }) => {
                 }}
               />
             </Tooltip>
+            { shouldAllowModifyUser && (
             <Tooltip title="Editar usuario">
               <Button
                 shape="circle"
                 icon={<EditOutlined />}
-                onClick={() => { history.push(`/usuario/${data.id}/editar`); }}
+                onClick={() => {
+                  history.push(`/usuarios/${data.id}/modificar`);
+                }}
               />
             </Tooltip>
+            ) }
           </Actions>
         );
       },

@@ -1,6 +1,11 @@
 from django.contrib.auth.models import Group
-from backend.utils.constants import ADMIN_GROUP, PROVIDER_GROUP
-from rest_framework import permissions
+from backend.utils.constants import (
+    ADMIN_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP
+)
+from backend.utils.groups import is_admin, is_client, is_invoice_manager
+from rest_framework import permissions, exceptions
+from datetime import date
+from django.conf import settings
 
 
 def _is_in_group(user, group_name):
@@ -15,6 +20,15 @@ def _is_in_group(user, group_name):
 def _has_group_permission(user, required_groups):
     return any(
         [_is_in_group(user, group_name) for group_name in required_groups])
+
+
+def available_today(weekdays_available):
+    if weekdays_available:
+        today_weekday = date.today().weekday()
+        available_weekdays = weekdays_available
+        valid = today_weekday in available_weekdays
+        return valid
+    return True
 
 
 class CustomBasePermission(permissions.BasePermission):
@@ -41,8 +55,67 @@ class IsProvider(CustomBasePermission):
     required_groups = [PROVIDER_GROUP]
 
 
+class IsInvoiceManager(CustomBasePermission):
+    required_groups = [INVOICE_MANAGER_GROUP]
+
+
 class IsOwnUserOrAdmin(permissions.BasePermission):
     """Allow only same users or admins"""
 
     def has_object_permission(self, request, view, obj):
         return request.user == obj or _is_in_group(request.user, ADMIN_GROUP)
+
+
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """Allow only same users or admins"""
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user or _is_in_group(
+            request.user, ADMIN_GROUP
+        )
+
+
+class IsOwnProviderOrAdmin(permissions.BasePermission):
+    """Allow only same users or admins"""
+
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.provider.user or _is_in_group(
+            request.user, ADMIN_GROUP
+        )
+
+
+class IsInvoiceCheckDay(permissions.BasePermission):
+    message = {
+        'errors': ['This operation is only available on specific weekdays.'],
+        'code': 'UNAVAILABLE_WEEKDAY'
+    }
+
+    def has_object_permission(self, request, view, obj):
+        valid = available_today(settings.INVOICE_STATUS_UPDATE_WEEKDAYS)
+        if valid:
+            return True
+        raise exceptions.PermissionDenied(
+            detail=self.message
+        )
+
+
+class InvoiceStatusUpdate(permissions.BasePermission):
+    message = {
+        'errors': ['User is not allowed to do this action.'],
+        'code': 'NOT_ALLOWED'
+    }
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if is_client(user):
+            if obj.is_client_responsible and obj.order.user.pk == user.pk:
+                return True
+        if is_invoice_manager(user):
+            if not obj.is_client_responsible:
+                return True
+        if is_admin(user):
+            return True
+
+        raise exceptions.PermissionDenied(
+            detail=self.message
+        )

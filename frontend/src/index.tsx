@@ -7,7 +7,7 @@ import { NavContextProvider } from 'hooks/navigation';
 import { AuthContextProvider } from 'hooks/useAuth';
 import { ShoppingCartContextProvider } from 'hooks/shoppingCart';
 import App from './views/App';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 
 const globalTheme: DefaultTheme = {
   colors: {

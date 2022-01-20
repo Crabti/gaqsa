@@ -5,13 +5,14 @@ import {
   notification,
   InputNumber,
   Select,
+  Input,
 } from 'antd';
 import { useHistory } from 'react-router';
 import Title from 'components/Title';
 import { useBackend } from 'integrations';
 import {
   Laboratory,
-  Product, ProductGroup,
+  Product, ProductGroup, Provider,
 } from '@types';
 import Table from 'components/Table';
 import moment from 'moment';
@@ -44,10 +45,15 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
   );
+
   const [
     selected,
     setSelected,
   ] = useState([]);
+
+  const resetSelected = useCallback(
+    () => setSelected([]), [selected],
+  );
 
   const [rejectModalVisible, setRejectModalVisible] = useState<boolean>(false);
   const [groupModal, setGroupModal] = useState<GroupProductModal>(
@@ -126,6 +132,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       price: product.provider.price,
       iva: product.provider.iva,
       laboratory: product.provider.laboratory.id,
+      name: product.name,
     }));
 
     const [, error] = await backend.products.post(
@@ -145,7 +152,8 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       message: '¡Producto(s) aceptado(s) exitosamente!',
     });
     setLoading(false);
-    history.push('/productos');
+    // Refresh
+    fetchProducts();
   };
 
   const onRejectSelected = (value: boolean) : void => {
@@ -169,6 +177,7 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       fetchLabs();
     }
     resetFiltered();
+    resetSelected();
   }, [history, fetchProducts, resetFiltered]);
 
   const onUpdatePrice = (
@@ -187,6 +196,16 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
     const updatedProducts = products;
     if (updatedProducts) {
       updatedProducts[key].provider.iva = value;
+      setProducts(updatedProducts);
+    }
+  };
+
+  const onUpdateName = (
+    key: number, value: string,
+  ) : any => {
+    const updatedProducts = products;
+    if (updatedProducts) {
+      updatedProducts[key].name = value;
       setProducts(updatedProducts);
     }
   };
@@ -224,6 +243,16 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
       title: 'Nombre',
       dataIndex: 'name',
       key: 'name',
+      render: (_: string, data: any, index: number) => (
+        <Input
+          defaultValue={data.name}
+          onChange={
+            (value) => onUpdateName(
+              index, value.target.value,
+            )
+          }
+        />
+      ),
     },
     {
       title: 'Categoria',
@@ -256,9 +285,10 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
               index, value,
             )
           }
-          filterOption={(input, option) => (option === undefined
-            ? false : option.children
-              .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
+          filterOption={(input, option: any) => (
+            (option === undefined || option?.children === undefined)
+              ? false : option.children
+                .toLowerCase().indexOf(input.toLowerCase()) >= 0)}
         >
           {labs ? Object.values(labs).map(
             (lab: Laboratory) => (
@@ -352,7 +382,8 @@ const ListPending: React.VC = ({ verboseName, parentName }) => {
               key: product.key,
               name: product.name,
               category: product.category,
-              provider: product.provider.provider,
+              provider: `${(product.provider.provider as Provider).name}
+               - ${(product.provider.provider as Provider).nav_key}`,
               presentation: product.presentation,
               iva: product.provider.iva,
               price: product.provider.price,

@@ -10,6 +10,7 @@ const MOCK_INITIAL_STATE : AuthType = {
     first_name: '',
     last_name: '',
     groups: [''],
+    username: '',
   },
   access: undefined,
   refresh: undefined,
@@ -17,6 +18,7 @@ const MOCK_INITIAL_STATE : AuthType = {
   isAdmin: false,
   isClient: false,
   isProvider: false,
+  isInvoiceManager: false,
 };
 
 const mockSetTokens = jest.fn();

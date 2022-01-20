@@ -95,7 +95,7 @@ jobs:
           name: Check no pending migrations to generate
           working_directory: ./backend
           command: |
-            poetry run ./manage.py makemigrations --dry-run --check
+            poetry run ./manage.py makemigrations --dry-run --check clients offers order products providers users
       - run:
           name: Run tests
           working_directory: ./backend

@@ -5,6 +5,7 @@ import products.models
 from backend.faker import sfaker
 from products.factories.category import CategoryFactory
 from products.factories.laboratory import LaboratoryFactory
+from providers.factories.provider import ProviderFactory
 
 
 class ProductFactory(django.DjangoModelFactory):
@@ -33,3 +34,5 @@ class ProductProviderFactory(django.DjangoModelFactory):
     )
     iva = LazyAttribute(lambda _: sfaker.random_int(min=0, max=100))
     laboratory = SubFactory(LaboratoryFactory)
+    product = SubFactory(ProductFactory)
+    provider = SubFactory(ProviderFactory)

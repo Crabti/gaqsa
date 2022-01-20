@@ -1,0 +1,56 @@
+{% extends "base_email.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h4>Se han subido <b>{{ invoices_total }}</b> archivos de los siguientes pedidos:</h4>
+  <table style="width:100%">
+    <th>
+      Folio
+    </th>
+    <th>
+      Fecha
+    </th>
+    <th>
+      Total
+    </th>
+    <th>
+      Numero de pedido
+    </th>
+    <th>
+      Estado de pedido
+    </th>
+    <th>
+      Cliente
+    </th>
+    <th>
+      Fecha de entrega
+    </th>
+    {% for invoice in invoices %}
+    <tr>
+      <td>
+        {{ invoice.invoice_folio }}
+      </td>
+      <td>
+        {{ invoice.invoice_date }}
+      </td>
+      <td>
+        {{ invoice.amount }}
+      </td>
+      <td>
+        Pedido #{{ invoice.order.pk }}
+      </td>
+      <td>
+        {{ invoice.order.status }}
+      </td>
+      <td>
+        {{ invoice.order.user }}
+      </td>
+      <td>
+        {{ invoice.delivery_date }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
+

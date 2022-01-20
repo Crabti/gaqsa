@@ -1,10 +1,10 @@
 from http import HTTPStatus
-
+from urllib.request import Request
+from auditlog.models import LogEntry
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, User
-from rest_framework.request import Request
-
 from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP, ADMIN_GROUP
+from users.serializers.audit_log import AuditLogSerializer
 from users.serializers.user_emails import CreateUserEmailSerializer
 from providers.serializers.providers import CreateProviderSerializer
 from clients.serializers.ranch import CreateRanchSerializer
@@ -13,6 +13,7 @@ from users.serializers.profile import CreateProfileSerializer
 from users.serializers.users import (
     CreateUserSerializer,
     ListUserSerializer,
+    UpdateUserSerializer,
     UserIsActiveSerializer,
     UserSerializer, ClientUserSerializer, ProviderUserSerializer,
 )
@@ -52,6 +53,40 @@ class ListUserView(generics.ListAPIView):
     permission_classes = [IsAdmin]
     queryset = User.objects.all()
     serializer_class = ListUserSerializer
+
+
+class UpdateUserView(APIView):
+    @staticmethod
+    def bad_request(message):
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def not_found(message):
+        return Response(message, status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request: Request, pk: int) -> Response:
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return self.not_found(
+                {"code": "NOT_FOUND"}
+            )
+        with transaction.atomic():
+            user_data = request.data.pop("user")
+            data = {
+                    **request.data,
+                    **user_data,
+                }
+            serializer = UpdateUserSerializer(
+                user,
+                data,
+            )
+            if not serializer.is_valid():
+                return self.bad_request(
+                    serializer.errors
+                )
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RetrieveUserView(APIView):
@@ -229,3 +264,9 @@ class CreateUser(APIView):
                     str(e),
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+
+class ListAuditLogView(generics.ListAPIView):
+    permission_classes = [IsAdmin]
+    queryset = LogEntry.objects.all()
+    serializer_class = AuditLogSerializer

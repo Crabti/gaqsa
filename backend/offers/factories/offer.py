@@ -1,9 +1,11 @@
-from factory import django, LazyAttribute
+from factory import django, LazyAttribute, SubFactory
 
 import offers.models
 import random
 from datetime import date
 from datetime import timedelta
+
+from users.factories.user import UserFactory
 
 
 class OfferFactory(django.DjangoModelFactory):
@@ -19,3 +21,4 @@ class OfferFactory(django.DjangoModelFactory):
     ending_at = LazyAttribute(
         lambda _: date.today() + timedelta(days=7)
     )
+    user = SubFactory(UserFactory)

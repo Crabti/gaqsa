@@ -1,14 +1,16 @@
-import { CommonType } from '@types';
+import { CommonType, Product, Provider } from '@types';
+import { Invoice } from './invoice';
 
 export interface Requisition {
     id: number;
     order: number;
     provider: number | string;
-    product: number | string;
+    product: number | string | Product;
     quantity_requested: number;
     quantity_accepted: number;
     price: number;
     status: string;
+    sent: boolean;
 }
 
 export interface Order extends CommonType {
@@ -16,6 +18,12 @@ export interface Order extends CommonType {
     user: number | string;
     created_at: Date;
     requisitions: Requisition[];
+    invoices?: Invoice[];
+    provider: string | Provider;
+    status: string;
+    total?: number;
+    cancelled: boolean;
+    invoice_status: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

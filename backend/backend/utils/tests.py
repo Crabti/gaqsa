@@ -1,17 +1,23 @@
-from backend.utils.constants import ADMIN_GROUP, CLIENT_GROUP, PROVIDER_GROUP
-from clients.factories.client import ClientFactory
-from providers.factories.provider import ProviderFactory
+import logging
+from backend.utils.constants import (
+    ADMIN_GROUP, CLIENT_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP
+)
 from users.factories.user import UserFactory
 from django.test import TestCase
 from django.contrib.auth.models import Group
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core import mail
 
 
 class BaseTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
+        # Clean mail outbox
+        mail.outbox = []
+
+        logging.disable(logging.WARNING)
 
         cls.provider_user = UserFactory.create()
         provider_group = Group.objects.get(name=PROVIDER_GROUP)
@@ -24,6 +30,11 @@ class BaseTestCase(TestCase):
         cls.admin_user = UserFactory.create()
         admin_group = Group.objects.get(name=ADMIN_GROUP)
         cls.admin_user.groups.add(admin_group)
+
+        cls.invoice_user = UserFactory.create()
+        invoice_group = Group.objects.get(name=INVOICE_MANAGER_GROUP)
+        cls.invoice_user.groups.add(invoice_group)
+
         cls.anonymous = APIClient()
 
         cls.provider_client = APIClient()
@@ -42,6 +53,12 @@ class BaseTestCase(TestCase):
         cls.admin_client = APIClient()
         access = RefreshToken.for_user(cls.admin_user).access_token
         cls.admin_client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + str(access)
+        )
+
+        cls.invoice_client = APIClient()
+        access = RefreshToken.for_user(cls.invoice_user).access_token
+        cls.invoice_client.credentials(
             HTTP_AUTHORIZATION="Bearer " + str(access)
         )
         return super().setUpTestData()

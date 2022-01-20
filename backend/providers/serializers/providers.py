@@ -64,3 +64,12 @@ class CreateProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Provider
         exclude = ('id', 'user')
+
+
+class UpdateProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Provider
+        exclude = ('id', 'user', 'created_at', 'updated_at')
+        extra_kwargs = {
+            'rfc': {'validators': []},
+        }

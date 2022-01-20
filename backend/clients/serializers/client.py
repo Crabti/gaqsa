@@ -8,6 +8,15 @@ class CreateClientSerializer(serializers.ModelSerializer):
         exclude = ('id', 'user')
 
 
+class UpdateClientSerialzier(serializers.ModelSerializer):
+    class Meta:
+        model = Client
+        exclude = ('id', 'user', 'created_at', 'updated_at')
+        extra_kwargs = {
+            'rfc': {'validators': []},
+        }
+
+
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client

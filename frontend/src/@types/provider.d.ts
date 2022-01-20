@@ -7,6 +7,7 @@ export interface Provider extends CommonType {
   rfc: string;
   address: string;
   emails?: UserEmail[];
+  nav_key: string;
 }
 
 export interface CreateProviderForm extends CreateBusinessForm {
