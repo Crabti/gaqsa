@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
 
 from announcements.models import Announcement
+from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-from backend.settings import FRONTEND_DOMAIN_URL
 from backend.utils.constants import PROVIDER_GROUP, CLIENT_GROUP
 
 
@@ -15,7 +15,7 @@ def send_mail_on_create_announcement(announcement: Announcement) -> None:
 
     title = announcement.title
     subject = f"GAQSA - {title}"
-    url = f"{FRONTEND_DOMAIN_URL}/circulares/{announcement.pk}"
+    url = f"{settings.FRONTEND_DOMAIN_URL}/circulares/{announcement.pk}"
     addressee = announcement.addressee
     context = {
         "url": url,
@@ -33,12 +33,12 @@ def send_mail_on_create_announcement(announcement: Announcement) -> None:
         else CLIENT_GROUP
     )
 
-    provider_emails = list(User.objects.filter(
+    emails = list(User.objects.filter(
         groups__name=group,
     ).values_list('email', flat=True))
 
     from_email = "noreply@gaqsa.com"
-    to_emails = provider_emails
+    to_emails = emails
     html_message = render_to_string(
         "new_announcement.html",
         context
@@ -48,7 +48,7 @@ def send_mail_on_create_announcement(announcement: Announcement) -> None:
         subject,
         plain_message,
         from_email,
-        to_emails,
+        bcc=to_emails,
     )
     email.attach_alternative(html_message, "text/html")
 
