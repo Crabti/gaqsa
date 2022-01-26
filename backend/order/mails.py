@@ -79,7 +79,7 @@ def send_mail_to_provider_on_create_order(orders: "list[Order]"):
             subject,
             plain_message,
             from_email,
-            to_emails,
+            bcc=to_emails,
         )
         email.attach_alternative(html_message, "text/html")
         emails.append(email)
@@ -112,7 +112,7 @@ def send_mail_to_client_on_create_order(orders: "list[Order]"):
             subject,
             plain_message,
             from_email,
-            to_emails,
+            bcc=to_emails,
         )
         email.attach_alternative(html_message, "text/html")
         emails.append(email)
