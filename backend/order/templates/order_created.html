@@ -6,25 +6,7 @@
   <div>
     <h4>EL SOCIO: {{ user }}</h4>
   </div>
-  <h4>Ha generado el siguiente pedido a su nombre {{ provider }}:</h4>
-  <table style="width:100%">
-    <tr>
-      <th>
-        Producto
-      </th>
-      <th>
-        Cantidad Requerida
-      </th>
-    </tr>
-    {% for product in products %}
-    <tr>
-      <th>
-        {{ product.product.name}}
-      </th>
-      <th>
-        {{ product.quantity_requested }}
-      </th>
-    </tr>
-    {% endfor%}
-  </table>
+  <h4>Ha generado el siguiente pedido a su nombre {{ provider.name }}:</h4>
+  {% include 'orders_table.html' %}
+
 {% endblock %}

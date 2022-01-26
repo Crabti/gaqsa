@@ -1,0 +1,99 @@
+<style>
+  .orderDiv {
+    margin-top: 10px;
+  }
+  .orderTable {
+    margin-right: 0; margin-left: auto;
+  }
+  .orderTable table tr td {
+    border: none;
+    border-collapse: collapse;
+  }
+</style>
+
+<table style="width:100%">
+      <th>
+        Producto
+      </th>
+      <th>
+        Descripción
+      </th>
+      <th>
+        Sustancia Activa
+      </th>
+      <th>
+        Presentación
+      </th>
+      <th>
+        Precio
+      </th>
+      <th>
+        Laboratorio
+      </th>
+      <th>
+        Iva
+      </th>
+      <th>
+        Ieps
+      </th>
+      <th>
+        Cantidad de Unidades
+      </th>
+      <th>
+        Importe
+      </th>
+    {% for requisition in products %}
+    <tr>
+      <td>
+        {{ requisition.product.key }}
+      </td>
+      <td>
+        {{ requisition.product.name}}
+      </td>
+      <td>
+        {{ requisition.product.active_substance }}
+      </td>
+      <td>
+        {{ requisition.product.presentation }}
+      </td>
+      <td>
+        ${{ requisition.original_price }}
+      </td>
+      <td>
+        {{ requisition.laboratory }}
+      </td>
+      <td>
+        {{ requisition.iva }}%
+      </td>
+      <td>
+        {{ requisition.product.ieps }}%
+      </td>
+      <td>
+        {{ requisition.quantity_requested }}
+      </td>
+      <td>
+        ${{ requisition.price }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="orderDiv">
+    <table class="orderTable">
+      <tr>
+        <td>Cantidad de unidades:</td> <td>{{ quantity_total }}</td>
+      </tr>
+      <tr>
+        <td>Iva</td> <td>${{ iva_total }}</td>
+      </tr>
+      <tr>
+        <td>Ieps:</td> <td>${{ ieps_total }}</td>
+      </tr>
+      <tr>
+        <td>Sub-Totales:</td><td>${{ subtotal }}</td>
+      </tr>
+      <tr>
+        <td>Total:</td> <td>${{ total }}</td>
+      </tr>
+    </table>
+  </div>
+
