@@ -10,6 +10,7 @@ const MOCK_INITIAL_STATE : AuthType = {
     first_name: '',
     last_name: '',
     groups: [''],
+    username: '',
   },
   access: undefined,
   refresh: undefined,

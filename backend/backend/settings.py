@@ -285,6 +285,7 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 INVOICE_FILE_ROOT = 'invoices/'
+ANNOUNCEMENT_FILE_ROOT = 'announcements/'
 
 DOMAIN_URL = os.getenv('DOMAIN_URL', '')
 FRONTEND_DOMAIN_URL = os.getenv('FRONTEND_DOMAIN_URL', '')

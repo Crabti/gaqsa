@@ -11,6 +11,13 @@ export type Column = {
   render?: any;
 }
 
+interface DownloadProps {
+  filename?: string;
+  disabled?: boolean;
+  text?: string;
+  ignoreColumnsKeys?: string[];
+}
+
 interface TableAction {
   action(): void,
 
@@ -30,6 +37,8 @@ interface Props {
   rowKey: string | ((record: any) => string),
   actions?: TableAction[],
   selection?: any,
+  downloadable?: boolean,
+  downloadProps?: DownloadProps;
 }
 
 export default Props;

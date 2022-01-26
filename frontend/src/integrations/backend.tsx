@@ -24,6 +24,7 @@ import {
   UpdateLaboratoryForm,
   UpdateProductForm,
   UpdateRequisitionForm,
+  User,
 } from '@types';
 
 import {
@@ -48,7 +49,7 @@ export class Backend {
 
   announcements: CRUD<Announcement, CreateAnnouncement, any>;
 
-  users: CRUD<any, any, any>;
+  users: CRUD<User, any, any>;
 
   providers: CRUD<Provider, any, any>;
 

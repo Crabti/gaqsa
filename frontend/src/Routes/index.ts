@@ -28,6 +28,7 @@ import ListAuditLog from 'views/AuditLog.ListAuditLog';
 import ListInvoice from 'views/Invoice.ListInvoice';
 import UploadInvoice from 'views/Invoice.UploadInvoice/Invoice.UploadInvoice';
 import OrderCreateOrder from 'views/Order.CreateOrder';
+import UpdateUserCompound from 'views/Users.UpdateUser';
 
 import {
   LIST_PROVIDERS, SHOW_CREATE_ANNOUNCEMENT,
@@ -258,6 +259,12 @@ export const usersRoutes: Routes = {
     view: ListAuditLog,
     verboseName: 'Bitácora de acciones',
     showInMenu: SHOW_AUDIT_LOG,
+    hasAccess: ((auth) => auth.isAdmin),
+  },
+  editUser: {
+    path: '/usuarios/:id(\\d+)/modificar',
+    view: UpdateUserCompound,
+    verboseName: 'Modificar usuario',
     hasAccess: ((auth) => auth.isAdmin),
   },
 };
