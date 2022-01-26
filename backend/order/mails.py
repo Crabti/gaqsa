@@ -2,10 +2,55 @@ from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from order.models import Order
+from products.models import ProductProvider
 from providers.models import Provider
 
 from users.models import UserEmail
 from backend.utils.emails import get_admin_emails
+
+
+def build_order_table_context(order: Order, title):
+    products = []
+    quantity_total = 0
+    iva_total = 0
+    ieps_total = 0
+    subtotal = 0
+
+    for requisition in order.requisitions:
+        product_provider = ProductProvider.objects.get(
+            product=requisition.product.pk,
+            provider=order.provider.pk,
+        )
+        quantity_total += requisition.quantity_requested
+        ieps_total += (
+            product_provider.ieps_to_money * requisition.quantity_requested
+        )
+        iva_total += (
+            product_provider.iva_to_money * requisition.quantity_requested
+        )
+        subtotal += product_provider.calculate_subtotal(
+            requisition.quantity_requested,
+        )
+        products.append({
+            **(requisition.__dict__),
+            "product": {**(requisition.product.__dict__)},
+            "iva": product_provider.iva,
+            "original_price": product_provider.price,
+            "laboratory": product_provider.laboratory.name,
+        })
+    context = {
+        "pk": order.pk,
+        "user": order.user,
+        "provider": order.provider,
+        "title": title,
+        "products": products,
+        "total": order.total,
+        "subtotal": subtotal,
+        "quantity_total": quantity_total,
+        "iva_total": iva_total,
+        "ieps_total": ieps_total,
+    }
+    return context
 
 
 def send_mail_to_provider_on_create_order(orders: "list[Order]"):
@@ -15,12 +60,8 @@ def send_mail_to_provider_on_create_order(orders: "list[Order]"):
     for order in orders:
         title = f"Orden de compra - {order.pk} - Socio { order.user } "
         subject = f"GAQSA - {title}"
-        context = {
-            "user": order.user,
-            "title": title,
-            "provider": order.provider,
-            "products": order.requisitions
-        }
+
+        context = build_order_table_context(order, title)
         user = order.provider.user
 
         provider_emails = list(UserEmail.objects.filter(
@@ -51,14 +92,11 @@ def send_mail_to_client_on_create_order(orders: "list[Order]"):
     connection.open()
     emails = []
     for order in orders:
-        title = f"Orden de compra - {order.pk} - Socio { order.user } "
+        title = f"Orden de compra - {order.pk} - Socio { order.user }" \
+                f" - Proveedor { order.provider.name }"
         subject = f"GAQSA - {title}"
-        context = {
-            "pk": order.pk,
-            "user": order.user,
-            "title": title,
-            "products": order.requisitions,
-        }
+        context = build_order_table_context(order, title)
+
         from_email = "noreply@gaqsa.com"
         admin_emails = get_admin_emails()
         client_emails = list(UserEmail.objects.filter(

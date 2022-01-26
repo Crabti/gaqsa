@@ -7,24 +7,5 @@
     <h4>Estimado: {{ user }}</h4>
   </div>
   <h4>Has generado el siguiente pedido:</h4>
-  <table style="width:100%">
-    <tr>
-      <th>
-        Producto
-      </th>
-      <th>
-        Cantidad Requerida
-      </th>
-    </tr>
-    {% for product in products %}
-    <tr>
-      <th>
-        {{ product.product.name}}
-      </th>
-      <th>
-        {{ product.quantity_requested }}
-      </th>
-    </tr>
-    {% endfor%}
-  </table>
+  {% include 'orders_table.html' %}
 {% endblock %}
