@@ -20,8 +20,8 @@ def send_mail_on_reject_product(data):
                 "title": title
             }
             from_email = "noreply@gaqsa.com"
-            # TODO: Cambiar correo de admin
-            to_emails = [relation.provider.user.email, "admin@temp.com"]
+            admin_emails = get_admin_emails()
+            to_emails = [relation.provider.user.email] + admin_emails
             html_message = render_to_string(
                 "product_updated.html",
                 context
@@ -31,7 +31,7 @@ def send_mail_on_reject_product(data):
                 subject,
                 plain_message,
                 from_email,
-                to_emails,
+                bcc=to_emails,
             )
             email.attach_alternative(html_message, "text/html")
             emails.append(email)
@@ -56,14 +56,14 @@ def send_mail_on_create_product_request(product_provider):
         context
     )
     plain_message = strip_tags(html_message)
-    mail.send_mail(
+    email = mail.EmailMultiAlternatives(
         subject,
         plain_message,
         from_email,
-        to_emails,
-        html_message=html_message,
-        fail_silently=True,
+        bcc=to_emails,
     )
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=True)
 
 
 def send_mail_on_price_change(

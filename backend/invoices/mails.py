@@ -42,7 +42,7 @@ def send_mail_on_notify_invoice(invoices: "list[Invoice]", user: int) -> None:
         subject,
         plain_message,
         from_email,
-        to_emails,
+        bcc=to_emails,
     )
     email.attach_alternative(html_message, "text/html")
     for invoice in invoices:
@@ -90,7 +90,7 @@ def send_mail_on_invoice_status_update(invoice) -> None:
         subject,
         plain_message,
         from_email,
-        to_emails,
+        bcc=to_emails,
     )
     email.attach_alternative(html_message, "text/html")
     email.attach_file(invoice.invoice_file.path)

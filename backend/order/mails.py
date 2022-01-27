@@ -144,11 +144,11 @@ def send_main_on_cancel_order(order):
         context
     )
     plain_message = strip_tags(html_message)
-    mail.send_mail(
+    email = mail.EmailMultiAlternatives(
         subject,
         plain_message,
         from_email,
-        to_emails,
-        html_message=html_message,
-        fail_silently=True,
+        bcc=to_emails,
     )
+    email.attach_alternative(html_message, "text/html")
+    email.send(fail_silently=True)

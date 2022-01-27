@@ -1,3 +1,4 @@
+from backend.utils.emails import get_admin_emails
 from offers.models import Offer
 from django.dispatch import receiver
 from django.core import mail
@@ -17,18 +18,18 @@ def send_mail_on_offer_create(sender, instance=None, created=False, **kwargs):
             "title": title
         }
         from_email = "noreply@gaqsa.com"
-        # TODO: Cambiar correo de admin
-        to_emails = [instance.user.email, "admin@temp.com"]
+        admin_emails = get_admin_emails()
+        to_emails = [instance.user.email] + admin_emails
         html_message = render_to_string(
             "offer_created.html",
             context
         )
         plain_message = strip_tags(html_message)
-        mail.send_mail(
+        email = mail.EmailMultiAlternatives(
             subject,
             plain_message,
             from_email,
-            to_emails,
-            html_message=html_message,
-            fail_silently=True,
+            bcc=to_emails,
         )
+        email.attach_alternative(html_message, "text/html")
+        email.send(fail_silently=True)
