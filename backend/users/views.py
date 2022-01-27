@@ -3,7 +3,9 @@ from urllib.request import Request
 from auditlog.models import LogEntry
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group, User
-from backend.utils.constants import CLIENT_GROUP, PROVIDER_GROUP, ADMIN_GROUP
+from backend.utils.constants import (
+    CLIENT_GROUP, INVOICE_MANAGER_GROUP, PROVIDER_GROUP, ADMIN_GROUP,
+)
 from users.serializers.audit_log import AuditLogSerializer
 from users.serializers.user_emails import CreateUserEmailSerializer
 from providers.serializers.providers import CreateProviderSerializer
@@ -120,7 +122,7 @@ class RetrieveUserView(APIView):
         user_role = user.groups.all()[0].name
         if user_role == PROVIDER_GROUP:
             return self.get_user_response(user, ProviderUserSerializer)
-        if user_role == ADMIN_GROUP:
+        if user_role == ADMIN_GROUP or user_role == INVOICE_MANAGER_GROUP:
             return self.get_user_response(user, UserSerializer)
         if user_role == CLIENT_GROUP:
             return self.get_user_response(user, ClientUserSerializer)

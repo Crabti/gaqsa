@@ -91,6 +91,12 @@ const UserForm: React.FC<Props> = ({
                 <Option value={UserGroups.CLIENT} key={UserGroups.CLIENT}>
                   {UserGroups.CLIENT}
                 </Option>
+                <Option
+                  value={UserGroups.INVOICE_MANAGER}
+                  key={UserGroups.INVOICE_MANAGER}
+                >
+                  {UserGroups.INVOICE_MANAGER}
+                </Option>
               </Select>
             </Form.Item>
             )
@@ -214,73 +220,76 @@ const UserForm: React.FC<Props> = ({
     >
       <Row justify="space-around">
         { standardFields }
-        { selectedRole !== UserGroups.ADMIN ? (
-          <>
-            <Col span={12}>
-              <Form.Item
-                name={['business', 'invoice_telephone']}
-                label="Teléfono de Facturación"
-                rules={[{ required: true, max: 16 }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name={['business', 'internal_key']}
-                label="Clave Interna del Usuario"
-                rules={[{ required: true }]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            { selectedRole === UserGroups.PROVIDER
-              ? (
-                <Col span={12}>
-                  <Form.Item
-                    name={['business', 'nav_key']}
-                    label="Clave Nav"
-                    rules={[{ required: true }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                </Col>
-              ) : null}
-            <Col span={12}>
-              <Form.Item
-                name={['business', 'dimension']}
-                label="Dimensión"
-                rules={[{ required: true }]}
-              >
-                <InputNumber />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name={['business', 'rfc']}
-                label="RFC"
-                rules={[{
-                  required: true,
-                  min: 12,
-                  max: 13,
-                }]}
-              >
-                <Input maxLength={13} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name={['business', 'name']}
-                label="Razón Social"
-                rules={[{ required: true }]}
-              >
-                <TextArea rows={3} />
-              </Form.Item>
-            </Col>
+        {
+          (selectedRole === UserGroups.CLIENT
+          || selectedRole === UserGroups.PROVIDER) ? (
+            <>
+              <Col span={12}>
+                <Form.Item
+                  name={['business', 'invoice_telephone']}
+                  label="Teléfono de Facturación"
+                  rules={[{ required: true, max: 16 }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name={['business', 'internal_key']}
+                  label="Clave Interna del Usuario"
+                  rules={[{ required: true }]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              { selectedRole === UserGroups.PROVIDER
+                ? (
+                  <Col span={12}>
+                    <Form.Item
+                      name={['business', 'nav_key']}
+                      label="Clave Nav"
+                      rules={[{ required: true }]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                ) : null}
+              <Col span={12}>
+                <Form.Item
+                  name={['business', 'dimension']}
+                  label="Dimensión"
+                  rules={[{ required: true }]}
+                >
+                  <InputNumber />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name={['business', 'rfc']}
+                  label="RFC"
+                  rules={[{
+                    required: true,
+                    min: 12,
+                    max: 13,
+                  }]}
+                >
+                  <Input maxLength={13} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name={['business', 'name']}
+                  label="Razón Social"
+                  rules={[{ required: true }]}
+                >
+                  <TextArea rows={3} />
+                </Form.Item>
+              </Col>
 
-            <Divider />
-          </>
-        ) : null }
+              <Divider />
+            </>
+            ) : null
+}
       </Row>
       { !isUpdate && selectedRole === UserGroups.CLIENT
         ? (
