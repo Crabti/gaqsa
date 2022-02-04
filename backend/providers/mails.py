@@ -5,7 +5,7 @@ from django.utils.html import strip_tags
 from users.models import UserEmail
 
 
-def send_mail_on_new_code(providers, token_apply_date):
+def send_mail_on_new_code(providers, token_apply_date, user_email):
     connection = mail.get_connection(fail_silently=True)
     connection.open()
     emails = []
@@ -22,7 +22,7 @@ def send_mail_on_new_code(providers, token_apply_date):
         provider_emails = list(UserEmail.objects.filter(
             user=provider.user, category=UserEmail.PRICE_CHANGE
         ).values_list('email', flat=True))
-        to_emails = provider_emails
+        to_emails = provider_emails + [user_email]
         html_message = render_to_string(
             'new_code.html',
             context
@@ -32,7 +32,7 @@ def send_mail_on_new_code(providers, token_apply_date):
             subject,
             plain_message,
             from_email,
-            to_emails,
+            bcc=to_emails,
         )
         email.attach_alternative(html_message, "text/html")
         emails.append(email)
