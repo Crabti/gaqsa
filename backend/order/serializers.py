@@ -176,6 +176,8 @@ class RequisitionPreviewSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     total = serializers.FloatField()
     subtotal = serializers.FloatField()
+    ieps_percentage = serializers.FloatField()
+    iva_percentage = serializers.FloatField()
     iva_total = serializers.FloatField()
     ieps_total = serializers.FloatField()
     price = serializers.FloatField()

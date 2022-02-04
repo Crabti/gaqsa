@@ -22,15 +22,12 @@ def build_order_table_context(order: Order, title):
             provider=order.provider.pk,
         )
         quantity_total += requisition.quantity_requested
-        ieps_total += (
-            product_provider.ieps_to_money * requisition.quantity_requested
-        )
-        iva_total += (
-            product_provider.iva_to_money * requisition.quantity_requested
-        )
-        subtotal += product_provider.calculate_subtotal(
+        temp_subtotal = product_provider.calculate_subtotal(
             requisition.quantity_requested,
         )
+        ieps_total += product_provider.ieps_to_money(temp_subtotal)
+        iva_total += product_provider.iva_to_money(temp_subtotal)
+        subtotal += temp_subtotal
         products.append({
             **(requisition.__dict__),
             "product": {**(requisition.product.__dict__)},
