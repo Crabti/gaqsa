@@ -4,12 +4,14 @@ import { Button, Tooltip, Typography } from 'antd';
 import { useHistory } from 'react-router';
 import Table, { Column } from 'components/Table';
 import React from 'react';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 interface Props {
   data: Announcement[];
+  loading: boolean;
 }
 
-const AnnouncementsList: React.FC<Props> = ({ data }) => {
+const AnnouncementsList: React.FC<Props> = ({ data, loading }) => {
   const history = useHistory();
 
   const CONTENT_LIMIT = 70;
@@ -55,6 +57,7 @@ const AnnouncementsList: React.FC<Props> = ({ data }) => {
       ),
     },
   ];
+  if (loading) return <LoadingIndicator />;
   return (
     <Table columns={columns} data={data} rowKey={(record) => record.id} />
   );
