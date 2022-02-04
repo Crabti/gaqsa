@@ -23,6 +23,7 @@ const PriceChangeForm: React.FC<Props> = ({
   const resetFiltered = useCallback(
     () => setFiltered(products || []), [products],
   );
+  const [code, setCode] = useState<string>('');
 
   const columns = [
     {
@@ -136,7 +137,11 @@ const PriceChangeForm: React.FC<Props> = ({
             name="token"
             rules={[{ required: true }]}
           >
-            <Input size="small" />
+            <Input
+              size="small"
+              value={code}
+              onChange={(event) => setCode(event.target.value)}
+            />
           </Form.Item>
         </Col>
       </Row>
@@ -164,6 +169,7 @@ const PriceChangeForm: React.FC<Props> = ({
       <FormButton
         loading={isLoading}
         text="Confirmar"
+        disabled={!code}
       />
     </Form>
   );
