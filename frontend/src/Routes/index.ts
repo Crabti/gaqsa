@@ -143,7 +143,7 @@ const ordersRoutes: Routes = {
 const invoiceRoutes: Routes = {
   listInvoice: {
     path: '/facturas',
-    verboseName: 'Lista de facturas',
+    verboseName: 'Historial de facturas',
     view: ListInvoice,
     showInMenu: true,
     hasAccess: (

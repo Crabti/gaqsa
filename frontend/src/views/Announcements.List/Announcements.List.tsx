@@ -4,16 +4,33 @@ import { Button, Tooltip, Typography } from 'antd';
 import { useHistory } from 'react-router';
 import Table, { Column } from 'components/Table';
 import React from 'react';
+import LoadingIndicator from 'components/LoadingIndicator';
+import moment from 'moment';
 
 interface Props {
   data: Announcement[];
+  loading: boolean;
 }
 
-const AnnouncementsList: React.FC<Props> = ({ data }) => {
+const AnnouncementsList: React.FC<Props> = ({ data, loading }) => {
   const history = useHistory();
 
   const CONTENT_LIMIT = 70;
   const columns: Column[] = [
+    {
+      title: 'Fecha de creación',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      defaultSortOrder: 'descend',
+      sorter: (a: any, b: any) => moment(
+        a.created_at,
+      ).unix() - moment(
+        b.created_at,
+      ).unix(),
+      render: (_: number, announ: Announcement) => (
+        moment(announ.created_at).format('YYYY-MM-DD hh:mm')
+      ),
+    },
     {
       title: 'Título',
       dataIndex: 'title',
@@ -55,6 +72,7 @@ const AnnouncementsList: React.FC<Props> = ({ data }) => {
       ),
     },
   ];
+  if (loading) return <LoadingIndicator />;
   return (
     <Table columns={columns} data={data} rowKey={(record) => record.id} />
   );

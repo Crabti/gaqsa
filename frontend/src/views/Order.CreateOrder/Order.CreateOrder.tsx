@@ -28,6 +28,8 @@ interface RequisitionPreview {
   quantity: number;
   total: number;
   subtotal: number;
+  ieps_percentage: number;
+  iva_percentage: number;
   iva_total: number;
   ieps_total: number;
   price: number;
@@ -86,7 +88,6 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
   useEffect(() => {
     fetchPreview();
   }, [fetchPreview]);
-
   const onFinish = async () : Promise<void> => {
     setLoading(true);
     const [, error] = await backend.orders.createOne(productsCart);
@@ -140,13 +141,13 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
     },
     {
       title: 'IVA',
-      dataIndex: 'iva',
-      key: 'iva',
+      dataIndex: 'iva_percentage',
+      key: 'iva_percentage',
     },
     {
       title: 'IEPS',
-      dataIndex: 'ieps',
-      key: 'ieps',
+      dataIndex: 'ieps_percentage',
+      key: 'ieps_percentage',
     },
     {
       title: 'Cantidad',
@@ -236,6 +237,8 @@ const CreateOrder: React.VC = ({ verboseName, parentName }) => {
                 original_price: `$${product.original_price?.toFixed(2)}`,
                 total: `$${product.total.toFixed(2)}`,
                 subtotal: `$${product.subtotal.toFixed(2)}`,
+                iva_percentage: `${product.iva_percentage}%`,
+                ieps_percentage: `${product.ieps_percentage}%`,
               }))}
               columns={columns}
               rowKey={(row) => `${row.id}`}

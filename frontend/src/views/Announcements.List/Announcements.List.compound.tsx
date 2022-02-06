@@ -17,6 +17,7 @@ const AnnouncementsListCompound: React.VC = ({
   const backend = useBackend();
   const user = useAuth();
   const [announs, setAnnouns] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const onExtraClick = (): void => {
     history.push(catalogsRoutes.createAnnouncement.path);
@@ -24,6 +25,7 @@ const AnnouncementsListCompound: React.VC = ({
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
+      setLoading(true);
       const [res, err] = await backend.announcements.getAll();
 
       if (err || !res || !res.data) {
@@ -31,6 +33,7 @@ const AnnouncementsListCompound: React.VC = ({
       }
 
       setAnnouns(res.data);
+      setLoading(false);
     };
 
     fetchData();
@@ -51,7 +54,7 @@ const AnnouncementsListCompound: React.VC = ({
           ]
         }
       />
-      <AnnouncementsList data={announs} />
+      <AnnouncementsList data={announs} loading={loading || !announs} />
     </Content>
   );
 };

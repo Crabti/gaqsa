@@ -14,7 +14,7 @@ const AnnouncementsDetailCompound: React.VC = ({
 }) => {
   const { id } = useParams<{ id: string }>();
   const backend = useBackend();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [announ, setAnnoun] = useState<Announcement | undefined>(
     undefined,
   );

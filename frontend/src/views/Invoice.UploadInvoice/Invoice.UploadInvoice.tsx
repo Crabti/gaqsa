@@ -24,6 +24,7 @@ import { FileOutlined } from '@ant-design/icons';
 import useAuth from 'hooks/useAuth';
 import OrderInvoiceStatusTag from 'components/OrderInvoiceStatusTag';
 import TableFilter from 'components/TableFilter';
+import { OrderStatus } from 'constants/strings';
 
 interface InvoiceModal {
   visible: boolean,
@@ -143,27 +144,37 @@ const UploadInvoice: React.VC = ({ verboseName, parentName }) => {
       title: 'Acciones',
       dataIndex: 'actions',
       key: 'actions',
-      render: (_: number, order: Order) => (
-        <Row gutter={10} justify="center">
-          {shouldUploadInvoices
-            ? (
-              <Col>
-                <Tooltip title="Cargar Factura">
-                  <Button
-                    shape="circle"
-                    icon={<FileOutlined />}
-                    onClick={() => (
-                      setInvoiceModal({
-                        visible: true,
-                        order,
-                      })
-                    )}
-                  />
-                </Tooltip>
-              </Col>
-            ) : null }
-        </Row>
-      ),
+      render: (_: number, order: Order) => {
+        const allowUpload = order.status === OrderStatus.INCOMPLETE
+            || order.status === OrderStatus.RECEIVED;
+
+        const uploadTooltip = allowUpload
+          ? 'Cargar Factura'
+          : 'El pedido debe tener estado Aceptado o Incompleto.';
+
+        return (
+          <Row gutter={10} justify="center">
+            {shouldUploadInvoices
+              ? (
+                <Col>
+                  <Tooltip title={uploadTooltip}>
+                    <Button
+                      disabled={!allowUpload}
+                      shape="circle"
+                      icon={<FileOutlined />}
+                      onClick={() => (
+                        setInvoiceModal({
+                          visible: true,
+                          order,
+                        })
+                      )}
+                    />
+                  </Tooltip>
+                </Col>
+              ) : null }
+          </Row>
+        );
+      },
     },
   ];
 

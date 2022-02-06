@@ -7,9 +7,11 @@ import { RcFile } from 'antd/es/upload';
 import { UploadProps } from 'antd/lib/upload/interface';
 import { useBackend } from 'integrations';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
 import { ANNOUNCEMENT_ROOT } from 'settings';
 
 const AnnouncementForm: React.FC = () => {
+  const history = useHistory();
   const [fileToUpload, setFileToUpload] = useState<RcFile | undefined>(
     undefined,
   );
@@ -54,6 +56,7 @@ const AnnouncementForm: React.FC = () => {
     }
 
     setIsLoading(false);
+    history.push('/circulares');
     notification.success({ message: 'Circular enviada exitosamente' });
   };
 

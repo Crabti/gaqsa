@@ -38,7 +38,11 @@ class CreateCode(APIView):
                 return Response(
                     serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        send_mail_on_new_code(providers, token_apply_date)
+        send_mail_on_new_code(
+            providers,
+            token_apply_date,
+            request.user.email,
+        )
         return Response(
             {'message': 'Codes created'},
             status=status.HTTP_200_OK)

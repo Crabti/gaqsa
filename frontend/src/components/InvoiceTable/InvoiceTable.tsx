@@ -225,10 +225,21 @@ const InvoiceTable: React.FC<Props> = (
       ),
     },
     {
+      title: 'Vigencia',
+      dataIndex: 'is_client_responsible',
+      key: 'is_client_responsible',
+      render: (valid: boolean) => (valid ? '' : 'Excedió tiempo'),
+    },
+    {
       title: 'Estado',
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => <InvoiceStatusTag status={status} />,
+    },
+    {
+      title: 'Razon de rechazo',
+      dataIndex: 'reject_reason',
+      key: 'reject_reason',
     },
     {
       title: 'Acciones',
