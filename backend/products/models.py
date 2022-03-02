@@ -181,6 +181,9 @@ class ProductProvider(models.Model):
     def __str__(self) -> str:
         return f"{self.product} - {self.provider} - {self.price}"
 
+    class Meta:
+        unique_together = ('product', 'provider')
+
 
 class ChangePriceRequest(models.Model):
     ACCEPTED = "Aceptado"

@@ -33,6 +33,12 @@ const AddProviderToProductModal: React.FC<Props> = ({
 
   const onFinishFailed = (code: string) : void => {
     switch (code) {
+      case 'UNIQUE':
+        notification.error({
+          message: `El proveedor seleccionado ya cuenta 
+            con el producto ${product.name} asociado.`,
+        });
+        break;
       default:
         notification.error({
           message: '¡Ocurrió un error al intentar guardar!',

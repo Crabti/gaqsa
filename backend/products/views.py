@@ -1,4 +1,5 @@
 from __future__ import annotations
+from django.db import transaction
 
 from datetime import date, datetime
 
@@ -185,6 +186,7 @@ class AcceptProductAsNew(APIView):
 class GroupProductsView(APIView):
     permission_classes = (IsAdmin, )
 
+    @transaction.atomic
     def post(self, request: Request) -> Response:
         data = request.data
         target = Product.objects.get(pk=data['product'])
@@ -193,21 +195,41 @@ class GroupProductsView(APIView):
                 data={"code": "TARGET_PRODUCT_NOT_FOUND"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        sid = transaction.savepoint()
         for data in data['providers']:
             id = data['id']
             product_provider = ProductProvider.objects.get(pk=id)
+
             if not product_provider:
+                transaction.savepoint_rollback(sid)
                 return Response(
                     data={"code": "PRODUCT_PROVIDER_NOT_FOUND"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            target_product_provider_exists = ProductProvider.objects.filter(
+                product=target.pk, provider=product_provider.provider.pk,
+            ).exists()
+
+            if target_product_provider_exists:
+                transaction.savepoint_rollback(sid)
+                return Response(
+                    data={
+                        "message": "Product-provider unique constraint",
+                        "code": "UNIQUE",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             # Update fields if passed
             serializer = UpdateProductProviderSerializer(
                 product_provider,
                 data=data,
                 partial=True,
             )
+
             if not serializer.is_valid():
+                transaction.savepoint_rollback(sid)
                 return Response(
                     data=serializer.errors,
                     status=status.HTTP_400_BAD_REQUEST,
@@ -220,6 +242,7 @@ class GroupProductsView(APIView):
             instance.product = target
             instance.save()
 
+        transaction.savepoint_commit(sid)
         return Response(
             data={'code': 'PRODUCTS_GROUPED'},
             status=status.HTTP_200_OK
@@ -355,6 +378,17 @@ class AddProviderToProductView(APIView):
     def post(self, request: Request, *args, **kwargs) -> Response:
         data = request.data
         target = generics.get_object_or_404(Product, pk=kwargs.get('pk'))
+        product_provider_exists = ProductProvider.objects.filter(
+            product=target, provider=data['provider']
+        ).exists()
+        if product_provider_exists:
+            return Response(
+                data={
+                    "message": "A provider-product relation already exists.",
+                    "code": "UNIQUE",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         serializer = AddProviderToProductSerializer(
             data={
                 **data,
@@ -362,6 +396,7 @@ class AddProviderToProductView(APIView):
             }
         )
         if not serializer.is_valid():
+            print(serializer.errors)
             return Response(
                 data=serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST,

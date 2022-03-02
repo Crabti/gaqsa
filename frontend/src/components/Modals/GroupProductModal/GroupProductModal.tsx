@@ -33,6 +33,12 @@ const GroupProductModal: React.FC<Props> = ({
 
   const onFinishFailed = (code: string) : void => {
     switch (code) {
+      case 'UNIQUE':
+        notification.error({
+          message: `Uno de los proveedores ya cuentan con una relacion con el producto seleccionado`,
+          description: 'Verifique los productos registrados en el sistema.'
+        });
+        break;
       default:
         notification.error({
           message: '¡Ocurrió un error al intentar guardar!',
