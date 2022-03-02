@@ -107,9 +107,9 @@ const GroupProductModal: React.FC<Props> = ({
     'IEPS',
   ];
 
-  const productLabel = (product: Product) : string => `${product.key}
-    - ${product.category}
-     - ${product.name}
+  const productLabel = (product: Product) : string => `${product.key} \
+    - ${product.category} \
+     - ${product.name} \
      - ${product.presentation}`;
 
   return (
@@ -138,10 +138,12 @@ const GroupProductModal: React.FC<Props> = ({
                   showSearch
                   placeholder="Buscar producto existente"
                   filterOption={
-            (input, option: any) => ((option === undefined || option.children)
-              ? false : option.children
-                .toLowerCase().indexOf(input.toLowerCase()) >= 0)
-          }
+                  (input, option: any) => (
+                    (option === undefined)
+                      ? false : option.children
+                        .toLowerCase().indexOf(input.toLowerCase()) !== -1)
+                  }
+
                 >
                   { Object.values(existingProducts).map(
                     (product) => (
