@@ -1,11 +1,12 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { AddresseeTypes } from '@types';
 import {
-  Button, Form, Input, notification, Select, Upload,
+  Button, DatePicker, Form, Input, notification, Select, Upload,
 } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { UploadProps } from 'antd/lib/upload/interface';
 import { useBackend } from 'integrations';
+import moment, { Moment } from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { ANNOUNCEMENT_ROOT } from 'settings';
@@ -18,6 +19,8 @@ const AnnouncementForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const backend = useBackend();
 
+  const { RangePicker } = DatePicker;
+
   const uploadProps: UploadProps = {
     name: 'file',
     beforeUpload(file) {
@@ -28,7 +31,11 @@ const AnnouncementForm: React.FC = () => {
   };
 
   const handleSubmit = async (
-    data: { title: string; content: string; addressee: string; },
+    data: {
+      title: string;
+      content: string;
+      addressee: string;
+      dates: Moment[]; },
   ): Promise<void> => {
     setIsLoading(true);
     if (!fileToUpload) {
@@ -41,6 +48,8 @@ const AnnouncementForm: React.FC = () => {
     formData.append('file', fileToUpload);
     formData.append('title', data.title);
     formData.append('content', data.content);
+    formData.append('start_date', data.dates[0].format('YYYY-MM-DD'));
+    formData.append('end_date', data.dates[1].format('YYYY-MM-DD'));
     formData.append('addressee', data.addressee);
 
     const [result, err] = await backend.announcements.post(
@@ -60,6 +69,10 @@ const AnnouncementForm: React.FC = () => {
     notification.success({ message: 'Circular enviada exitosamente' });
   };
 
+  const disabledDate = (
+    current : any,
+  ) : boolean => current && current < moment().endOf('day');
+
   return (
     <Form
       name="announcement_form"
@@ -72,6 +85,9 @@ const AnnouncementForm: React.FC = () => {
           placeholder="Máximo 140 caractéres"
           maxLength={140}
         />
+      </Form.Item>
+      <Form.Item name="dates" label="Fechas de inicio - fin">
+        <RangePicker disabledDate={disabledDate} />
       </Form.Item>
       <Form.Item name="content" label="Contenido">
         <Input.TextArea placeholder="Escribe aquí..." />

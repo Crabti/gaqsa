@@ -6,7 +6,13 @@ class CreateAnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
         fields = (
-            "title", "addressee", "content", "created_by", "file_url",
+            "title",
+            "addressee",
+            "content",
+            "created_by",
+            "file_url",
+            "start_date",
+            "end_date",
         )
 
 

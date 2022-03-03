@@ -1,4 +1,6 @@
 import os.path
+import datetime
+
 from typing import Tuple
 
 from rest_framework.generics import RetrieveAPIView
@@ -52,8 +54,10 @@ class CreateAnnouncement(APIView):
                 "title": request.data["title"],
                 "content": request.data["content"],
                 "addressee": request.data["addressee"],
+                "start_date": request.data["start_date"],
+                "end_date": request.data["end_date"],
                 "created_by": request.user.pk,
-                "file_url": file_url
+                "file_url": file_url,
             },
         )
 
@@ -71,11 +75,20 @@ class CreateAnnouncement(APIView):
         if is_provider(request.user):
             anns = Announcement.objects.filter(
                 addressee=Announcement.PROVIDERS,
+                start_date__lte=datetime.date.today(),
+                end_date__gte=datetime.date.today(),
             )
         elif is_client(request.user):
-            anns = Announcement.objects.filter(addressee=Announcement.CLIENTS)
+            anns = Announcement.objects.filter(
+                addressee=Announcement.CLIENTS,
+                start_date__lte=datetime.date.today(),
+                end_date__gte=datetime.date.today(),
+            )
         else:
-            anns = Announcement.objects.all()
+            anns = Announcement.objects.filter(
+                start_date__lte=datetime.date.today(),
+                end_date__gte=datetime.date.today(),
+            )
 
         serializer = ListAnnouncementsSerializer(anns, many=True)
 
@@ -98,5 +111,8 @@ class CreateAnnouncement(APIView):
 
 
 class AnnouncementDetail(RetrieveAPIView):
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.filter(
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today(),
+    )
     serializer_class = ListAnnouncementsSerializer
